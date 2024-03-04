@@ -1,2 +1,2 @@
-# openje
+# OpenJE
 Open source Jefferson Engine
