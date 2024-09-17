@@ -3,7 +3,7 @@
 #ifndef JE_EDITTOKENINTERFACE_HPP_
 #define JE_EDITTOKENINTERFACE_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/CEngineInterface.hpp"
 
 namespace JE {

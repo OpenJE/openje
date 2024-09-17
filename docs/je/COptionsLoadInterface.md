@@ -1,6 +1,6 @@
 # JE::COptionsLoadInterface
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)
 
 ## C++
 
@@ -22,4 +22,4 @@ graph TD;
     JE::CEngineInterface --> JE::COptionsLoadInterface
 ```
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)

@@ -3,7 +3,7 @@
 #ifndef JE_OCTREE_CRCL2D_HPP_
 #define JE_OCTREE_CRCL2D_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	struct OCTREE_Crcl2D {

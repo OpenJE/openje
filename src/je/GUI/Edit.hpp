@@ -3,7 +3,7 @@
 #ifndef JE_GUI_EDIT_HPP_
 #define JE_GUI_EDIT_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/GUI/Label.hpp"
 #include "je/cls_0x4abc60.hpp"
 

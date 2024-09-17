@@ -3,7 +3,7 @@
 #ifndef JE_CLOADMAPINTERFACE_HPP_
 #define JE_CLOADMAPINTERFACE_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/GUI/Interface.hpp"
 
 namespace JE {

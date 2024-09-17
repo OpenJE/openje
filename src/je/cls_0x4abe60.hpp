@@ -3,7 +3,7 @@
 #ifndef JE_CLS_0X4ABE60_HPP_
 #define JE_CLS_0X4ABE60_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	class cls_0x4abe60 {
@@ -20,7 +20,7 @@ namespace JE {
 			ctor_0x4abe60;
 			meth_0x4abe80;
 			meth_0x4ac240;
-	}; // 
+	}; //
 } // namespace JE
 
 #endif // JE_CLS_0X4ABE60_HPP_

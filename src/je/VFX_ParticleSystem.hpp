@@ -3,7 +3,7 @@
 #ifndef JE_VFX_PARTICLESYSTEM_HPP_
 #define JE_VFX_PARTICLESYSTEM_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/VFX_EffectInstance.hpp"
 #include "je/Gfx_LineSystem.hpp"
 #include "je/VFXEFFECTTYPE_PARTICLESYSTEM_Struct.hpp"

@@ -3,7 +3,7 @@
 #ifndef JE_GFX_SYSTEM_INTERFACE_HPP_
 #define JE_GFX_SYSTEM_INTERFACE_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	class Gfx_System_Interface {

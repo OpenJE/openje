@@ -3,7 +3,7 @@
 #ifndef JE_G3D_DIRECTIONALLIGHT_HPP_
 #define JE_G3D_DIRECTIONALLIGHT_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/G3D_BaseLight.hpp"
 
 namespace JE {

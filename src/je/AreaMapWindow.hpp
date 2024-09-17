@@ -3,7 +3,7 @@
 #ifndef JE_AREAMAPWINDOW_HPP_
 #define JE_AREAMAPWINDOW_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/GUI/Picture.hpp"
 #include "je/cls_0x4abc60.hpp"
 #include "je/cls_0x4abc60.hpp"

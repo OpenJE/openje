@@ -3,7 +3,7 @@
 #ifndef JE_NETWORK_HPP_
 #define JE_NETWORK_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	struct Network {

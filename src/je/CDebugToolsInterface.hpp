@@ -3,7 +3,7 @@
 #ifndef JE_CDEBUGTOOLSINTERFACE_HPP_
 #define JE_CDEBUGTOOLSINTERFACE_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	class CDebugToolsInterface {

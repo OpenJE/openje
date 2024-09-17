@@ -3,7 +3,7 @@
 #ifndef JE_ACTIONDIE_HPP_
 #define JE_ACTIONDIE_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/Action.hpp"
 
 namespace JE {

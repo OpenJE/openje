@@ -3,7 +3,7 @@
 #ifndef JE_TRANSITIONTRIGGER_HPP_
 #define JE_TRANSITIONTRIGGER_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/Trigger.hpp"
 
 namespace JE {

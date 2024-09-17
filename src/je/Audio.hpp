@@ -3,7 +3,7 @@
 #ifndef JE_AUDIO_HPP_
 #define JE_AUDIO_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	struct Audio {

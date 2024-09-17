@@ -3,7 +3,7 @@
 #ifndef JE_ENCYCLOPEDIA_HPP_
 #define JE_ENCYCLOPEDIA_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	struct Encyclopedia {

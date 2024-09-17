@@ -3,7 +3,7 @@
 #ifndef JE_GFX_RS_B_LM_HPP_
 #define JE_GFX_RS_B_LM_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/Gfx_RenderStyle.hpp"
 
 namespace JE {

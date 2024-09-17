@@ -3,7 +3,7 @@
 #ifndef JE_VFX_PARAMETERINFO_HPP_
 #define JE_VFX_PARAMETERINFO_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/VFX_Parameter.hpp"
 #include "je/VFX_Parameter.hpp"
 #include "je/VFX_Parameter.hpp"

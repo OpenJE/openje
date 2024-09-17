@@ -1,6 +1,6 @@
 # JE::Input_Win32
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)
 
 ## C++
 
@@ -18,4 +18,4 @@ graph TD;
     JE::Input --> JE::Input_Win32
 ```
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)

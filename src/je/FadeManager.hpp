@@ -3,7 +3,7 @@
 #ifndef JE_FADEMANAGER_HPP_
 #define JE_FADEMANAGER_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	struct FadeManager {

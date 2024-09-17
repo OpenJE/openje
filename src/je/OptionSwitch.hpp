@@ -3,7 +3,7 @@
 #ifndef JE_OPTIONSWITCH_HPP_
 #define JE_OPTIONSWITCH_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/OptionDial.hpp"
 
 namespace JE {

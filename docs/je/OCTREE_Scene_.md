@@ -1,6 +1,6 @@
 # JE::OCTREE_Scene_
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)
 
 ## C++
 
@@ -18,4 +18,4 @@ graph TD;
     JE::OCTREE_Scene --> JE::OCTREE_Scene_
 ```
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)

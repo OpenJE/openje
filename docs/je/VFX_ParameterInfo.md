@@ -1,6 +1,6 @@
 # JE::VFX_ParameterInfo
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)
 
 ## C++
 
@@ -18,4 +18,4 @@ graph TD;
     JE::VFX_Parameter --> JE::VFX_ParameterInfo
 ```
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)

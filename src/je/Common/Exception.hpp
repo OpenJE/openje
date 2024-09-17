@@ -3,7 +3,7 @@
 #ifndef JE_COMMON_EXCEPTION_HPP_
 #define JE_COMMON_EXCEPTION_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
     namespace Common {

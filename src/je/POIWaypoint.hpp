@@ -3,7 +3,7 @@
 #ifndef JE_POIWAYPOINT_HPP_
 #define JE_POIWAYPOINT_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/GUI/Label.hpp"
 
 namespace JE {

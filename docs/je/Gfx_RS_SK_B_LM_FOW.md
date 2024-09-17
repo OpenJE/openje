@@ -1,6 +1,6 @@
 # JE::Gfx_RS_SK_B_LM_FOW
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)
 
 ## C++
 
@@ -18,4 +18,4 @@ graph TD;
     JE::Gfx_RenderStyle --> JE::Gfx_RS_SK_B_LM_FOW
 ```
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)

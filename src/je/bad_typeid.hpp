@@ -3,7 +3,7 @@
 #ifndef JE_BAD_TYPEID_HPP_
 #define JE_BAD_TYPEID_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/exception.hpp"
 
 namespace JE {

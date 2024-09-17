@@ -3,7 +3,7 @@
 #ifndef JE_COPTIONSVIDEOINTERFACE_HPP_
 #define JE_COPTIONSVIDEOINTERFACE_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	class COptionsVideoInterface {

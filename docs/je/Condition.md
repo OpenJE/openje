@@ -1,6 +1,6 @@
 # JE::Condition
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)
 
 ## C++
 
@@ -18,4 +18,4 @@ graph TD;
     JE::Effect --> JE::Condition
 ```
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)

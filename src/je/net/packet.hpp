@@ -3,7 +3,7 @@
 #ifndef JE_NET_PACKET_HPP_
 #define JE_NET_PACKET_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/net/buffer.hpp"
 
 namespace JE {

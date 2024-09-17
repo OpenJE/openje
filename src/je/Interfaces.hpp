@@ -3,7 +3,7 @@
 #ifndef JE_INTERFACES_HPP_
 #define JE_INTERFACES_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	struct Interfaces {

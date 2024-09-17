@@ -3,7 +3,7 @@
 #ifndef JE_GUI_WINDOW_HPP_
 #define JE_GUI_WINDOW_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/GUI/Base.hpp"
 #include "je/GUI/HeapTracker.hpp"
 

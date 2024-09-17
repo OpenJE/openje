@@ -3,7 +3,7 @@
 #ifndef JE_CESCAPEMENUINTERFACE_HPP_
 #define JE_CESCAPEMENUINTERFACE_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	class CEscapeMenuInterface {

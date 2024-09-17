@@ -3,7 +3,7 @@
 #ifndef JE_EFFECT_HPP_
 #define JE_EFFECT_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	struct Effect {

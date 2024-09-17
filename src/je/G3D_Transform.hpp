@@ -3,7 +3,7 @@
 #ifndef JE_G3D_TRANSFORM_HPP_
 #define JE_G3D_TRANSFORM_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	class G3D_Transform {

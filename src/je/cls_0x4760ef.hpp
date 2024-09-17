@@ -3,7 +3,7 @@
 #ifndef JE_CLS_0X4760EF_HPP_
 #define JE_CLS_0X4760EF_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/cls_0x474824.hpp"
 #include "je/cls_0x474824.hpp"
 

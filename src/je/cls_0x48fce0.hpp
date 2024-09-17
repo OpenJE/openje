@@ -3,7 +3,7 @@
 #ifndef JE_CLS_0X48FCE0_HPP_
 #define JE_CLS_0X48FCE0_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/cls_0x48fb60.hpp"
 
 namespace JE {

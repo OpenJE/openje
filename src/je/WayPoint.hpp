@@ -3,7 +3,7 @@
 #ifndef JE_WAYPOINT_HPP_
 #define JE_WAYPOINT_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	class WayPoint {

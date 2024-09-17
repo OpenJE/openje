@@ -3,7 +3,7 @@
 #ifndef JE_CLOADINGBARINTERFACE_HPP_
 #define JE_CLOADINGBARINTERFACE_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	class CLoadingBarInterface {

@@ -3,7 +3,7 @@
 #ifndef JE_PARTY_HPP_
 #define JE_PARTY_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	struct Party {

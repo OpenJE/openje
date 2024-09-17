@@ -3,7 +3,7 @@
 #ifndef JE_POIPICTURE_HPP_
 #define JE_POIPICTURE_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/GUI/Picture.hpp"
 
 namespace JE {

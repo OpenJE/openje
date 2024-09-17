@@ -1,6 +1,6 @@
 # JE::Gfx_PacketData
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)
 
 ## C++
 
@@ -18,4 +18,4 @@ graph TD;
     JE::Gfx_BasePacketData --> JE::Gfx_PacketData
 ```
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)

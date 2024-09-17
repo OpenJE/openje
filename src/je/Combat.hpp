@@ -3,7 +3,7 @@
 #ifndef JE_COMBAT_HPP_
 #define JE_COMBAT_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	struct Combat {

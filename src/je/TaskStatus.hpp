@@ -3,7 +3,7 @@
 #ifndef JE_TASKSTATUS_HPP_
 #define JE_TASKSTATUS_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	class TaskStatus {

@@ -3,7 +3,7 @@
 #ifndef JE_VFXEFFECTTYPE_LIGHTNING_STRUCT_HPP_
 #define JE_VFXEFFECTTYPE_LIGHTNING_STRUCT_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/VFXEFFECTTYPE_BASE_Struct.hpp"
 #include "je/cls_0x4d8d70.hpp"
 #include "je/cls_0x4d8d70.hpp"

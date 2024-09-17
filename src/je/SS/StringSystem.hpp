@@ -3,7 +3,7 @@
 #ifndef JE_SS_STRINGSYSTEM_HPP_
 #define JE_SS_STRINGSYSTEM_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/cls_0x40a220.hpp"
 #include "je/cls_0x40a220.hpp"
 

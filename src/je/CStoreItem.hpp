@@ -3,7 +3,7 @@
 #ifndef JE_CSTOREITEM_HPP_
 #define JE_CSTOREITEM_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	class CStoreItem {

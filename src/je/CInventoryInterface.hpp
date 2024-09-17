@@ -3,7 +3,7 @@
 #ifndef JE_CINVENTORYINTERFACE_HPP_
 #define JE_CINVENTORYINTERFACE_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	class CInventoryInterface {

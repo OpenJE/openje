@@ -3,7 +3,7 @@
 #ifndef JE_COUNTERCONTROL_HPP_
 #define JE_COUNTERCONTROL_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	class CounterControl {

@@ -3,7 +3,7 @@
 #ifndef JE_VFX_SYSTEM_HPP_
 #define JE_VFX_SYSTEM_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	class VFX_System {

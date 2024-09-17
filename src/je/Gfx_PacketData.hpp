@@ -3,7 +3,7 @@
 #ifndef JE_GFX_PACKETDATA_HPP_
 #define JE_GFX_PACKETDATA_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/Gfx_BasePacketData.hpp"
 
 namespace JE {

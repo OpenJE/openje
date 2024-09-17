@@ -3,7 +3,7 @@
 #ifndef JE_CLS_0X50DB20_HPP_
 #define JE_CLS_0X50DB20_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/VFX_Parameter.hpp"
 #include "je/G3D_Water.hpp"
 #include "je/cls_0x40a220.hpp"

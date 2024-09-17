@@ -3,7 +3,7 @@
 #ifndef JE_CAMERACONTROL_HPP_
 #define JE_CAMERACONTROL_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/Gfx_CamCtrl_Orbit.hpp"
 
 namespace JE {

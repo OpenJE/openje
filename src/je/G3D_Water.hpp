@@ -3,7 +3,7 @@
 #ifndef JE_G3D_WATER_HPP_
 #define JE_G3D_WATER_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/G3D_BaseAttribute.hpp"
 #include "je/cls_0x4d8d70.hpp"
 

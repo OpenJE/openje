@@ -3,7 +3,7 @@
 #ifndef JE_NET_CRITICAL_SECTION_HPP_
 #define JE_NET_CRITICAL_SECTION_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
     namespace net {

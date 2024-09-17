@@ -3,7 +3,7 @@
 #ifndef JE_OPTIONCHECKBOX_HPP_
 #define JE_OPTIONCHECKBOX_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/OptionDial.hpp"
 
 namespace JE {

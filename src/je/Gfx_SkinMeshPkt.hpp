@@ -3,7 +3,7 @@
 #ifndef JE_GFX_SKINMESHPKT_HPP_
 #define JE_GFX_SKINMESHPKT_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/Gfx_NodeAttribute.hpp"
 
 namespace JE {

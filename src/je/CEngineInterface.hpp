@@ -3,7 +3,7 @@
 #ifndef JE_CENGINEINTERFACE_HPP_
 #define JE_CENGINEINTERFACE_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/GUI/Interface.hpp"
 
 namespace JE {

@@ -3,7 +3,7 @@
 #ifndef JE_SAVESLOTOPTION_HPP_
 #define JE_SAVESLOTOPTION_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	class SaveSlotOption {

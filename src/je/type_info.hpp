@@ -3,7 +3,7 @@
 #ifndef JE_TYPE_INFO_HPP_
 #define JE_TYPE_INFO_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	class type_info {

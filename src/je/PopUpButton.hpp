@@ -3,7 +3,7 @@
 #ifndef JE_POPUPBUTTON_HPP_
 #define JE_POPUPBUTTON_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	class PopUpButton {

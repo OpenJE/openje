@@ -1,6 +1,6 @@
 # JE::GUI::Edit
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)
 
 ## C++
 
@@ -16,4 +16,4 @@ graph TD;
     JE::GUI::Window-->JE::GUI::Label-->JE::GUI::Edit
 ```
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)

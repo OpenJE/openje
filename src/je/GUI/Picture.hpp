@@ -3,7 +3,7 @@
 #ifndef JE_GUI_PICTURE_HPP_
 #define JE_GUI_PICTURE_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/GUI/Window.hpp"
 
 namespace JE {

@@ -3,7 +3,7 @@
 #ifndef JE_GFX_WATERTILE_HPP_
 #define JE_GFX_WATERTILE_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/Gfx_NodeAttribute.hpp"
 #include "je/cls_0x4abc60.hpp"
 

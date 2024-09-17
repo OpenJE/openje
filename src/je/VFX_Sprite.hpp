@@ -3,7 +3,7 @@
 #ifndef JE_VFX_SPRITE_HPP_
 #define JE_VFX_SPRITE_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/VFX_EffectInstance.hpp"
 #include "je/VFXEFFECTTYPE_SPRITE_Struct.hpp"
 

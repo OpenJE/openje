@@ -3,7 +3,7 @@
 #ifndef JE_HOTKEYS_HPP_
 #define JE_HOTKEYS_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	struct HotKeys {

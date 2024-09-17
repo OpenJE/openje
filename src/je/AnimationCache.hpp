@@ -3,7 +3,7 @@
 #ifndef JE_ANIMATIONCACHE_HPP_
 #define JE_ANIMATIONCACHE_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	class AnimationCache {

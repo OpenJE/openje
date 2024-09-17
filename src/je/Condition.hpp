@@ -3,7 +3,7 @@
 #ifndef JE_CONDITION_HPP_
 #define JE_CONDITION_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/Effect.hpp"
 
 namespace JE {

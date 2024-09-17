@@ -3,7 +3,7 @@
 #ifndef JE_EFFECTTREERINGTRIGGER_HPP_
 #define JE_EFFECTTREERINGTRIGGER_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/EffectTreeTrigger.hpp"
 
 namespace JE {

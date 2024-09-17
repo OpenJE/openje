@@ -1,6 +1,6 @@
 # JE::G3D_SpotLight
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)
 
 ## C++
 
@@ -22,4 +22,4 @@ graph TD;
     JE::G3D_PointLight --> JE::G3D_SpotLight
 ```
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)

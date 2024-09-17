@@ -3,7 +3,7 @@
 #ifndef JE_PROCESSOR_HPP_
 #define JE_PROCESSOR_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	struct Processor {

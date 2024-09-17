@@ -3,7 +3,7 @@
 #ifndef JE_JOURNALENTRY_HPP_
 #define JE_JOURNALENTRY_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	class JournalEntry {

@@ -3,7 +3,7 @@
 #ifndef JE_DYNAMICOBJECT_HPP_
 #define JE_DYNAMICOBJECT_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/Gfx_LineSystem.hpp"
 
 namespace JE {

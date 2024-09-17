@@ -1,6 +1,6 @@
 // Copyright 2024 OpenJE
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/Action.hpp"
 #include "je/ActionAnim.hpp"
 #include "je/net/critical_section.hpp"
@@ -44,7 +44,7 @@ namespace JE {
         Entity::meth_0x548d80( this_00, this->mbr_0x18, this->mbr_0x1c );
         this_00->field_0x288 = 0;
         net::critical_section::meth_0x548fc0( (net::critical_section *)this_00 );
-        uVar1 = FUN_00616e24();
+        uVar1 = sub_616e24();
         this->mbr_0x24 = param_1 - (int)uVar1;
         return 0;
     }

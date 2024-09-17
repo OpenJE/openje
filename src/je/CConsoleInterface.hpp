@@ -3,7 +3,7 @@
 #ifndef JE_CCONSOLEINTERFACE_HPP_
 #define JE_CCONSOLEINTERFACE_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	class CConsoleInterface {

@@ -3,7 +3,7 @@
 #ifndef JE_TASKENTRY_HPP_
 #define JE_TASKENTRY_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/JournalEntry.hpp"
 
 namespace JE {

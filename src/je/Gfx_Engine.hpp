@@ -3,7 +3,7 @@
 #ifndef JE_GFX_ENGINE_HPP_
 #define JE_GFX_ENGINE_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/Gfx_System_Interface.hpp"
 #include "je/cls_0x5cb740.hpp"
 

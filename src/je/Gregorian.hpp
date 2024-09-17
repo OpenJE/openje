@@ -3,7 +3,7 @@
 #ifndef JE_GREGORIAN_HPP_
 #define JE_GREGORIAN_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	struct Gregorian {

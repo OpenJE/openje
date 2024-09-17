@@ -3,7 +3,7 @@
 #ifndef JE_CSOUNDSYSTEM_HPP_
 #define JE_CSOUNDSYSTEM_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/cls_0x50ca00.hpp"
 
 namespace JE {

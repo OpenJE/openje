@@ -1,6 +1,6 @@
 # Van Buren Documentation
 
-- `je`
+- `JE`
     - `Client`
         - [`Server`](/docs/je/Client/Server.md)
     - `Server`

@@ -3,7 +3,7 @@
 #ifndef JE_WORLDMAP_HPP_
 #define JE_WORLDMAP_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	struct WorldMap {

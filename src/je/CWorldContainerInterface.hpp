@@ -3,7 +3,7 @@
 #ifndef JE_CWORLDCONTAINERINTERFACE_HPP_
 #define JE_CWORLDCONTAINERINTERFACE_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/GUI/Interface.hpp"
 #include "je/CSound.hpp"
 

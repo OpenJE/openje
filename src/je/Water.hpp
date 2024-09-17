@@ -3,7 +3,7 @@
 #ifndef JE_WATER_HPP_
 #define JE_WATER_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/DynamicObject.hpp"
 
 namespace JE {

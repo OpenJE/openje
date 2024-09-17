@@ -3,7 +3,7 @@
 #ifndef JE_DIALOGUEINTERFACE_HPP_
 #define JE_DIALOGUEINTERFACE_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/CEngineInterface.hpp"
 
 namespace JE {

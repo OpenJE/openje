@@ -3,7 +3,7 @@
 #ifndef JE_GUI_FRAGMENT_HPP_
 #define JE_GUI_FRAGMENT_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/GUI/Base.hpp"
 #include "je/cls_0x4abc60.hpp"
 

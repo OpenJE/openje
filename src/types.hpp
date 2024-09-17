@@ -1,9 +1,7 @@
 // Copyright 2024 OpenJE
 
-#ifndef TYPES_HPP
-#define TYPES_HPP
-
-#include "stdafx.h"
+#ifndef TYPES_HPP_
+#define TYPES_HPP_
 
 // Shorthand Types
 typedef unsigned char       uchar;
@@ -11,14 +9,6 @@ typedef unsigned short      ushort;
 typedef unsigned int        uint;
 typedef unsigned long       ulong;
 typedef unsigned long long  ulonglong;
-
-// Ghidra Types
-typedef uchar       undefined;
-typedef ushort      undefined2;
-typedef uint        undefined4;
-typedef ulonglong   undefined8;
-typedef void        code;
-typedef long double float10;
 
 // Types
 typedef char        int8_t;
@@ -29,6 +19,20 @@ typedef uchar       uint8_t;
 typedef ushort      uint16_t;
 typedef uint        uint32_t;
 typedef ulonglong   uint64_t;
+
+// OOAnalyzer Types
+typedef uchar       byte;
+typedef ushort      word ;
+typedef uint        dword;
+typedef ulonglong   qword;
+
+// Ghidra Types
+typedef uchar       undefined;
+typedef ushort      undefined2;
+typedef uint        undefined4;
+typedef ulonglong   undefined8;
+typedef void        code;
+typedef long double float10;
 
 // Ghidra Operations
 // Concatination
@@ -130,10 +134,4 @@ typedef ulonglong   uint64_t;
 //#define CPOOLREF
 //#define NEW
 
-// OOAnalyzer Types
-typedef uchar       byte;
-typedef ushort      word ;
-typedef uint        dword;
-typedef ulonglong   qword;
-
-#endif // TYPES_HPP
+#endif // TYPES_HPP_

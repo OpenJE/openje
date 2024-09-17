@@ -3,7 +3,7 @@
 #ifndef JE_G3D_BASELIGHT_HPP_
 #define JE_G3D_BASELIGHT_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/G3D_BaseAttribute.hpp"
 
 namespace JE {

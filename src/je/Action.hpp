@@ -3,7 +3,7 @@
 #ifndef JE_ACTION_HPP_
 #define JE_ACTION_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	struct Action {

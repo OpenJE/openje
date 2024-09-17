@@ -1,6 +1,6 @@
 # JE::GUI::Fragment
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)
 
 ## C++
 
@@ -14,4 +14,4 @@ graph TD;
     JE::GUI::Base-->JE::GUI::Fragment
 ```
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)

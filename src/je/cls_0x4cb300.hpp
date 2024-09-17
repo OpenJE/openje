@@ -3,7 +3,7 @@
 #ifndef JE_CLS_0X4CB300_HPP_
 #define JE_CLS_0X4CB300_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/G3D_Transform.hpp"
 
 namespace JE {

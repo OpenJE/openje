@@ -1,6 +1,6 @@
 // Copyright 2024 OpenJE
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/Action.hpp"
 
 namespace JE {

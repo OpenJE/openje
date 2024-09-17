@@ -3,7 +3,7 @@
 #ifndef JE_COPTIONSINTERFACE_HPP_
 #define JE_COPTIONSINTERFACE_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	class COptionsInterface {

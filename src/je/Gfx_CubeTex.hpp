@@ -3,7 +3,7 @@
 #ifndef JE_GFX_CUBETEX_HPP_
 #define JE_GFX_CUBETEX_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/Gfx_Texture.hpp"
 
 namespace JE {

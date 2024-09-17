@@ -1,6 +1,6 @@
 # JE::VFXEFFECTTYPE_RAIN_Struct
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)
 
 ## C++
 
@@ -18,4 +18,4 @@ graph TD;
     JE::VFXEFFECTTYPE_BASE_Struct --> JE::VFXEFFECTTYPE_RAIN_Struct
 ```
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)

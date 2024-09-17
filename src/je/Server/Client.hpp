@@ -3,7 +3,7 @@
 #ifndef JE_SERVER_CLIENT_HPP_
 #define JE_SERVER_CLIENT_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/net/server/client.hpp"
 
 namespace JE {

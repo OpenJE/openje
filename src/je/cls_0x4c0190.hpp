@@ -3,7 +3,7 @@
 #ifndef JE_CLS_0X4C0190_HPP_
 #define JE_CLS_0X4C0190_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/cls_0x4abc60.hpp"
 #include "je/Gfx_Camera.hpp"
 

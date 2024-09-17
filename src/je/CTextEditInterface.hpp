@@ -3,7 +3,7 @@
 #ifndef JE_CTEXTEDITINTERFACE_HPP_
 #define JE_CTEXTEDITINTERFACE_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	class CTextEditInterface {

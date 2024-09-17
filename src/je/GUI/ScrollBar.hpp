@@ -3,7 +3,7 @@
 #ifndef JE_GUI_SCROLLBAR_HPP_
 #define JE_GUI_SCROLLBAR_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
     namespace GUI {

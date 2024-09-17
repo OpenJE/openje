@@ -3,7 +3,7 @@
 #ifndef JE_VFXEFFECTTYPE_MOTIONBLUR_STRUCT_HPP_
 #define JE_VFXEFFECTTYPE_MOTIONBLUR_STRUCT_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/VFXEFFECTTYPE_BASE_Struct.hpp"
 
 namespace JE {

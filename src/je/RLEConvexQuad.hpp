@@ -3,7 +3,7 @@
 #ifndef JE_RLECONVEXQUAD<NEAR STRUCT ENTITY *>_HPP_
 #define JE_RLECONVEXQUAD<NEAR STRUCT ENTITY *>_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/RLEPrimitive.hpp"
 
 namespace JE {

@@ -3,7 +3,7 @@
 #ifndef JE_NET_CONNECTION_HPP_
 #define JE_NET_CONNECTION_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/net/packet.hpp"
 #include "je/cls_0x5abd80.hpp"
 #include "je/net/packet.hpp"

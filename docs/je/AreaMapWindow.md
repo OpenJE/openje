@@ -1,6 +1,6 @@
 # JE::AreaMapWindow
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)
 
 ## C++
 
@@ -24,4 +24,4 @@ graph TD;
     JE::GUI::Picture --> JE::AreaMapWindow
 ```
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)

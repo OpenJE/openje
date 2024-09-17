@@ -1,10 +1,10 @@
 # JE::Combat
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)
 
 ## C++
 
 - [`Combat.hpp`](/src/je/Combat.hpp)
 - [`Combat.cpp`](/src/je/Combat.cpp)
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)

@@ -3,7 +3,7 @@
 #ifndef JE_ACTIONANIM_HPP_
 #define JE_ACTIONANIM_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/Action.hpp"
 #include "je/Entity.hpp"
 

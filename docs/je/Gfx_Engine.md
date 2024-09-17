@@ -1,6 +1,6 @@
 # JE::Gfx_Engine
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)
 
 ## C++
 
@@ -20,4 +20,4 @@ graph TD;
     JE::Gfx_System_Interface --> JE::Gfx_Engine
 ```
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)

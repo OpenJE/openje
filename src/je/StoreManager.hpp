@@ -3,7 +3,7 @@
 #ifndef JE_STOREMANAGER_HPP_
 #define JE_STOREMANAGER_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	struct StoreManager {

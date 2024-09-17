@@ -3,7 +3,7 @@
 #ifndef JE_MAPMASKMANAGER_HPP_
 #define JE_MAPMASKMANAGER_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	class MapMaskManager {

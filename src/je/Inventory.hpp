@@ -3,7 +3,7 @@
 #ifndef JE_INVENTORY_HPP_
 #define JE_INVENTORY_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	struct Inventory {

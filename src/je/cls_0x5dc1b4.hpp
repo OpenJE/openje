@@ -3,7 +3,7 @@
 #ifndef JE_CLS_0X5DC1B4_HPP_
 #define JE_CLS_0X5DC1B4_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/cls_0x482ebf.hpp"
 #include "je/cls_0x5d6554.hpp"
 #include "je/cls_0x5d6554.hpp"

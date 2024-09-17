@@ -3,7 +3,7 @@
 #ifndef JE_WATERTILEMODELINSTANCE_HPP_
 #define JE_WATERTILEMODELINSTANCE_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/ModelInstance.hpp"
 
 namespace JE {

@@ -3,7 +3,7 @@
 #ifndef JE_HOTKEYOPTION_HPP_
 #define JE_HOTKEYOPTION_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	class HotKeyOption {

@@ -1,6 +1,6 @@
 # JE::Entity
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)
 
 ## C++
 
@@ -18,4 +18,4 @@ graph TD;
     JE::DynamicObject --> JE::Entity
 ```
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)

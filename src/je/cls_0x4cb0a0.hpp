@@ -3,7 +3,7 @@
 #ifndef JE_CLS_0X4CB0A0_HPP_
 #define JE_CLS_0X4CB0A0_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/cls_0x496bd0.hpp"
 #include "je/std/strstreambuf.hpp"
 

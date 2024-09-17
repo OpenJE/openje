@@ -3,7 +3,7 @@
 #ifndef JE_TRIGGER_HPP_
 #define JE_TRIGGER_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	struct Trigger {

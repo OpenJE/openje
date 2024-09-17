@@ -1,6 +1,6 @@
 # JE::GUI::Interface
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)
 
 ## C++
 
@@ -14,4 +14,4 @@ graph TD;
     JE::GUI::HeapTracker-->JE::GUI::Interface
 ```
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)

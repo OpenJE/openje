@@ -3,7 +3,7 @@
 #ifndef JE_VISUALEFFECT_HPP_
 #define JE_VISUALEFFECT_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/DynamicObject.hpp"
 
 namespace JE {

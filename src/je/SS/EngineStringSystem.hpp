@@ -3,7 +3,7 @@
 #ifndef JE_SS_ENGINESTRINGSYSTEM_HPP_
 #define JE_SS_ENGINESTRINGSYSTEM_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/SS/StringSystem.hpp"
 
 namespace JE {

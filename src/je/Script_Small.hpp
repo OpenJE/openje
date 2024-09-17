@@ -3,7 +3,7 @@
 #ifndef JE_SCRIPT_SMALL_HPP_
 #define JE_SCRIPT_SMALL_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	struct Script_Small {

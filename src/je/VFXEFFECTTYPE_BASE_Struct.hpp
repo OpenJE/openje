@@ -3,7 +3,7 @@
 #ifndef JE_VFXEFFECTTYPE_BASE_STRUCT_HPP_
 #define JE_VFXEFFECTTYPE_BASE_STRUCT_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/cls_0x502110.hpp"
 #include "je/cls_0x50db20.hpp"
 #include "je/cls_0x4dff90.hpp"

@@ -3,7 +3,7 @@
 #ifndef JE_CLS_0X4468C0_HPP_
 #define JE_CLS_0X4468C0_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/cls_0x4395a0.hpp"
 #include "je/HotKeyWindowFormat.hpp"
 #include "je/HotKeyWindowFormat.hpp"

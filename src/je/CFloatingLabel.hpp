@@ -3,7 +3,7 @@
 #ifndef JE_CFLOATINGLABEL_HPP_
 #define JE_CFLOATINGLABEL_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/GUI/Label.hpp"
 
 namespace JE {

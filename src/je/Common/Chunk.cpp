@@ -1,7 +1,7 @@
 // Copyright 2024 OpenJE
 
 #include "je.hpp"
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/Common/Chunk.hpp"
 #include "je/Re"
 
@@ -34,7 +34,7 @@ namespace JE {
             }
             this->mbr_0x4 = 1;
             this->mbr_0x18 = param_2;
-            dVar1 = FUN_004981d0(param_2);
+            dVar1 = sub_4981d0(param_2);
             this->mbr_0x1c = dVar1;
             uVar2 = ResourceSystem::MemStreamRead(&this->mbr_0x8,4,param_2);
             if ((char)uVar2 != '\0') {

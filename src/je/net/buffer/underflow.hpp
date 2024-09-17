@@ -3,7 +3,7 @@
 #ifndef JE_NET_BUFFER_UNDERFLOW_HPP_
 #define JE_NET_BUFFER_UNDERFLOW_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/net/exception.hpp"
 
 namespace JE {

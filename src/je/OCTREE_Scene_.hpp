@@ -3,7 +3,7 @@
 #ifndef JE_OCTREE_SCENE__HPP_
 #define JE_OCTREE_SCENE__HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	struct OCTREE_Scene_ {

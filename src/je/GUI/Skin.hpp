@@ -3,7 +3,7 @@
 #ifndef JE_GUI_SKIN_HPP_
 #define JE_GUI_SKIN_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/cls_0x4dff90.hpp"
 
 namespace JE {

@@ -1,6 +1,6 @@
 # JE::Client
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)
 
 ## C++
 
@@ -20,4 +20,4 @@ graph TD;
     JE::net::client --> JE::Client
 ```
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)

@@ -3,7 +3,7 @@
 #ifndef JE_CCHARACTERGENERATIONINTERFACE_HPP_
 #define JE_CCHARACTERGENERATIONINTERFACE_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	class CCharacterGenerationInterface {

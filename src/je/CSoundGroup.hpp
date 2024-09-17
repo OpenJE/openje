@@ -3,7 +3,7 @@
 #ifndef JE_CSOUNDGROUP_HPP_
 #define JE_CSOUNDGROUP_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/CSoundFile.hpp"
 
 namespace JE {

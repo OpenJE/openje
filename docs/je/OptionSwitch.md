@@ -1,6 +1,6 @@
 # JE::OptionSwitch
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)
 
 ## C++
 
@@ -18,4 +18,4 @@ graph TD;
     JE::OptionDial --> JE::OptionSwitch
 ```
 
-[Return to `je`](/docs/je.md)
+[Return to `JE`](/docs/je.md)

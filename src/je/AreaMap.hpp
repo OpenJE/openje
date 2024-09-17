@@ -3,7 +3,7 @@
 #ifndef JE_AREAMAP_HPP_
 #define JE_AREAMAP_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 
 namespace JE {
 	class AreaMap {

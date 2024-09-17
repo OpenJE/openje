@@ -3,7 +3,7 @@
 #ifndef JE_GFX_PARTICLEINFO_HPP_
 #define JE_GFX_PARTICLEINFO_HPP_
 
-#include "je/global.hpp"
+#include "types.hpp"
 #include "je/Gfx_ParticleInfoBase.hpp"
 #include "je/cls_0x515ed0.hpp"
 
