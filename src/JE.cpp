@@ -1,25 +1,30 @@
 // OpenJE
 
 #include <windows.h>
-#include <stdio.h>
+#include <cstdio>
 
 #include "JE.hpp"
+#include "Logger.hpp"
 
 namespace JE {
     // 0x48CC40
-	void FatalError( const char * format, ... ) {
+	void FatalError( const char *format, ... ) {
+        LOG_INFO( LOG_LOCATION, "Enter: FatalError( format=\"%s\" )", format );
+        char *v1;
         char buffer [ 1024 ];
         va_list arg_list;
 
         va_start( arg_list, format );
-        sub_6174DA( buffer, format, arg_list );
-        //sub_497120( buffer );
+        FormatAndWriteToBuffer( buffer, format, arg_list );
+        LogDebugString( buffer, v1 );
         MessageBox( (HWND)0x0, buffer, "Fatal Error", MB_ICONERROR | MB_DEFBUTTON2 );
+        LOG_INFO( LOG_LOCATION, "Exit: FatalError( format=\"%s\" )", format );
         exit( 1 );
 	} // FailWithError
 
-    // 0x6174DA
-    int sub_6174DA(char *const Buffer, const char *const Format, va_list ArgList) {
+    // 0x6174da
+    int FormatAndWriteToBuffer( char *const Buffer, const char *const Format, va_list ArgList ) {
+        LOG_INFO( LOG_LOCATION, "Enter: sub_6174DA( Buffer=0x%p, Format=\"%s\", ArgList=0x%p )", Buffer, Format, &ArgList );
         int v3 = 0;
         FILE file;
 
@@ -27,16 +32,38 @@ namespace JE {
         file._flag = 66;
         file._base = Buffer;
         file._ptr = Buffer;
-        //v3 = sub_61F82F(&file, (char *)Format, (int *)ArgList);
+        //v3 = ParseAndFormatString( &file, Format, ArgList );
         if ( Buffer ) {
             --file._cnt;
             if ( file._cnt < 0 ) {
-                _flsbuf(0, &file);
+                _flsbuf( 0, &file );
             }
             else {
                 file._ptr = 0;
             }
         }
+        LOG_INFO( LOG_LOCATION, "Exit: sub_6174DA( Buffer=0x%p, Format=\"%s\", ArgList=0x%p ) -> %d", Buffer, Format, &ArgList, v3 );
         return v3;
     }
+
+    // 0x497120
+    void LogDebugString( char *a1, char *Format, ... ) {
+        LOG_INFO( LOG_LOCATION, "Enter: LogDebugString( a1=0x%p, Format=\"%s\" )", a1, Format );
+        int v2;
+        char Buffer[ 1024 ];
+        unsigned int retaddr;
+
+        if ( !bool_0x707cf0 ) {
+            bool_0x707cf0 = true;
+            FormatAndWriteToBuffer( Buffer, a1, Format );
+            //if ( *(_DWORD *)char_arr_0x707d60 ) {
+                //sub_496E00( (int)&F3::global_cls_0x4cc1e0, Buffer );
+                //cls_0x4cc1e0::meth_0x496990_496990( &F3::global_cls_0x4cc1e0, v2 );
+                OutputDebugString( Buffer );
+            //}
+            bool_0x707cf0 = false;
+        }
+        LOG_INFO( LOG_LOCATION, "Exit: LogDebugString( a1=0x%p, Format=\"%s\" )", a1, Format );
+    }
 } // namespace JE
+//

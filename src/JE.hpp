@@ -6,8 +6,11 @@
 #include <windows.h>
 
 namespace JE {
-    void FatalError( const char * format, ... );
-    int sub_6174DA( char *const Buffer, const char *const Format, va_list ArgList );
+    static bool bool_0x707cf0;
+
+    void FatalError( const char *format, ... );
+    int FormatAndWriteToBuffer( char *const Buffer, const char *const Format, va_list ArgList );
+    void LogDebugString( char *a1, char *Format, ... );
 } // namespace JE
 
 #endif // JE_HPP_
