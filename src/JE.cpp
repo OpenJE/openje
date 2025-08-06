@@ -1,7 +1,8 @@
 // OpenJE
 
-#include <windows.h>
 #include <cstdio>
+
+#include <windows.h>
 
 #include "JE.hpp"
 #include "Logger.hpp"
