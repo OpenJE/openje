@@ -23,7 +23,7 @@ namespace JE {
 		exit( 1 );
 	} // FailWithError
 
-	// 0x6174da
+	// 0x6174DA
 	int FormatAndWriteToBuffer( char *const Buffer, const char *const Format, va_list ArgList ) {
 		tracing::Instrument _( tracing::LOCATION, "Enter: sub_6174DA( Buffer=0x%p, Format=\"%s\", ArgList=0x%p )", &Buffer, &Format, &ArgList );
 		int v3 = 0;
