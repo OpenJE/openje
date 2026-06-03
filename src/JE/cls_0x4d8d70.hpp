@@ -22,7 +22,8 @@ namespace JE {
 			dword mbr_0x4;
 			dword mbr_0x8;
 			dword mbr_0xc;
-		//: Methods
+			char _pad[4];  // IDA reports total size = 56 bytes (0x38)
+	//: Methods
 		public:
 			meth_0x401d20;
 			meth_0x41f880;
@@ -62,7 +63,7 @@ namespace JE {
 			meth_0x4b5470;
 			meth_0x4c0810;
 			meth_0x4c8e50;
-			meth_0x4cbdf0;
+			dword meth_0x4cbdf0(int param_1);
 			meth_0x4cce30;
 			meth_0x4cce70;
 			meth_0x4cceb0;
@@ -112,7 +113,7 @@ namespace JE {
 			meth_0x52e440;
 			ctor_0x52e470;
 			ctor_0x52e850;
-			meth_0x545710;
+			int* meth_0x545710(int param_1);
 			meth_0x546210;
 			meth_0x546250;
 			meth_0x5471d0;
@@ -130,7 +131,7 @@ namespace JE {
 			meth_0x56bc60;
 			meth_0x56c2a0;
 			meth_0x56ee40;
-			meth_0x56f520;
+			int* meth_0x56f520(int *param_1, int *param_2);
 			meth_0x5700e0;
 			meth_0x570120;
 			meth_0x570b50;
@@ -157,7 +158,8 @@ namespace JE {
 			meth_0x59ece0;
 			meth_0x59ed20;
 			meth_0x59f0b0;
-			meth_0x59f200;
+			int meth_0x59f200(int param_1, char param_2, int param_3, int param_4);
+			int* meth_0x59f3e0(int param_1, int *param_2);
 			meth_0x59jee0;
 			meth_0x59f4d0;
 			ctor_0x59f500;
@@ -167,7 +169,7 @@ namespace JE {
 			meth_0x5a0150;
 			meth_0x5a0330;
 			meth_0x5a0420;
-			meth_0x5ace40;
+			int meth_0x5ace40(unsigned int *param_1);
 			meth_0x5ad090;
 			meth_0x5ad270;
 			meth_0x5ad3d0;
