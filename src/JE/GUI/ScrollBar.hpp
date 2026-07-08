@@ -37,23 +37,23 @@ namespace JE {
                 dword mbr_0xc;
             //: Methods
             public:
-                ctor_0x4b8720;
-                dtor_0x4b8780;
-                meth_0x4b87d0;
-                meth_0x4b8840;
-                meth_0x4b88f0;
-                meth_0x4b8930;
-                meth_0x4b8980;
-                meth_0x4b8a00;
-                virt_meth_0x4b8a80;
-                meth_0x4b8aa0;
-                meth_0x4b8ac0;
-                meth_0x4b8ae0;
-                meth_0x4b8b00;
-                meth_0x4b8b90;
-                meth_0x52afb0;
-                meth_0x568420;
-                meth_0x59c2c0;
+                void ctor_0x4b8720();
+                void dtor_0x4b8780();
+                undefined4 meth_0x4b87d0();
+                undefined4 meth_0x4b8840();
+                undefined4 meth_0x4b88f0();
+                undefined4 meth_0x4b8930();
+                undefined4 meth_0x4b8980();
+                undefined4 meth_0x4b8a00();
+                undefined4 virt_meth_0x4b8a80();
+                undefined4 meth_0x4b8aa0();
+                undefined4 meth_0x4b8ac0();
+                undefined4 meth_0x4b8ae0();
+                undefined4 meth_0x4b8b00();
+                undefined4 meth_0x4b8b90();
+                undefined4 meth_0x52afb0();
+                undefined4 meth_0x568420();
+                undefined4 meth_0x59c2c0();
         }; // class ScrollBar
     } // namespace GUI
 } // namespace JE

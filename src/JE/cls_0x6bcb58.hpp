@@ -23,18 +23,18 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			ctor_0x5f4689;
-			dtor_0x5f474d;
-			virt_meth_0x5f47c1;
-			virt_meth_0x5f482b;
-			virt_meth_0x5f494f;
-			virt_meth_0x5f495e;
-			virt_meth_0x5f4b16;
-			virt_meth_0x5f4b1b;
-			virt_meth_0x5f4c02;
-			virt_meth_0x5f4c4d;
-			virt_meth_0x5f4c5b;
-			virt_meth_0x5f55ab;
+			void ctor_0x5f4689();
+			void dtor_0x5f474d();
+			undefined4 virt_meth_0x5f47c1();
+			undefined4 virt_meth_0x5f482b();
+			undefined4 virt_meth_0x5f494f();
+			undefined4 virt_meth_0x5f495e();
+			undefined4 virt_meth_0x5f4b16();
+			undefined4 virt_meth_0x5f4b1b();
+			undefined4 virt_meth_0x5f4c02();
+			undefined4 virt_meth_0x5f4c4d();
+			undefined4 virt_meth_0x5f4c5b();
+			undefined4 virt_meth_0x5f55ab();
 	}; // 
 } // namespace JE
 

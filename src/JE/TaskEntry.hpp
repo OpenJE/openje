@@ -4,15 +4,15 @@
 #define JE_TASKENTRY_HPP_
 
 #include "types.hpp"
-#include "je/JournalEntry.hpp"
+#include "JE/JournalEntry.hpp"
 
 namespace JE {
 	class TaskEntry : public JournalEntry {
 		//: Methods
 		public:
-			ctor_0x46c2b0;
-			dtor_0x46c2d0;
-			virt_meth_0x46c310;
+			void ctor_0x46c2b0();
+			void dtor_0x46c2d0();
+			undefined4 virt_meth_0x46c310();
 	}; // TaskEntry
 } // namespace JE
 

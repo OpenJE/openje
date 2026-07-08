@@ -4,7 +4,7 @@
 #define JE_RLECIRCLE<NEAR STRUCT ENTITY *>_HPP_
 
 #include "types.hpp"
-#include "je/RLEPrimitive.hpp"
+#include "JE/RLEPrimitive.hpp"
 
 namespace JE {
 	class RLECircle<near struct Entity *> : public RLEPrimitive<near struct Entity *> {
@@ -17,14 +17,14 @@ namespace JE {
 			dword mbr_0x24;
 		//: Methods
 		public:
-			meth_0x40a1b0;
-			virt_meth_0x54b770;
-			ctor_0x54fea0;
-			virt_meth_0x54ff10;
+			undefined4 meth_0x40a1b0();
+			undefined4 virt_meth_0x54b770();
+			void ctor_0x54fea0();
+			undefined4 virt_meth_0x54ff10();
 			virt_meth_0x54fje0;
-			virt_meth_0x54ff50;
-			virt_meth_0x54ffd0;
-			virt_meth_0x591690;
+			undefined4 virt_meth_0x54ff50();
+			undefined4 virt_meth_0x54ffd0();
+			undefined4 virt_meth_0x591690();
 	}; // RLECircle<near struct Entity *>
 } // namespace JE
 

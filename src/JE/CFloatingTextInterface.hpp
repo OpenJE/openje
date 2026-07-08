@@ -4,7 +4,7 @@
 #define JE_CFLOATINGTEXTINTERFACE_HPP_
 
 #include "types.hpp"
-#include "je/CEngineInterface.hpp"
+#include "JE/CEngineInterface.hpp"
 
 namespace JE {
 	class CFloatingTextInterface : public CEngineInterface {
@@ -49,14 +49,14 @@ namespace JE {
 			dword mbr_0xfcc;
 		//: Methods
 		public:
-			virt_meth_0x58f9b0;
-			meth_0x58f9c0;
-			virt_meth_0x5900c0;
-			virt_meth_0x590120;
-			ctor_0x590360;
-			meth_0x590500;
-			virt_meth_0x590750;
-			virt_meth_0x5907e0;
+			undefined4 virt_meth_0x58f9b0();
+			undefined4 meth_0x58f9c0();
+			undefined4 virt_meth_0x5900c0();
+			undefined4 virt_meth_0x590120();
+			void ctor_0x590360();
+			undefined4 meth_0x590500();
+			undefined4 virt_meth_0x590750();
+			undefined4 virt_meth_0x5907e0();
 	}; // CFloatingTextInterface
 } // namespace JE
 

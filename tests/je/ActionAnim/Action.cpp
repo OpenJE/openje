@@ -1,4 +1,4 @@
-#include "je/ActionAnim.hpp"
+#include "JE/ActionAnim.hpp"
 
 int main() {
     JE::ActionAnim action_anim;

@@ -4,7 +4,7 @@
 #define JE_CAMERACONTROL_HPP_
 
 #include "types.hpp"
-#include "je/Gfx_CamCtrl_Orbit.hpp"
+#include "JE/Gfx_CamCtrl_Orbit.hpp"
 
 namespace JE {
 	struct CameraControl {
@@ -42,21 +42,21 @@ namespace JE {
 			dword mbr_0xf4;
 			dword mbr_0xf8;
 		//: Methods
-			meth_0x585e20;
-			meth_0x585e60;
-			meth_0x585fd0;
-			meth_0x586110;
-			meth_0x586330;
-			meth_0x586410;
-			dtor_0x586570;
-			meth_0x586590;
-			meth_0x586710;
-			meth_0x586760;
-			meth_0x5867c0;
-			meth_0x586830;
-			meth_0x5869c0;
-			ctor_0x586f70;
-			virt_meth_0x587030;
+			undefined4 meth_0x585e20();
+			undefined4 meth_0x585e60();
+			undefined4 meth_0x585fd0();
+			undefined4 meth_0x586110();
+			undefined4 meth_0x586330();
+			undefined4 meth_0x586410();
+			void dtor_0x586570();
+			undefined4 meth_0x586590();
+			undefined4 meth_0x586710();
+			undefined4 meth_0x586760();
+			undefined4 meth_0x5867c0();
+			undefined4 meth_0x586830();
+			undefined4 meth_0x5869c0();
+			void ctor_0x586f70();
+			undefined4 virt_meth_0x587030();
 	}; // CameraControl
 } // namespace JE
 

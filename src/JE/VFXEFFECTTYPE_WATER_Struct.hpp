@@ -4,17 +4,17 @@
 #define JE_VFXEFFECTTYPE_WATER_STRUCT_HPP_
 
 #include "types.hpp"
-#include "je/VFXEFFECTTYPE_BASE_Struct.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x40a220.hpp"
-#include "je/cls_0x50db20.hpp"
-#include "je/cls_0x40a220.hpp"
-#include "je/cls_0x50db20.hpp"
+#include "JE/VFXEFFECTTYPE_BASE_Struct.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x40a220.hpp"
+#include "JE/cls_0x50db20.hpp"
+#include "JE/cls_0x40a220.hpp"
+#include "JE/cls_0x50db20.hpp"
 
 namespace JE {
 	struct VFXEFFECTTYPE_WATER_Struct : public VFXEFFECTTYPE_BASE_Struct, public cls_0x40a220, public cls_0x50db20 {
@@ -88,10 +88,10 @@ namespace JE {
 			dword mbr_0xf8;
 			dword mbr_0xfc;
 		//: Methods
-			ctor_0x4ee150;
-			meth_0x4ee220;
-			virt_meth_0x4ee2e0;
-			meth_0x4ee420;
+			void ctor_0x4ee150();
+			undefined4 meth_0x4ee220();
+			undefined4 virt_meth_0x4ee2e0();
+			undefined4 meth_0x4ee420();
 	}; // VFXEFFECTTYPE_WATER_Struct
 } // namespace JE
 

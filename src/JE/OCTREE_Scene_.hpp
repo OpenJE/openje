@@ -19,11 +19,11 @@ namespace JE {
 			dword mbr_0x8;
 			dword mbr_0xc;
 		//: Methods
-			virt_meth_0x5bd690;
-			virt_meth_0x5bd6e0;
-			virt_meth_0x5bd720;
-			virt_meth_0x5bd7d0;
-			virt_meth_0x5bd820;
+			undefined4 virt_meth_0x5bd690();
+			undefined4 virt_meth_0x5bd6e0();
+			undefined4 virt_meth_0x5bd720();
+			undefined4 virt_meth_0x5bd7d0();
+			undefined4 virt_meth_0x5bd820();
 	}; // OCTREE_Scene_
 } // namespace JE
 

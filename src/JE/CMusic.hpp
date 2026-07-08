@@ -4,7 +4,7 @@
 #define JE_CMUSIC_HPP_
 
 #include "types.hpp"
-#include "je/CSound.hpp"
+#include "JE/CSound.hpp"
 
 namespace JE {
 	class CMusic : public CSound {
@@ -25,9 +25,9 @@ namespace JE {
 			dword mbr_0xfc;
 		//: Methods
 		public:
-			ctor_0x539030;
-			dtor_0x539070;
-			virt_meth_0x539570;
+			void ctor_0x539030();
+			void dtor_0x539070();
+			undefined4 virt_meth_0x539570();
 	}; // CMusic
 } // namespace JE
 

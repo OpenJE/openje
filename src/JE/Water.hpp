@@ -4,7 +4,7 @@
 #define JE_WATER_HPP_
 
 #include "types.hpp"
-#include "je/DynamicObject.hpp"
+#include "JE/DynamicObject.hpp"
 
 namespace JE {
 	struct Water : public DynamicObject {
@@ -22,15 +22,15 @@ namespace JE {
 			dword mbr_0x1a4;
 			dword mbr_0x1a8;
 		//: Methods
-			virt_meth_0x5ab040;
-			virt_meth_0x5ab070;
-			virt_meth_0x5ab0a0;
-			virt_meth_0x5ab0c0;
-			virt_meth_0x5ab0e0;
-			virt_meth_0x5ab0f0;
-			dtor_0x5ab250;
-			ctor_0x5ab310;
-			virt_meth_0x5ab380;
+			undefined4 virt_meth_0x5ab040();
+			undefined4 virt_meth_0x5ab070();
+			undefined4 virt_meth_0x5ab0a0();
+			undefined4 virt_meth_0x5ab0c0();
+			undefined4 virt_meth_0x5ab0e0();
+			undefined4 virt_meth_0x5ab0f0();
+			void dtor_0x5ab250();
+			void ctor_0x5ab310();
+			undefined4 virt_meth_0x5ab380();
 	}; // Water
 } // namespace JE
 

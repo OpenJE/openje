@@ -4,7 +4,7 @@
 #define JE_CSOUNDGROUP_HPP_
 
 #include "types.hpp"
-#include "je/CSoundFile.hpp"
+#include "JE/CSoundFile.hpp"
 
 namespace JE {
 	class CSoundGroup : public CSoundFile {
@@ -28,9 +28,9 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			ctor_0x52dbf0;
-			dtor_0x52dc90;
-			virt_meth_0x52dd00;
+			void ctor_0x52dbf0();
+			void dtor_0x52dc90();
+			undefined4 virt_meth_0x52dd00();
 	}; // CSoundGroup
 } // namespace JE
 

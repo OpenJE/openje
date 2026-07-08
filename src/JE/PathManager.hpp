@@ -14,11 +14,11 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			virt_meth_0x560480;
-			virt_meth_0x5604a0;
-			virt_meth_0x5604d0;
-			ctor_0x560b80;
-			virt_meth_0x562600;
+			undefined4 virt_meth_0x560480();
+			undefined4 virt_meth_0x5604a0();
+			undefined4 virt_meth_0x5604d0();
+			void ctor_0x560b80();
+			undefined4 virt_meth_0x562600();
 	}; // PathManager
 } // namespace JE
 

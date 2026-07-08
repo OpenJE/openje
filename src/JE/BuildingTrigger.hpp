@@ -4,7 +4,7 @@
 #define JE_BUILDINGTRIGGER_HPP_
 
 #include "types.hpp"
-#include "je/Trigger.hpp"
+#include "JE/Trigger.hpp"
 
 namespace JE {
 	struct BuildingTrigger : public Trigger {
@@ -21,13 +21,13 @@ namespace JE {
 			dword mbr_0x4;
 			dword mbr_0xc;
 		//: Methods
-			ctor_0x5b1c30;
-			dtor_0x5b1c60;
-			virt_meth_0x5b1c70;
-			virt_meth_0x5b1d40;
-			virt_meth_0x5b1d50;
-			virt_meth_0x5b1de0;
-			virt_meth_0x5b1f00;
+			void ctor_0x5b1c30();
+			void dtor_0x5b1c60();
+			undefined4 virt_meth_0x5b1c70();
+			undefined4 virt_meth_0x5b1d40();
+			undefined4 virt_meth_0x5b1d50();
+			undefined4 virt_meth_0x5b1de0();
+			undefined4 virt_meth_0x5b1f00();
 	}; // BuildingTrigger
 } // namespace JE
 

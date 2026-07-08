@@ -4,7 +4,7 @@
 #define JE_CLS_0X41A2B0_HPP_
 
 #include "types.hpp"
-#include "je/cls_0x4395a0.hpp"
+#include "JE/cls_0x4395a0.hpp"
 
 namespace JE {
 	class cls_0x41a2b0 : public cls_0x4395a0 {
@@ -65,34 +65,34 @@ namespace JE {
 			dword mbr_0xec;
 		//: Methods
 		public:
-			meth_0x416b80;
-			meth_0x416cd0;
-			meth_0x416d80;
-			meth_0x416df0;
-			meth_0x416e30;
-			meth_0x416e80;
-			meth_0x416eb0;
-			meth_0x416fb0;
-			meth_0x416ff0;
-			meth_0x4172d0;
-			meth_0x417370;
-			meth_0x417450;
-			meth_0x417a50;
-			meth_0x417cf0;
-			meth_0x417f50;
-			meth_0x418040;
-			meth_0x4186f0;
-			meth_0x418820;
-			meth_0x4188a0;
-			meth_0x419c70;
-			ctor_0x41a2b0;
-			meth_0x41bfa0;
-			meth_0x41c040;
-			meth_0x41c2e0;
-			meth_0x41c4c0;
-			meth_0x41c790;
-			meth_0x41c910;
-			meth_0x41c9d0;
+			undefined4 meth_0x416b80();
+			undefined4 meth_0x416cd0();
+			undefined4 meth_0x416d80();
+			undefined4 meth_0x416df0();
+			undefined4 meth_0x416e30();
+			undefined4 meth_0x416e80();
+			undefined4 meth_0x416eb0();
+			undefined4 meth_0x416fb0();
+			undefined4 meth_0x416ff0();
+			undefined4 meth_0x4172d0();
+			undefined4 meth_0x417370();
+			undefined4 meth_0x417450();
+			undefined4 meth_0x417a50();
+			undefined4 meth_0x417cf0();
+			undefined4 meth_0x417f50();
+			undefined4 meth_0x418040();
+			undefined4 meth_0x4186f0();
+			undefined4 meth_0x418820();
+			undefined4 meth_0x4188a0();
+			undefined4 meth_0x419c70();
+			void ctor_0x41a2b0();
+			undefined4 meth_0x41bfa0();
+			undefined4 meth_0x41c040();
+			undefined4 meth_0x41c2e0();
+			undefined4 meth_0x41c4c0();
+			undefined4 meth_0x41c790();
+			undefined4 meth_0x41c910();
+			undefined4 meth_0x41c9d0();
 	}; // 
 } // namespace JE
 

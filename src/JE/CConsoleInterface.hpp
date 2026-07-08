@@ -12,8 +12,8 @@ namespace JE {
 			dword mbr_0x4;
 		//: Methods
 		public:
-			virt_meth_0x59dce0;
-			virt_meth_0x59ec10;
+			undefined4 virt_meth_0x59dce0();
+			undefined4 virt_meth_0x59ec10();
 	}; // CConsoleInterface
 } // namespace JE
 

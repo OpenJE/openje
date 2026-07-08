@@ -4,8 +4,8 @@
 #define JE_CLS_0X4CB0A0_HPP_
 
 #include "types.hpp"
-#include "je/cls_0x496bd0.hpp"
-#include "je/std/strstreambuf.hpp"
+#include "JE/cls_0x496bd0.hpp"
+#include <strstreambuf>
 
 namespace JE {
 	class cls_0x4cb0a0 : public cls_0x496bd0, public std::strstreambuf {
@@ -16,7 +16,7 @@ namespace JE {
 			dword mbr_0x84;
 		//: Methods
 		public:
-			ctor_0x4cb0a0;
+			void ctor_0x4cb0a0();
 	}; // 
 } // namespace JE
 

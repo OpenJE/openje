@@ -4,10 +4,10 @@
 #define JE_VFXEFFECTTYPE_SPRITE_STRUCT_HPP_
 
 #include "types.hpp"
-#include "je/VFXEFFECTTYPE_BASE_Struct.hpp"
-#include "je/cls_0x40a220.hpp"
-#include "je/cls_0x50db20.hpp"
-#include "je/cls_0x4d8d70.hpp"
+#include "JE/VFXEFFECTTYPE_BASE_Struct.hpp"
+#include "JE/cls_0x40a220.hpp"
+#include "JE/cls_0x50db20.hpp"
+#include "JE/cls_0x4d8d70.hpp"
 
 namespace JE {
 	struct VFXEFFECTTYPE_SPRITE_Struct : public VFXEFFECTTYPE_BASE_Struct, public cls_0x40a220, public cls_0x50db20 {
@@ -54,10 +54,10 @@ namespace JE {
 			dword mbr_0xf8;
 			dword mbr_0xfc;
 		//: Methods
-			ctor_0x4f4fe0;
-			meth_0x4f5050;
-			virt_meth_0x4f50c0;
-			meth_0x4f5fc0;
+			void ctor_0x4f4fe0();
+			undefined4 meth_0x4f5050();
+			undefined4 virt_meth_0x4f50c0();
+			undefined4 meth_0x4f5fc0();
 	}; // VFXEFFECTTYPE_SPRITE_Struct
 } // namespace JE
 

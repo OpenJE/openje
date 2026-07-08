@@ -69,8 +69,8 @@ namespace JE {
 			byte mbr_0xf0;
 		//: Methods
 		public:
-			meth_0x5047a0;
-			ctor_0x505170;
+			undefined4 meth_0x5047a0();
+			void ctor_0x505170();
 	}; // 
 } // namespace JE
 

@@ -4,7 +4,7 @@
 #define JE_GFX_MODELBONE_HPP_
 
 #include "types.hpp"
-#include "je/Gfx_BaseObject.hpp"
+#include "JE/Gfx_BaseObject.hpp"
 
 namespace JE {
 	class Gfx_ModelBone : public Gfx_BaseObject {
@@ -18,9 +18,9 @@ namespace JE {
 			dword mbr_0x60;
 		//: Methods
 		public:
-			dtor_0x524330;
-			virt_meth_0x524370;
-			ctor_0x524640;
+			void dtor_0x524330();
+			undefined4 virt_meth_0x524370();
+			void ctor_0x524640();
 	}; // Gfx_ModelBone
 } // namespace JE
 

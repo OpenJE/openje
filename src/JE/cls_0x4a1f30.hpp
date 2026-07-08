@@ -23,10 +23,10 @@ namespace JE {
 		//: Methods
 		public:
 			meth_0x4a1je0;
-			meth_0x4a49d0;
-			meth_0x4a4a70;
-			meth_0x4a4ba0;
-			meth_0x4a4c10;
+			undefined4 meth_0x4a49d0();
+			undefined4 meth_0x4a4a70();
+			undefined4 meth_0x4a4ba0();
+			undefined4 meth_0x4a4c10();
 	}; // 
 } // namespace JE
 

@@ -4,7 +4,7 @@
 #define JE_CMASTERJUMPLIST_HPP_
 
 #include "types.hpp"
-#include "je/CSoundFile.hpp"
+#include "JE/CSoundFile.hpp"
 
 namespace JE {
 	class CMasterJumplist : public CSoundFile {
@@ -23,12 +23,12 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			meth_0x4c7180;
-			meth_0x4c7e80;
-			ctor_0x539120;
-			meth_0x539190;
-			dtor_0x539210;
-			virt_meth_0x539a00;
+			undefined4 meth_0x4c7180();
+			undefined4 meth_0x4c7e80();
+			void ctor_0x539120();
+			undefined4 meth_0x539190();
+			void dtor_0x539210();
+			undefined4 virt_meth_0x539a00();
 	}; // CMasterJumplist
 } // namespace JE
 

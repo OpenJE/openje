@@ -16,11 +16,11 @@ namespace JE {
 			dword mbr_0x28;
 			dword mbr_0x4;
 		//: Methods
-			meth_0x52ee80;
-			virt_meth_0x52eea0;
-			virt_meth_0x52eed0;
-			virt_meth_0x52f010;
-			ctor_0x52f6b0;
+			undefined4 meth_0x52ee80();
+			undefined4 virt_meth_0x52eea0();
+			undefined4 virt_meth_0x52eed0();
+			undefined4 virt_meth_0x52f010();
+			void ctor_0x52f6b0();
 	}; // OCTREE_Crcl2D
 } // namespace JE
 

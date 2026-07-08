@@ -4,8 +4,8 @@
 #define JE_NET_CLIENT_HPP_
 
 #include "types.hpp"
-#include "je/net/base.hpp"
-#include "je/net/connection.hpp"
+#include "JE/net/base.hpp"
+#include "JE/net/connection.hpp"
 
 namespace JE {
     namespace net {
@@ -40,42 +40,42 @@ namespace JE {
                 dword mbr_0xc;
             //: Methods
             public:
-                virt_meth_0x409bb0;
-                virt_meth_0x55bdb0;
-                ctor_0x59c2e0;
-                virt_meth_0x59c320;
-                virt_meth_0x59c330;
-                virt_meth_0x59c340;
-                virt_meth_0x59c360;
-                virt_meth_0x59c380;
-                virt_meth_0x59c410;
-                virt_meth_0x59c440;
-                virt_meth_0x59c450;
-                virt_meth_0x59c4d0;
-                meth_0x59c560;
-                meth_0x59c5d0;
-                meth_0x59c670;
-                meth_0x59c6f0;
-                meth_0x59c780;
-                meth_0x59c790;
-                meth_0x59c7f0;
-                virt_meth_0x59c880;
-                virt_meth_0x59c8a0;
-                meth_0x59c9c0;
-                meth_0x59cb40;
-                meth_0x59ccf0;
-                meth_0x59cf10;
-                meth_0x59d040;
-                virt_meth_0x59d180;
-                meth_0x59d1a0;
-                meth_0x59d260;
-                virt_meth_0x59d2d0;
-                virt_meth_0x59d300;
-                meth_0x59d5d0;
-                meth_0x59d5f0;
-                meth_0x59d630;
-                meth_0x59d7f0;
-                meth_0x59d930;
+                undefined4 virt_meth_0x409bb0();
+                undefined4 virt_meth_0x55bdb0();
+                void ctor_0x59c2e0();
+                undefined4 virt_meth_0x59c320();
+                undefined4 virt_meth_0x59c330();
+                undefined4 virt_meth_0x59c340();
+                undefined4 virt_meth_0x59c360();
+                undefined4 virt_meth_0x59c380();
+                undefined4 virt_meth_0x59c410();
+                undefined4 virt_meth_0x59c440();
+                undefined4 virt_meth_0x59c450();
+                undefined4 virt_meth_0x59c4d0();
+                undefined4 meth_0x59c560();
+                undefined4 meth_0x59c5d0();
+                undefined4 meth_0x59c670();
+                undefined4 meth_0x59c6f0();
+                undefined4 meth_0x59c780();
+                undefined4 meth_0x59c790();
+                undefined4 meth_0x59c7f0();
+                undefined4 virt_meth_0x59c880();
+                undefined4 virt_meth_0x59c8a0();
+                undefined4 meth_0x59c9c0();
+                undefined4 meth_0x59cb40();
+                undefined4 meth_0x59ccf0();
+                undefined4 meth_0x59cf10();
+                undefined4 meth_0x59d040();
+                undefined4 virt_meth_0x59d180();
+                undefined4 meth_0x59d1a0();
+                undefined4 meth_0x59d260();
+                undefined4 virt_meth_0x59d2d0();
+                undefined4 virt_meth_0x59d300();
+                undefined4 meth_0x59d5d0();
+                undefined4 meth_0x59d5f0();
+                undefined4 meth_0x59d630();
+                undefined4 meth_0x59d7f0();
+                undefined4 meth_0x59d930();
         }; // class client
     } // namespace net
 } // namespace JE

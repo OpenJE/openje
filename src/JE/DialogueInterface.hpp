@@ -4,7 +4,7 @@
 #define JE_DIALOGUEINTERFACE_HPP_
 
 #include "types.hpp"
-#include "je/CEngineInterface.hpp"
+#include "JE/CEngineInterface.hpp"
 
 namespace JE {
 	class DialogueInterface : public CEngineInterface {
@@ -18,12 +18,12 @@ namespace JE {
 			dword mbr_0x8;
 		//: Methods
 		public:
-			virt_meth_0x593620;
-			virt_meth_0x593630;
-			virt_meth_0x593640;
-			virt_meth_0x593650;
-			ctor_0x5943c0;
-			virt_meth_0x596780;
+			undefined4 virt_meth_0x593620();
+			undefined4 virt_meth_0x593630();
+			undefined4 virt_meth_0x593640();
+			undefined4 virt_meth_0x593650();
+			void ctor_0x5943c0();
+			undefined4 virt_meth_0x596780();
 	}; // DialogueInterface
 } // namespace JE
 

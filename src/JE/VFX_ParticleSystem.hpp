@@ -4,9 +4,9 @@
 #define JE_VFX_PARTICLESYSTEM_HPP_
 
 #include "types.hpp"
-#include "je/VFX_EffectInstance.hpp"
-#include "je/Gfx_LineSystem.hpp"
-#include "je/VFXEFFECTTYPE_PARTICLESYSTEM_Struct.hpp"
+#include "JE/VFX_EffectInstance.hpp"
+#include "JE/Gfx_LineSystem.hpp"
+#include "JE/VFXEFFECTTYPE_PARTICLESYSTEM_Struct.hpp"
 
 namespace JE {
 	class VFX_ParticleSystem : public VFX_EffectInstance, public Gfx_LineSystem, public VFXEFFECTTYPE_PARTICLESYSTEM_Struct {
@@ -42,25 +42,25 @@ namespace JE {
 			dword mbr_0xf0;
 		//: Methods
 		public:
-			meth_0x4e1d20;
-			meth_0x4f69b0;
-			virt_meth_0x4f69e0;
-			virt_meth_0x4f6a20;
-			virt_meth_0x4f6a50;
-			virt_meth_0x4f6b90;
-			virt_meth_0x4f6bb0;
-			virt_meth_0x4f6bd0;
-			virt_meth_0x4f6c20;
-			meth_0x4f70a0;
-			ctor_0x4f7110;
-			dtor_0x4f71b0;
-			virt_meth_0x4f72a0;
-			virt_meth_0x4f72c0;
-			virt_meth_0x4f74e0;
-			virt_meth_0x4f76b0;
-			meth_0x4f87e0;
-			virt_meth_0x4f94e0;
-			meth_0x4f9850;
+			undefined4 meth_0x4e1d20();
+			undefined4 meth_0x4f69b0();
+			undefined4 virt_meth_0x4f69e0();
+			undefined4 virt_meth_0x4f6a20();
+			undefined4 virt_meth_0x4f6a50();
+			undefined4 virt_meth_0x4f6b90();
+			undefined4 virt_meth_0x4f6bb0();
+			undefined4 virt_meth_0x4f6bd0();
+			undefined4 virt_meth_0x4f6c20();
+			undefined4 meth_0x4f70a0();
+			void ctor_0x4f7110();
+			void dtor_0x4f71b0();
+			undefined4 virt_meth_0x4f72a0();
+			undefined4 virt_meth_0x4f72c0();
+			undefined4 virt_meth_0x4f74e0();
+			undefined4 virt_meth_0x4f76b0();
+			undefined4 meth_0x4f87e0();
+			undefined4 virt_meth_0x4f94e0();
+			undefined4 meth_0x4f9850();
 	}; // VFX_ParticleSystem
 } // namespace JE
 

@@ -4,7 +4,7 @@
 #define JE_GFX_WATER_HPP_
 
 #include "types.hpp"
-#include "je/Gfx_NodeAttribute.hpp"
+#include "JE/Gfx_NodeAttribute.hpp"
 
 namespace JE {
 	class Gfx_Water : public Gfx_NodeAttribute {
@@ -84,21 +84,21 @@ namespace JE {
 			dword mbr_0xfc;
 		//: Methods
 		public:
-			meth_0x49eac0;
-			meth_0x49eb20;
-			meth_0x49eb80;
-			meth_0x51c8e0;
-			meth_0x51c990;
-			meth_0x51c9e0;
-			meth_0x51cab0;
-			meth_0x51ccc0;
-			meth_0x51cd20;
-			meth_0x51cda0;
-			virt_meth_0x51ce00;
-			meth_0x51d840;
-			ctor_0x51e550;
-			dtor_0x51e770;
-			virt_meth_0x51e900;
+			undefined4 meth_0x49eac0();
+			undefined4 meth_0x49eb20();
+			undefined4 meth_0x49eb80();
+			undefined4 meth_0x51c8e0();
+			undefined4 meth_0x51c990();
+			undefined4 meth_0x51c9e0();
+			undefined4 meth_0x51cab0();
+			undefined4 meth_0x51ccc0();
+			undefined4 meth_0x51cd20();
+			undefined4 meth_0x51cda0();
+			undefined4 virt_meth_0x51ce00();
+			undefined4 meth_0x51d840();
+			void ctor_0x51e550();
+			void dtor_0x51e770();
+			undefined4 virt_meth_0x51e900();
 	}; // Gfx_Water
 } // namespace JE
 

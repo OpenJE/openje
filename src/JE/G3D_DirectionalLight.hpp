@@ -4,7 +4,7 @@
 #define JE_G3D_DIRECTIONALLIGHT_HPP_
 
 #include "types.hpp"
-#include "je/G3D_BaseLight.hpp"
+#include "JE/G3D_BaseLight.hpp"
 
 namespace JE {
 	class G3D_DirectionalLight : public G3D_BaseLight {
@@ -31,15 +31,15 @@ namespace JE {
 			dword mbr_0x74;
 		//: Methods
 		public:
-			ctor_0x4cb5e0;
-			virt_meth_0x4cb6a0;
-			meth_0x4ce980;
-			virt_meth_0x4cec30;
-			meth_0x4d06b0;
-			meth_0x4d0750;
-			virt_meth_0x4d1ac0;
-			virt_meth_0x4d1b60;
-			virt_meth_0x4d5ea0;
+			void ctor_0x4cb5e0();
+			undefined4 virt_meth_0x4cb6a0();
+			undefined4 meth_0x4ce980();
+			undefined4 virt_meth_0x4cec30();
+			undefined4 meth_0x4d06b0();
+			undefined4 meth_0x4d0750();
+			undefined4 virt_meth_0x4d1ac0();
+			undefined4 virt_meth_0x4d1b60();
+			undefined4 virt_meth_0x4d5ea0();
 	}; // G3D_DirectionalLight
 } // namespace JE
 

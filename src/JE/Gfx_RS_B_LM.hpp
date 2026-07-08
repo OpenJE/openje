@@ -4,7 +4,7 @@
 #define JE_GFX_RS_B_LM_HPP_
 
 #include "types.hpp"
-#include "je/Gfx_RenderStyle.hpp"
+#include "JE/Gfx_RenderStyle.hpp"
 
 namespace JE {
 	class Gfx_RS_B_LM : public Gfx_RenderStyle {
@@ -18,22 +18,22 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			virt_meth_0x535f40;
-			virt_meth_0x535f90;
-			virt_meth_0x535fc0;
-			dtor_0x536c20;
-			virt_meth_0x536cb0;
-			virt_meth_0x536cc0;
-			virt_meth_0x536cd0;
-			virt_meth_0x536ce0;
-			virt_meth_0x536d00;
-			virt_meth_0x536d30;
-			virt_meth_0x536d50;
-			virt_meth_0x537ba0;
-			virt_meth_0x537bc0;
-			ctor_0x53bef0;
+			undefined4 virt_meth_0x535f40();
+			undefined4 virt_meth_0x535f90();
+			undefined4 virt_meth_0x535fc0();
+			void dtor_0x536c20();
+			undefined4 virt_meth_0x536cb0();
+			undefined4 virt_meth_0x536cc0();
+			undefined4 virt_meth_0x536cd0();
+			undefined4 virt_meth_0x536ce0();
+			undefined4 virt_meth_0x536d00();
+			undefined4 virt_meth_0x536d30();
+			undefined4 virt_meth_0x536d50();
+			undefined4 virt_meth_0x537ba0();
+			undefined4 virt_meth_0x537bc0();
+			void ctor_0x53bef0();
 			virt_meth_0x53bje0;
-			virt_meth_0x53c290;
+			undefined4 virt_meth_0x53c290();
 	}; // Gfx_RS_B_LM
 } // namespace JE
 

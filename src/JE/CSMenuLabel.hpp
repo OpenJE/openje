@@ -4,7 +4,7 @@
 #define JE_CSMENULABEL_HPP_
 
 #include "types.hpp"
-#include "je/GUI/Label.hpp"
+#include "JE/GUI/Label.hpp"
 
 namespace JE {
 	class CSMenuLabel : public GUI::Label {
@@ -19,12 +19,12 @@ namespace JE {
 			byte mbr_0xe78;
 		//: Methods
 		public:
-			dtor_0x568430;
-			virt_meth_0x568450;
-			virt_meth_0x5684b0;
-			virt_meth_0x5684e0;
-			virt_meth_0x5684f0;
-			ctor_0x568ca0;
+			void dtor_0x568430();
+			undefined4 virt_meth_0x568450();
+			undefined4 virt_meth_0x5684b0();
+			undefined4 virt_meth_0x5684e0();
+			undefined4 virt_meth_0x5684f0();
+			void ctor_0x568ca0();
 	}; // CSMenuLabel
 } // namespace JE
 

@@ -9,8 +9,8 @@ namespace JE {
 	class COptionsMultiplayerInterface {
 		//: Methods
 		public:
-			virt_meth_0x4491a0;
-			virt_meth_0x4491b0;
+			undefined4 virt_meth_0x4491a0();
+			undefined4 virt_meth_0x4491b0();
 	}; // COptionsMultiplayerInterface
 } // namespace JE
 

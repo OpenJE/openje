@@ -1,4 +1,4 @@
-#include "je/Action.hpp"
+#include "JE/Action.hpp"
 
 int main() {
     JE::Action action;

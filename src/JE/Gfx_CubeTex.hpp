@@ -4,7 +4,7 @@
 #define JE_GFX_CUBETEX_HPP_
 
 #include "types.hpp"
-#include "je/Gfx_Texture.hpp"
+#include "JE/Gfx_Texture.hpp"
 
 namespace JE {
 	class Gfx_CubeTex : public Gfx_Texture {
@@ -13,11 +13,11 @@ namespace JE {
 			dword mbr_0x34;
 		//: Methods
 		public:
-			virt_meth_0x538980;
-			meth_0x5389a0;
-			ctor_0x538ad0;
-			dtor_0x538af0;
-			virt_meth_0x538b50;
+			undefined4 virt_meth_0x538980();
+			undefined4 meth_0x5389a0();
+			void ctor_0x538ad0();
+			void dtor_0x538af0();
+			undefined4 virt_meth_0x538b50();
 	}; // Gfx_CubeTex
 } // namespace JE
 

@@ -4,7 +4,7 @@
 #define JE_OPTIONSWITCH_HPP_
 
 #include "types.hpp"
-#include "je/OptionDial.hpp"
+#include "JE/OptionDial.hpp"
 
 namespace JE {
 	class OptionSwitch : public OptionDial {
@@ -15,10 +15,10 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			ctor_0x4432a0;
-			dtor_0x4432c0;
-			virt_meth_0x443510;
-			virt_meth_0x443d70;
+			void ctor_0x4432a0();
+			void dtor_0x4432c0();
+			undefined4 virt_meth_0x443510();
+			undefined4 virt_meth_0x443d70();
 	}; // OptionSwitch
 } // namespace JE
 

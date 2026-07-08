@@ -4,7 +4,7 @@
 #define JE_CLS_0X5B4EB0_HPP_
 
 #include "types.hpp"
-#include "je/CEngineInterface.hpp"
+#include "JE/CEngineInterface.hpp"
 
 namespace JE {
 	class cls_0x5b4eb0 : public CEngineInterface {
@@ -14,7 +14,7 @@ namespace JE {
 			dword mbr_0x4;
 		//: Methods
 		public:
-			ctor_0x5b4eb0;
+			void ctor_0x5b4eb0();
 	}; // 
 } // namespace JE
 

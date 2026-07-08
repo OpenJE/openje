@@ -4,7 +4,7 @@
 #define JE_SCRIPTTRIGGER_HPP_
 
 #include "types.hpp"
-#include "je/Trigger.hpp"
+#include "JE/Trigger.hpp"
 
 namespace JE {
 	struct ScriptTrigger : public Trigger {
@@ -15,14 +15,14 @@ namespace JE {
 			dword mbr_0x48;
 			dword mbr_0x4c;
 		//: Methods
-			meth_0x5b23d0;
-			virt_meth_0x5b23f0;
-			virt_meth_0x5b2460;
-			virt_meth_0x5b24d0;
-			ctor_0x5b2600;
-			dtor_0x5b2630;
-			virt_meth_0x5b26b0;
-			virt_meth_0x5b26d0;
+			undefined4 meth_0x5b23d0();
+			undefined4 virt_meth_0x5b23f0();
+			undefined4 virt_meth_0x5b2460();
+			undefined4 virt_meth_0x5b24d0();
+			void ctor_0x5b2600();
+			void dtor_0x5b2630();
+			undefined4 virt_meth_0x5b26b0();
+			undefined4 virt_meth_0x5b26d0();
 	}; // ScriptTrigger
 } // namespace JE
 

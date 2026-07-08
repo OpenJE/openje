@@ -23,11 +23,11 @@ namespace JE {
 			dword mbr_0x8;
 		//: Methods
 		public:
-			meth_0x5b29d0;
-			meth_0x5b2a00;
-			ctor_0x5b2ab0;
-			dtor_0x5b2af0;
-			virt_meth_0x5b2b80;
+			undefined4 meth_0x5b29d0();
+			undefined4 meth_0x5b2a00();
+			void ctor_0x5b2ab0();
+			void dtor_0x5b2af0();
+			undefined4 virt_meth_0x5b2b80();
 	}; // MapSound
 } // namespace JE
 

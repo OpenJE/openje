@@ -4,7 +4,7 @@
 #define JE_GUI_BUTTON_HPP_
 
 #include "types.hpp"
-#include "je/GUI/Window.hpp"
+#include "JE/GUI/Window.hpp"
 
 namespace JE {
     namespace GUI {

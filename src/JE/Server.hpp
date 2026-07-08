@@ -4,8 +4,8 @@
 #define JE_SERVER_HPP_
 
 #include "types.hpp"
-#include "je/net/server.hpp"
-#include "je/net/packet.hpp"
+#include "JE/net/server.hpp"
+#include "JE/net/packet.hpp"
 
 namespace JE {
 	class Server : public net::server, public net::packet {
@@ -40,46 +40,46 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			virt_meth_0x46cea0;
-			meth_0x54a5f0;
-			virt_meth_0x5529a0;
-			virt_meth_0x552a60;
-			virt_meth_0x552ac0;
-			virt_meth_0x552b60;
-			virt_meth_0x552c70;
-			virt_meth_0x552ca0;
-			meth_0x552e20;
-			meth_0x552f20;
-			meth_0x553850;
-			meth_0x553990;
-			meth_0x553b00;
-			meth_0x553c30;
-			meth_0x553cf0;
-			meth_0x553dd0;
-			meth_0x554300;
-			meth_0x554f70;
-			meth_0x555050;
-			meth_0x555170;
-			virt_meth_0x5552c0;
-			virt_meth_0x555380;
-			meth_0x5553c0;
-			meth_0x5554b0;
-			meth_0x5555d0;
-			meth_0x555640;
-			meth_0x555680;
-			meth_0x5556c0;
-			meth_0x555750;
-			meth_0x555890;
-			virt_meth_0x556250;
-			meth_0x556270;
-			meth_0x5562f0;
-			meth_0x556370;
-			meth_0x5563d0;
-			meth_0x556450;
-			ctor_0x5564d0;
-			meth_0x5566b0;
-			meth_0x556b60;
-			virt_meth_0x556ea0;
+			undefined4 virt_meth_0x46cea0();
+			undefined4 meth_0x54a5f0();
+			undefined4 virt_meth_0x5529a0();
+			undefined4 virt_meth_0x552a60();
+			undefined4 virt_meth_0x552ac0();
+			undefined4 virt_meth_0x552b60();
+			undefined4 virt_meth_0x552c70();
+			undefined4 virt_meth_0x552ca0();
+			undefined4 meth_0x552e20();
+			undefined4 meth_0x552f20();
+			undefined4 meth_0x553850();
+			undefined4 meth_0x553990();
+			undefined4 meth_0x553b00();
+			undefined4 meth_0x553c30();
+			undefined4 meth_0x553cf0();
+			undefined4 meth_0x553dd0();
+			undefined4 meth_0x554300();
+			undefined4 meth_0x554f70();
+			undefined4 meth_0x555050();
+			undefined4 meth_0x555170();
+			undefined4 virt_meth_0x5552c0();
+			undefined4 virt_meth_0x555380();
+			undefined4 meth_0x5553c0();
+			undefined4 meth_0x5554b0();
+			undefined4 meth_0x5555d0();
+			undefined4 meth_0x555640();
+			undefined4 meth_0x555680();
+			undefined4 meth_0x5556c0();
+			undefined4 meth_0x555750();
+			undefined4 meth_0x555890();
+			undefined4 virt_meth_0x556250();
+			undefined4 meth_0x556270();
+			undefined4 meth_0x5562f0();
+			undefined4 meth_0x556370();
+			undefined4 meth_0x5563d0();
+			undefined4 meth_0x556450();
+			void ctor_0x5564d0();
+			undefined4 meth_0x5566b0();
+			undefined4 meth_0x556b60();
+			undefined4 virt_meth_0x556ea0();
 	}; // Server
 } // namespace JE
 

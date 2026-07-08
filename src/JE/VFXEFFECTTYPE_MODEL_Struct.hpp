@@ -4,13 +4,13 @@
 #define JE_VFXEFFECTTYPE_MODEL_STRUCT_HPP_
 
 #include "types.hpp"
-#include "je/VFXEFFECTTYPE_BASE_Struct.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x40a220.hpp"
-#include "je/cls_0x40a220.hpp"
-#include "je/cls_0x40a220.hpp"
+#include "JE/VFXEFFECTTYPE_BASE_Struct.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x40a220.hpp"
+#include "JE/cls_0x40a220.hpp"
+#include "JE/cls_0x40a220.hpp"
 
 namespace JE {
 	struct VFXEFFECTTYPE_MODEL_Struct : public VFXEFFECTTYPE_BASE_Struct, public cls_0x40a220 {
@@ -83,10 +83,10 @@ namespace JE {
 			dword mbr_0xf8;
 			dword mbr_0xfc;
 		//: Methods
-			ctor_0x4je830;
-			meth_0x4je8d0;
-			virt_meth_0x4je9e0;
-			meth_0x4jeb40;
+			void ctor_0x4f3830();
+			void meth_0x4f38d0();
+			void virt_meth_0x4f39e0(char param_1);
+			void meth_0x4f3b40(int param_1);
 	}; // VFXEFFECTTYPE_MODEL_Struct
 } // namespace JE
 

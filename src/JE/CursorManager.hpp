@@ -17,9 +17,9 @@ namespace JE {
 			dword mbr_0x8;
 			dword mbr_0xc;
 		//: Methods
-			meth_0x5916a0;
-			virt_meth_0x5916e0;
-			ctor_0x591700;
+			undefined4 meth_0x5916a0();
+			undefined4 virt_meth_0x5916e0();
+			void ctor_0x591700();
 	}; // CursorManager
 } // namespace JE
 

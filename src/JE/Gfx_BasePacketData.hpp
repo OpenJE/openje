@@ -30,9 +30,9 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			dtor_0x422950;
-			meth_0x4b7660;
-			ctor_0x4b7990;
+			void dtor_0x422950();
+			undefined4 meth_0x4b7660();
+			void ctor_0x4b7990();
 	}; // Gfx_BasePacketData
 } // namespace JE
 

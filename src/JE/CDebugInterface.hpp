@@ -9,8 +9,8 @@ namespace JE {
 	class CDebugInterface {
 		//: Methods
 		public:
-			virt_meth_0x557d40;
-			virt_meth_0x558dc0;
+			undefined4 virt_meth_0x557d40();
+			undefined4 virt_meth_0x558dc0();
 	}; // CDebugInterface
 } // namespace JE
 

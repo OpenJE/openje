@@ -26,18 +26,18 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			meth_0x48cda0;
-			meth_0x48d9b0;
-			meth_0x48dbe0;
-			meth_0x48dcc0;
-			meth_0x48df00;
-			meth_0x48e5f0;
-			dtor_0x48e9f0;
-			ctor_0x48ed60;
-			virt_meth_0x48ede0;
-			meth_0x48ee30;
-			meth_0x48efb0;
-			meth_0x48f080;
+			undefined4 meth_0x48cda0();
+			undefined4 meth_0x48d9b0();
+			undefined4 meth_0x48dbe0();
+			undefined4 meth_0x48dcc0();
+			undefined4 meth_0x48df00();
+			undefined4 meth_0x48e5f0();
+			void dtor_0x48e9f0();
+			void ctor_0x48ed60();
+			undefined4 virt_meth_0x48ede0();
+			undefined4 meth_0x48ee30();
+			undefined4 meth_0x48efb0();
+			undefined4 meth_0x48f080();
 	}; // VFX_VEGInstance
 } // namespace JE
 

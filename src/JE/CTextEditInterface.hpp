@@ -9,8 +9,8 @@ namespace JE {
 	class CTextEditInterface {
 		//: Methods
 		public:
-			virt_meth_0x5b77a0;
-			virt_meth_0x5b8a00;
+			undefined4 virt_meth_0x5b77a0();
+			undefined4 virt_meth_0x5b8a00();
 	}; // CTextEditInterface
 } // namespace JE
 

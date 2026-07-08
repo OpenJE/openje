@@ -4,9 +4,9 @@
 #define JE_AREAMAPWINDOW_HPP_
 
 #include "types.hpp"
-#include "je/GUI/Picture.hpp"
-#include "je/cls_0x4abc60.hpp"
-#include "je/cls_0x4abc60.hpp"
+#include "JE/GUI/Picture.hpp"
+#include "JE/cls_0x4abc60.hpp"
+#include "JE/cls_0x4abc60.hpp"
 
 namespace JE {
 	class AreaMapWindow : public GUI::Picture, public cls_0x4abc60 {
@@ -164,38 +164,38 @@ namespace JE {
 			byte mbr_0xfa1;
 		//: Methods
 		public:
-			virt_meth_0x41d200;
-			meth_0x41d220;
-			meth_0x41d250;
-			meth_0x41d2d0;
-			virt_meth_0x41d340;
-			meth_0x41d360;
-			meth_0x41d7b0;
-			meth_0x41dbd0;
-			meth_0x41dd90;
-			meth_0x41e1f0;
-			meth_0x41e6b0;
-			meth_0x41e820;
-			meth_0x41e900;
-			meth_0x41e9b0;
-			meth_0x41ef80;
-			meth_0x41f080;
+			undefined4 virt_meth_0x41d200();
+			undefined4 meth_0x41d220();
+			undefined4 meth_0x41d250();
+			undefined4 meth_0x41d2d0();
+			undefined4 virt_meth_0x41d340();
+			undefined4 meth_0x41d360();
+			undefined4 meth_0x41d7b0();
+			undefined4 meth_0x41dbd0();
+			undefined4 meth_0x41dd90();
+			undefined4 meth_0x41e1f0();
+			undefined4 meth_0x41e6b0();
+			undefined4 meth_0x41e820();
+			undefined4 meth_0x41e900();
+			undefined4 meth_0x41e9b0();
+			undefined4 meth_0x41ef80();
+			undefined4 meth_0x41f080();
 			virt_meth_0x41jed0;
-			virt_meth_0x41f410;
-			meth_0x41f480;
-			meth_0x41f4d0;
-			meth_0x41f6e0;
-			dtor_0x420730;
-			virt_meth_0x4209c0;
-			meth_0x4209d0;
-			virt_meth_0x421720;
-			virt_meth_0x421740;
-			meth_0x421880;
-			ctor_0x422d40;
-			meth_0x4231b0;
-			meth_0x4235a0;
-			virt_meth_0x423d40;
-			meth_0x4aa910;
+			undefined4 virt_meth_0x41f410();
+			undefined4 meth_0x41f480();
+			undefined4 meth_0x41f4d0();
+			undefined4 meth_0x41f6e0();
+			void dtor_0x420730();
+			undefined4 virt_meth_0x4209c0();
+			undefined4 meth_0x4209d0();
+			undefined4 virt_meth_0x421720();
+			undefined4 virt_meth_0x421740();
+			undefined4 meth_0x421880();
+			void ctor_0x422d40();
+			undefined4 meth_0x4231b0();
+			undefined4 meth_0x4235a0();
+			undefined4 virt_meth_0x423d40();
+			undefined4 meth_0x4aa910();
 	}; // AreaMapWindow
 } // namespace JE
 

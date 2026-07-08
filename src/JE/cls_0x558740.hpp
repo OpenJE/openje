@@ -4,7 +4,7 @@
 #define JE_CLS_0X558740_HPP_
 
 #include "types.hpp"
-#include "je/CEngineInterface.hpp"
+#include "JE/CEngineInterface.hpp"
 
 namespace JE {
 	class cls_0x558740 : public CEngineInterface {
@@ -54,18 +54,18 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			meth_0x434120;
-			meth_0x434250;
-			meth_0x4342c0;
-			meth_0x434760;
-			meth_0x434910;
-			meth_0x557a50;
-			meth_0x557d90;
-			meth_0x557ff0;
-			meth_0x558190;
-			meth_0x5583e0;
-			meth_0x558510;
-			ctor_0x558740;
+			undefined4 meth_0x434120();
+			undefined4 meth_0x434250();
+			undefined4 meth_0x4342c0();
+			undefined4 meth_0x434760();
+			undefined4 meth_0x434910();
+			undefined4 meth_0x557a50();
+			undefined4 meth_0x557d90();
+			undefined4 meth_0x557ff0();
+			undefined4 meth_0x558190();
+			undefined4 meth_0x5583e0();
+			undefined4 meth_0x558510();
+			void ctor_0x558740();
 	}; // 
 } // namespace JE
 

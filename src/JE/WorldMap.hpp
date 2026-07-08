@@ -31,13 +31,13 @@ namespace JE {
 			dword mbr_0x7c;
 			dword mbr_0x8;
 		//: Methods
-			meth_0x599e60;
-			ctor_0x599f90;
-			meth_0x59a1e0;
-			dtor_0x59a250;
-			virt_meth_0x59a330;
-			virt_meth_0x59a3f0;
-			virt_meth_0x59a440;
+			undefined4 meth_0x599e60();
+			void ctor_0x599f90();
+			undefined4 meth_0x59a1e0();
+			void dtor_0x59a250();
+			undefined4 virt_meth_0x59a330();
+			undefined4 virt_meth_0x59a3f0();
+			undefined4 virt_meth_0x59a440();
 	}; // WorldMap
 } // namespace JE
 

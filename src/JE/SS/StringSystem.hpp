@@ -4,8 +4,8 @@
 #define JE_SS_STRINGSYSTEM_HPP_
 
 #include "types.hpp"
-#include "je/cls_0x40a220.hpp"
-#include "je/cls_0x40a220.hpp"
+#include "JE/cls_0x40a220.hpp"
+#include "JE/cls_0x40a220.hpp"
 
 namespace JE {
     namespace SS {
@@ -31,10 +31,10 @@ namespace JE {
                 dword mbr_0xc;
             //: Methods
             public:
-                virt_meth_0x4c5a30;
-                dtor_0x4c5b40;
-                ctor_0x4c5c80;
-                virt_meth_0x4c5e30;
+                undefined4 virt_meth_0x4c5a30();
+                void dtor_0x4c5b40();
+                void ctor_0x4c5c80();
+                undefined4 virt_meth_0x4c5e30();
         }; // class StringSystem
     } // namespace SS
 } // namespace JE

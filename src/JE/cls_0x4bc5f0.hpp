@@ -4,8 +4,8 @@
 #define JE_CLS_0X4BC5F0_HPP_
 
 #include "types.hpp"
-#include "je/cls_0x4542d0.hpp"
-#include "je/cls_0x4bbc60.hpp"
+#include "JE/cls_0x4542d0.hpp"
+#include "JE/cls_0x4bbc60.hpp"
 
 namespace JE {
 	class cls_0x4bc5f0 {
@@ -22,9 +22,9 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			meth_0x4bc500;
-			ctor_0x4bc5f0;
-			ctor_0x4bc670;
+			undefined4 meth_0x4bc500();
+			void ctor_0x4bc5f0();
+			void ctor_0x4bc670();
 	}; // 
 } // namespace JE
 

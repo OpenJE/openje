@@ -9,7 +9,7 @@ namespace JE {
 	class Gfx_RenderStyle {
 		//: Methods
 		public:
-			dtor_0x535ec0;
+			void dtor_0x535ec0();
 	}; // Gfx_RenderStyle
 } // namespace JE
 

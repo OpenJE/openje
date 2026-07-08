@@ -4,8 +4,8 @@
 #define JE_ACTIONANIM_HPP_
 
 #include "types.hpp"
-#include "je/Action.hpp"
-#include "je/Entity.hpp"
+#include "JE/Action.hpp"
+#include "JE/Entity.hpp"
 
 namespace JE {
 	struct ActionAnim : public Action {

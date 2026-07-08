@@ -4,7 +4,7 @@
 #define JE_GFX_CAMCTRL_ORBIT_HPP_
 
 #include "types.hpp"
-#include "je/Gfx_CamCtrl.hpp"
+#include "JE/Gfx_CamCtrl.hpp"
 
 namespace JE {
 	class Gfx_CamCtrl_Orbit : public Gfx_CamCtrl {
@@ -28,10 +28,10 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			virt_meth_0x4c6430;
-			ctor_0x4c67c0;
-			virt_meth_0x4c6880;
-			dtor_0x4c68a0;
+			undefined4 virt_meth_0x4c6430();
+			void ctor_0x4c67c0();
+			undefined4 virt_meth_0x4c6880();
+			void dtor_0x4c68a0();
 	}; // Gfx_CamCtrl_Orbit
 } // namespace JE
 

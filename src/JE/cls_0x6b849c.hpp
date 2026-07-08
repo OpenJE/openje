@@ -4,7 +4,7 @@
 #define JE_CLS_0X6B849C_HPP_
 
 #include "types.hpp"
-#include "je/cls_0x6b848c.hpp"
+#include "JE/cls_0x6b848c.hpp"
 
 namespace JE {
 	class cls_0x6b849c {
@@ -46,12 +46,12 @@ namespace JE {
 			dword mbr_0x4;
 		//: Methods
 		public:
-			dtor_0x5d706e;
-			virt_meth_0x5d710e;
-			ctor_0x5dafd1;
-			virt_meth_0x5db233;
-			virt_meth_0x5db26b;
-			virt_meth_0x5db44c;
+			void dtor_0x5d706e();
+			undefined4 virt_meth_0x5d710e();
+			void ctor_0x5dafd1();
+			undefined4 virt_meth_0x5db233();
+			undefined4 virt_meth_0x5db26b();
+			undefined4 virt_meth_0x5db44c();
 	}; // 
 } // namespace JE
 

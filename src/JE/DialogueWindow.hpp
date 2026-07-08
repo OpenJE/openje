@@ -4,7 +4,7 @@
 #define JE_DIALOGUEWINDOW_HPP_
 
 #include "types.hpp"
-#include "je/GUI/Window.hpp"
+#include "JE/GUI/Window.hpp"
 
 namespace JE {
 	class DialogueWindow : public GUI::Window {
@@ -45,13 +45,13 @@ namespace JE {
 			dword mbr_0xdc4;
 		//: Methods
 		public:
-			meth_0x593660;
-			meth_0x5945f0;
-			virt_meth_0x595010;
-			dtor_0x596450;
-			virt_meth_0x596600;
-			ctor_0x596610;
-			virt_meth_0x596760;
+			undefined4 meth_0x593660();
+			undefined4 meth_0x5945f0();
+			undefined4 virt_meth_0x595010();
+			void dtor_0x596450();
+			undefined4 virt_meth_0x596600();
+			void ctor_0x596610();
+			undefined4 virt_meth_0x596760();
 	}; // DialogueWindow
 } // namespace JE
 

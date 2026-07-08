@@ -4,14 +4,10 @@
 #define JE_CLS_0X40A220_HPP_
 
 #include "types.hpp"
-#include "je/cls_0x496bd0.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/std/basic_streambuf.hpp"
-#include "je/std/basic_streambuf.hpp"
-
+#include "JE/cls_0x496bd0.hpp"
+#include "JE/cls_0x4d8d70.hpp"
 namespace JE {
-	class cls_0x40a220 : public cls_0x496bd0, public cls_0x4d8d70, public std::basic_streambuf<char, struct std::char_traits<char> > {
+	class cls_0x40a220 : public cls_0x496bd0, public cls_0x4d8d70 {
 		//: Members
 		public:
 			dword mbr_0x10;
@@ -32,23 +28,24 @@ namespace JE {
 			cls_0x4d8d70 mbr_0x60;
 			dword mbr_0x68;
 			dword mbr_0x6c;
-			std::basic_streambuf<char, struct std::char_traits<char> > mbr_0x8;
+			dword mbr_0x8;
 			dword mbr_0x8c;
 			dword mbr_0x90;
 		//: Methods
 		public:
-			ctor_0x40a220;
-			ctor_0x497bb0;
-			meth_0x497fb0;
-			meth_0x498120;
-			meth_0x4984e0;
-			meth_0x498550;
-			meth_0x499040;
-			ctor_0x499500;
-			meth_0x4e3260;
-			meth_0x5a4b80;
-			meth_0x605c76;
-			meth_0x605db5;
+			void ctor_0x40a220();
+			void ctor_0x497bb0();
+			undefined4 meth_0x497fb0();
+			undefined4 meth_0x498120();
+			undefined4 meth_0x4984e0();
+			undefined4 meth_0x498550();
+			undefined4 meth_0x499040();
+			void ctor_0x499500();
+			undefined4 meth_0x4e3260();
+			undefined4 meth_0x5a4b80();
+			undefined4 meth_0x605c76();
+			undefined4 meth_0x605db5();
+			cls_0x40a220() {}
 	}; // 
 } // namespace JE
 

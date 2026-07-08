@@ -9,10 +9,10 @@ namespace JE {
 	class CNASInterface {
 		//: Methods
 		public:
-			virt_meth_0x4254f0;
-			virt_meth_0x425500;
-			virt_meth_0x425510;
-			virt_meth_0x42fe40;
+			undefined4 virt_meth_0x4254f0();
+			undefined4 virt_meth_0x425500();
+			undefined4 virt_meth_0x425510();
+			undefined4 virt_meth_0x42fe40();
 	}; // CNASInterface
 } // namespace JE
 

@@ -4,10 +4,10 @@
 #define JE_VFX_COLLISION_HPP_
 
 #include "types.hpp"
-#include "je/VFX_EffectInstance.hpp"
-#include "je/cls_0x4dff90.hpp"
-#include "je/Gfx_LineSystem.hpp"
-#include "je/VFXEFFECTTYPE_BASE_Struct.hpp"
+#include "JE/VFX_EffectInstance.hpp"
+#include "JE/cls_0x4dff90.hpp"
+#include "JE/Gfx_LineSystem.hpp"
+#include "JE/VFXEFFECTTYPE_BASE_Struct.hpp"
 
 namespace JE {
 	class VFX_Collision : public VFX_EffectInstance, public cls_0x4dff90, public Gfx_LineSystem, public VFXEFFECTTYPE_BASE_Struct {
@@ -40,13 +40,13 @@ namespace JE {
 			dword mbr_0xbc;
 		//: Methods
 		public:
-			virt_meth_0x4ee8b0;
-			virt_meth_0x4eea10;
-			dtor_0x4f0ef0;
-			ctor_0x4f0f90;
-			virt_meth_0x4f10a0;
-			meth_0x4f1120;
-			virt_meth_0x4f1160;
+			undefined4 virt_meth_0x4ee8b0();
+			undefined4 virt_meth_0x4eea10();
+			void dtor_0x4f0ef0();
+			void ctor_0x4f0f90();
+			undefined4 virt_meth_0x4f10a0();
+			undefined4 meth_0x4f1120();
+			undefined4 virt_meth_0x4f1160();
 	}; // VFX_Collision
 } // namespace JE
 

@@ -8,9 +8,9 @@
 namespace JE {
 	struct Strings {
 		//: Methods
-			dtor_0x59c210;
-			ctor_0x59c240;
-			virt_meth_0x59c2a0;
+			void dtor_0x59c210();
+			void ctor_0x59c240();
+			undefined4 virt_meth_0x59c2a0();
 	}; // Strings
 } // namespace JE
 

@@ -22,14 +22,14 @@ namespace JE {
 			dword mbr_0x50;
 		//: Methods
 		public:
-			dtor_0x47701b;
-			virt_meth_0x47717d;
-			meth_0x47abbf;
-			virt_meth_0x47ac8f;
-			ctor_0x47aca7;
-			virt_meth_0x48059a;
-			virt_meth_0x480992;
-			virt_meth_0x48166d;
+			void dtor_0x47701b();
+			undefined4 virt_meth_0x47717d();
+			undefined4 meth_0x47abbf();
+			undefined4 virt_meth_0x47ac8f();
+			void ctor_0x47aca7();
+			undefined4 virt_meth_0x48059a();
+			undefined4 virt_meth_0x480992();
+			undefined4 virt_meth_0x48166d();
 	}; // 
 } // namespace JE
 

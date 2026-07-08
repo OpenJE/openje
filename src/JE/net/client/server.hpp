@@ -4,14 +4,14 @@
 #define JE_NET_CLIENT_SERVER_HPP_
 
 #include "types.hpp"
-#include "je/net/connection.hpp"
+#include "JE/net/connection.hpp"
 
 namespace JE {
     namespace net {
         namespace client {
             struct server : public net::connection {
                 //: Methods
-                    virt_meth_0x588fc0;
+                    undefined4 virt_meth_0x588fc0();
             }; // struct server
         } // namespace client
     } // namespace net

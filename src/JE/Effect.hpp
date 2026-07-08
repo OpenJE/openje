@@ -29,13 +29,13 @@ namespace JE {
 			byte mbr_0xb;
 			dword mbr_0xc;
 		//: Methods
-			virt_meth_0x45c090;
-			virt_meth_0x55a2a0;
-			virt_meth_0x55a300;
-			virt_meth_0x55ac10;
-			dtor_0x55b130;
-			ctor_0x55b230;
-			virt_meth_0x55b2e0;
+			undefined4 virt_meth_0x45c090();
+			undefined4 virt_meth_0x55a2a0();
+			undefined4 virt_meth_0x55a300();
+			undefined4 virt_meth_0x55ac10();
+			void dtor_0x55b130();
+			void ctor_0x55b230();
+			undefined4 virt_meth_0x55b2e0();
 	}; // Effect
 } // namespace JE
 

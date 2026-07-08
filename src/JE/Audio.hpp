@@ -23,13 +23,13 @@ namespace JE {
 			dword mbr_0x48;
 			dword mbr_0x8;
 		//: Methods
-			meth_0x5909e0;
-			ctor_0x590b10;
-			virt_meth_0x590b50;
-			virt_meth_0x590be0;
-			virt_meth_0x591110;
-			dtor_0x591520;
-			virt_meth_0x5915b0;
+			undefined4 meth_0x5909e0();
+			void ctor_0x590b10();
+			undefined4 virt_meth_0x590b50();
+			undefined4 virt_meth_0x590be0();
+			undefined4 virt_meth_0x591110();
+			void dtor_0x591520();
+			undefined4 virt_meth_0x5915b0();
 	}; // Audio
 } // namespace JE
 

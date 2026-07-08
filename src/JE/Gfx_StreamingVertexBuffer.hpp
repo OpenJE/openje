@@ -4,7 +4,7 @@
 #define JE_GFX_STREAMINGVERTEXBUFFER_HPP_
 
 #include "types.hpp"
-#include "je/Gfx_VertexBuffer.hpp"
+#include "JE/Gfx_VertexBuffer.hpp"
 
 namespace JE {
 	class Gfx_StreamingVertexBuffer : public Gfx_VertexBuffer {
@@ -17,11 +17,11 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			virt_meth_0x5053b0;
-			ctor_0x5055e0;
-			virt_meth_0x505600;
-			dtor_0x505620;
-			virt_meth_0x5056f0;
+			undefined4 virt_meth_0x5053b0();
+			void ctor_0x5055e0();
+			undefined4 virt_meth_0x505600();
+			void dtor_0x505620();
+			undefined4 virt_meth_0x5056f0();
 	}; // Gfx_StreamingVertexBuffer
 } // namespace JE
 

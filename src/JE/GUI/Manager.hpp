@@ -53,11 +53,11 @@ namespace JE {
                 dword mbr_0xc;
             //: Methods
             public:
-                meth_0x4b2900;
-                meth_0x4b4920;
-                dtor_0x4b5280;
-                ctor_0x4b5640;
-                virt_meth_0x4b58b0;
+                undefined4 meth_0x4b2900();
+                undefined4 meth_0x4b4920();
+                void dtor_0x4b5280();
+                void ctor_0x4b5640();
+                undefined4 virt_meth_0x4b58b0();
         }; // class Manager
     } // namespace GUI
 } // namespace JE

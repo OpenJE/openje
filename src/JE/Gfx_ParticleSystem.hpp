@@ -4,8 +4,8 @@
 #define JE_GFX_PARTICLESYSTEM_HPP_
 
 #include "types.hpp"
-#include "je/Gfx_NodeAttribute.hpp"
-#include "je/cls_0x514000.hpp"
+#include "JE/Gfx_NodeAttribute.hpp"
+#include "JE/cls_0x514000.hpp"
 
 namespace JE {
 	class Gfx_ParticleSystem : public Gfx_NodeAttribute, public cls_0x514000 {
@@ -157,38 +157,38 @@ namespace JE {
 			dword mbr_0xfc;
 		//: Methods
 		public:
-			meth_0x513070;
-			meth_0x513410;
-			meth_0x5138e0;
-			meth_0x513bf0;
-			meth_0x514410;
-			meth_0x5144e0;
-			meth_0x5146c0;
-			meth_0x514ad0;
-			meth_0x514ca0;
-			meth_0x514d30;
-			meth_0x515110;
-			meth_0x5154b0;
-			meth_0x5154d0;
-			meth_0x516480;
-			meth_0x5164e0;
-			meth_0x516550;
-			dtor_0x516600;
-			virt_meth_0x516a20;
-			meth_0x516a40;
-			meth_0x516dd0;
-			meth_0x5185d0;
-			meth_0x518c60;
-			meth_0x5192c0;
-			meth_0x519300;
-			meth_0x519490;
-			meth_0x519e70;
-			virt_meth_0x51a6c0;
-			ctor_0x51a880;
-			meth_0x51ae20;
-			meth_0x51b1e0;
-			meth_0x51c320;
-			meth_0x51c490;
+			undefined4 meth_0x513070();
+			undefined4 meth_0x513410();
+			undefined4 meth_0x5138e0();
+			undefined4 meth_0x513bf0();
+			undefined4 meth_0x514410();
+			undefined4 meth_0x5144e0();
+			undefined4 meth_0x5146c0();
+			undefined4 meth_0x514ad0();
+			undefined4 meth_0x514ca0();
+			undefined4 meth_0x514d30();
+			undefined4 meth_0x515110();
+			undefined4 meth_0x5154b0();
+			undefined4 meth_0x5154d0();
+			undefined4 meth_0x516480();
+			undefined4 meth_0x5164e0();
+			undefined4 meth_0x516550();
+			void dtor_0x516600();
+			undefined4 virt_meth_0x516a20();
+			undefined4 meth_0x516a40();
+			undefined4 meth_0x516dd0();
+			undefined4 meth_0x5185d0();
+			undefined4 meth_0x518c60();
+			undefined4 meth_0x5192c0();
+			undefined4 meth_0x519300();
+			undefined4 meth_0x519490();
+			undefined4 meth_0x519e70();
+			undefined4 virt_meth_0x51a6c0();
+			void ctor_0x51a880();
+			undefined4 meth_0x51ae20();
+			undefined4 meth_0x51b1e0();
+			undefined4 meth_0x51c320();
+			undefined4 meth_0x51c490();
 	}; // Gfx_ParticleSystem
 } // namespace JE
 

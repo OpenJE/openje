@@ -4,7 +4,7 @@
 #define JE_INPUT_WIN32_HPP_
 
 #include "types.hpp"
-#include "je/Input.hpp"
+#include "JE/Input.hpp"
 
 namespace JE {
 	struct Input_Win32 : public Input {
@@ -14,12 +14,12 @@ namespace JE {
 			dword mbr_0x2c;
 			dword mbr_0x30;
 		//: Methods
-			virt_meth_0x5b4690;
-			dtor_0x5b46b0;
-			virt_meth_0x5b4750;
-			ctor_0x5b4770;
-			virt_meth_0x5b48b0;
-			virt_meth_0x5b49e0;
+			undefined4 virt_meth_0x5b4690();
+			void dtor_0x5b46b0();
+			undefined4 virt_meth_0x5b4750();
+			void ctor_0x5b4770();
+			undefined4 virt_meth_0x5b48b0();
+			undefined4 virt_meth_0x5b49e0();
 	}; // Input_Win32
 } // namespace JE
 

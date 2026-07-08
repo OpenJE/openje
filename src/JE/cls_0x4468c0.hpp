@@ -4,10 +4,10 @@
 #define JE_CLS_0X4468C0_HPP_
 
 #include "types.hpp"
-#include "je/cls_0x4395a0.hpp"
-#include "je/HotKeyWindowFormat.hpp"
-#include "je/HotKeyWindowFormat.hpp"
-#include "je/HotKeyWindowFormat.hpp"
+#include "JE/cls_0x4395a0.hpp"
+#include "JE/HotKeyWindowFormat.hpp"
+#include "JE/HotKeyWindowFormat.hpp"
+#include "JE/HotKeyWindowFormat.hpp"
 
 namespace JE {
 	class cls_0x4468c0 : public cls_0x4395a0, public HotKeyWindowFormat {
@@ -53,8 +53,8 @@ namespace JE {
 			dword mbr_0xfc;
 		//: Methods
 		public:
-			meth_0x4461e0;
-			ctor_0x4468c0;
+			undefined4 meth_0x4461e0();
+			void ctor_0x4468c0();
 	}; // 
 } // namespace JE
 

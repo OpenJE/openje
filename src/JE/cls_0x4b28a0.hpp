@@ -35,34 +35,34 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			meth_0x4b28a0;
-			meth_0x4b28c0;
-			meth_0x4b28e0;
-			meth_0x4b2ab0;
-			meth_0x4b2ad0;
-			meth_0x4b2c10;
-			meth_0x4b2c20;
-			meth_0x4b2d40;
+			undefined4 meth_0x4b28a0();
+			undefined4 meth_0x4b28c0();
+			undefined4 meth_0x4b28e0();
+			undefined4 meth_0x4b2ab0();
+			undefined4 meth_0x4b2ad0();
+			undefined4 meth_0x4b2c10();
+			undefined4 meth_0x4b2c20();
+			undefined4 meth_0x4b2d40();
 			meth_0x4b2je0;
-			meth_0x4b2f80;
-			meth_0x4b2fe0;
-			meth_0x4b3000;
-			meth_0x4b3040;
-			meth_0x4b3430;
-			meth_0x4b34b0;
-			meth_0x4b3500;
-			meth_0x4b3570;
-			meth_0x4b35f0;
-			meth_0x4b3780;
-			meth_0x4b37f0;
-			meth_0x4b3920;
-			meth_0x4b40a0;
-			meth_0x4b40f0;
-			meth_0x4b4dd0;
-			meth_0x4b4e60;
-			meth_0x4b4f00;
-			meth_0x4b58d0;
-			meth_0x619b38;
+			undefined4 meth_0x4b2f80();
+			undefined4 meth_0x4b2fe0();
+			undefined4 meth_0x4b3000();
+			undefined4 meth_0x4b3040();
+			undefined4 meth_0x4b3430();
+			undefined4 meth_0x4b34b0();
+			undefined4 meth_0x4b3500();
+			undefined4 meth_0x4b3570();
+			undefined4 meth_0x4b35f0();
+			undefined4 meth_0x4b3780();
+			undefined4 meth_0x4b37f0();
+			undefined4 meth_0x4b3920();
+			undefined4 meth_0x4b40a0();
+			undefined4 meth_0x4b40f0();
+			undefined4 meth_0x4b4dd0();
+			undefined4 meth_0x4b4e60();
+			undefined4 meth_0x4b4f00();
+			undefined4 meth_0x4b58d0();
+			undefined4 meth_0x619b38();
 	}; // 
 } // namespace JE
 

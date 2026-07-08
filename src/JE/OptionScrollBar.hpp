@@ -12,9 +12,9 @@ namespace JE {
 			dword mbr_0x4;
 		//: Methods
 		public:
-			ctor_0x443300;
-			dtor_0x4433a0;
-			virt_meth_0x443550;
+			void ctor_0x443300();
+			void dtor_0x4433a0();
+			undefined4 virt_meth_0x443550();
 	}; // OptionScrollBar
 } // namespace JE
 

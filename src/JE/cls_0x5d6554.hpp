@@ -46,23 +46,23 @@ namespace JE {
 			byte mbr_0xca;
 		//: Methods
 		public:
-			meth_0x482e43;
-			meth_0x482e51;
-			meth_0x482f03;
-			meth_0x482fb6;
-			meth_0x482fea;
-			meth_0x482ff2;
-			ctor_0x5d6554;
-			meth_0x5d6564;
-			meth_0x5d65ee;
-			meth_0x5dc422;
-			meth_0x5dcb39;
-			meth_0x5dcbe2;
-			meth_0x5dcc83;
-			meth_0x5dd024;
-			meth_0x5dd1a3;
-			meth_0x5dd31a;
-			meth_0x5dd832;
+			undefined4 meth_0x482e43();
+			undefined4 meth_0x482e51();
+			undefined4 meth_0x482f03();
+			undefined4 meth_0x482fb6();
+			undefined4 meth_0x482fea();
+			undefined4 meth_0x482ff2();
+			void ctor_0x5d6554();
+			undefined4 meth_0x5d6564();
+			undefined4 meth_0x5d65ee();
+			undefined4 meth_0x5dc422();
+			undefined4 meth_0x5dcb39();
+			undefined4 meth_0x5dcbe2();
+			undefined4 meth_0x5dcc83();
+			undefined4 meth_0x5dd024();
+			undefined4 meth_0x5dd1a3();
+			undefined4 meth_0x5dd31a();
+			undefined4 meth_0x5dd832();
 	}; // 
 } // namespace JE
 

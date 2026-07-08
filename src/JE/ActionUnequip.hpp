@@ -4,7 +4,7 @@
 #define JE_ACTIONUNEQUIP_HPP_
 
 #include "types.hpp"
-#include "je/Action.hpp"
+#include "JE/Action.hpp"
 
 namespace JE {
 	struct ActionUnequip : public Action {

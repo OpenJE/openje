@@ -4,7 +4,7 @@
 #define JE_CJUMPLIST_HPP_
 
 #include "types.hpp"
-#include "je/CSoundFile.hpp"
+#include "JE/CSoundFile.hpp"
 
 namespace JE {
 	class CJumplist : public CSoundFile {
@@ -24,9 +24,9 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			ctor_0x538b70;
-			dtor_0x538bb0;
-			virt_meth_0x538bf0;
+			void ctor_0x538b70();
+			void dtor_0x538bb0();
+			undefined4 virt_meth_0x538bf0();
 	}; // CJumplist
 } // namespace JE
 

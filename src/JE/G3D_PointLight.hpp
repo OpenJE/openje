@@ -4,7 +4,7 @@
 #define JE_G3D_POINTLIGHT_HPP_
 
 #include "types.hpp"
-#include "je/G3D_BaseLight.hpp"
+#include "JE/G3D_BaseLight.hpp"
 
 namespace JE {
 	class G3D_PointLight : public G3D_BaseLight {
@@ -34,12 +34,12 @@ namespace JE {
 			dword mbr_0x80;
 		//: Methods
 		public:
-			ctor_0x4cb740;
-			virt_meth_0x4cb780;
-			virt_meth_0x4ceca0;
-			virt_meth_0x4d1c10;
-			virt_meth_0x4d1d30;
-			virt_meth_0x4d6150;
+			void ctor_0x4cb740();
+			undefined4 virt_meth_0x4cb780();
+			undefined4 virt_meth_0x4ceca0();
+			undefined4 virt_meth_0x4d1c10();
+			undefined4 virt_meth_0x4d1d30();
+			undefined4 virt_meth_0x4d6150();
 	}; // G3D_PointLight
 } // namespace JE
 

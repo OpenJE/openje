@@ -9,8 +9,8 @@ namespace JE {
 	class CLoadingBarInterface {
 		//: Methods
 		public:
-			virt_meth_0x440770;
-			virt_meth_0x440780;
+			undefined4 virt_meth_0x440770();
+			undefined4 virt_meth_0x440780();
 	}; // CLoadingBarInterface
 } // namespace JE
 

@@ -9,9 +9,9 @@ namespace JE {
 	class COptionsHotKeysInterface {
 		//: Methods
 		public:
-			virt_meth_0x445860;
-			virt_meth_0x445870;
-			virt_meth_0x4468b0;
+			undefined4 virt_meth_0x445860();
+			undefined4 virt_meth_0x445870();
+			undefined4 virt_meth_0x4468b0();
 	}; // COptionsHotKeysInterface
 } // namespace JE
 

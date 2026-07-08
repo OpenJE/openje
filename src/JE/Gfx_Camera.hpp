@@ -4,7 +4,7 @@
 #define JE_GFX_CAMERA_HPP_
 
 #include "types.hpp"
-#include "je/Gfx_BaseObject.hpp"
+#include "JE/Gfx_BaseObject.hpp"
 
 namespace JE {
 	class Gfx_Camera : public Gfx_BaseObject {
@@ -87,9 +87,9 @@ namespace JE {
 			dword mbr_0xfc;
 		//: Methods
 		public:
-			ctor_0x495ee0;
-			virt_meth_0x496090;
-			virt_meth_0x4960b0;
+			void ctor_0x495ee0();
+			undefined4 virt_meth_0x496090();
+			undefined4 virt_meth_0x4960b0();
 	}; // Gfx_Camera
 } // namespace JE
 

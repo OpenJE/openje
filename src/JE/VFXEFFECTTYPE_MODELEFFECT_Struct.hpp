@@ -4,11 +4,11 @@
 #define JE_VFXEFFECTTYPE_MODELEFFECT_STRUCT_HPP_
 
 #include "types.hpp"
-#include "je/VFXEFFECTTYPE_BASE_Struct.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x4d8d70.hpp"
+#include "JE/VFXEFFECTTYPE_BASE_Struct.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x4d8d70.hpp"
 
 namespace JE {
 	struct VFXEFFECTTYPE_MODELEFFECT_Struct : public VFXEFFECTTYPE_BASE_Struct, public cls_0x4d8d70 {
@@ -46,8 +46,8 @@ namespace JE {
 			dword mbr_0xb8;
 			dword mbr_0xbc;
 		//: Methods
-			ctor_0x4e8b70;
-			meth_0x4e8c80;
+			void ctor_0x4e8b70();
+			undefined4 meth_0x4e8c80();
 	}; // VFXEFFECTTYPE_MODELEFFECT_Struct
 } // namespace JE
 

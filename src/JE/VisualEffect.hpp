@@ -4,7 +4,7 @@
 #define JE_VISUALEFFECT_HPP_
 
 #include "types.hpp"
-#include "je/DynamicObject.hpp"
+#include "JE/DynamicObject.hpp"
 
 namespace JE {
 	struct VisualEffect : public DynamicObject {
@@ -32,25 +32,25 @@ namespace JE {
 			dword mbr_0x24;
 			byte mbr_0x30;
 		//: Methods
-			virt_meth_0x5682a0;
-			dtor_0x59f6f0;
-			virt_meth_0x59f760;
-			virt_meth_0x59f770;
-			virt_meth_0x59f7a0;
-			virt_meth_0x59f7f0;
-			virt_meth_0x59f810;
-			virt_meth_0x59f830;
-			virt_meth_0x59f840;
-			meth_0x59f8d0;
-			meth_0x59f8e0;
-			virt_meth_0x59f930;
-			meth_0x59f950;
-			meth_0x59fa40;
-			meth_0x59fc70;
-			ctor_0x59fcb0;
-			virt_meth_0x59fd70;
-			virt_meth_0x59fdb0;
-			meth_0x59ff20;
+			undefined4 virt_meth_0x5682a0();
+			void dtor_0x59f6f0();
+			undefined4 virt_meth_0x59f760();
+			undefined4 virt_meth_0x59f770();
+			undefined4 virt_meth_0x59f7a0();
+			undefined4 virt_meth_0x59f7f0();
+			undefined4 virt_meth_0x59f810();
+			undefined4 virt_meth_0x59f830();
+			undefined4 virt_meth_0x59f840();
+			undefined4 meth_0x59f8d0();
+			undefined4 meth_0x59f8e0();
+			undefined4 virt_meth_0x59f930();
+			undefined4 meth_0x59f950();
+			undefined4 meth_0x59fa40();
+			undefined4 meth_0x59fc70();
+			void ctor_0x59fcb0();
+			undefined4 virt_meth_0x59fd70();
+			undefined4 virt_meth_0x59fdb0();
+			undefined4 meth_0x59ff20();
 	}; // VisualEffect
 } // namespace JE
 

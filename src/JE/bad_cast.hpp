@@ -4,7 +4,7 @@
 #define JE_BAD_CAST_HPP_
 
 #include "types.hpp"
-#include "je/exception.hpp"
+#include "JE/exception.hpp"
 
 namespace JE {
 	class bad_cast : public exception {
@@ -14,10 +14,10 @@ namespace JE {
 			dword mbr_0x8;
 		//: Methods
 		public:
-			ctor_0x616bcd;
-			ctor_0x616be6;
-			dtor_0x616bfe;
-			virt_meth_0x616c91;
+			void ctor_0x616bcd();
+			void ctor_0x616be6();
+			void dtor_0x616bfe();
+			undefined4 virt_meth_0x616c91();
 	}; // bad_cast
 } // namespace JE
 

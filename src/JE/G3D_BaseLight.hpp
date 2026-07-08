@@ -4,7 +4,7 @@
 #define JE_G3D_BASELIGHT_HPP_
 
 #include "types.hpp"
-#include "je/G3D_BaseAttribute.hpp"
+#include "JE/G3D_BaseAttribute.hpp"
 
 namespace JE {
 	class G3D_BaseLight : public G3D_BaseAttribute {
@@ -30,7 +30,7 @@ namespace JE {
 			byte mbr_0x8;
 		//: Methods
 		public:
-			ctor_0x4cb520;
+			void ctor_0x4cb520();
 	}; // G3D_BaseLight
 } // namespace JE
 

@@ -14,8 +14,8 @@ namespace JE {
 			dword mbr_0x4;
 		//: Methods
 		public:
-			dtor_0x4fd280;
-			virt_meth_0x4fd660;
+			void dtor_0x4fd280();
+			undefined4 virt_meth_0x4fd660();
 	}; // VFX_FormatManager
 } // namespace JE
 

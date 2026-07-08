@@ -4,8 +4,8 @@
 #define JE_VFX_RAIN_HPP_
 
 #include "types.hpp"
-#include "je/VFX_EffectInstance.hpp"
-#include "je/VFXEFFECTTYPE_RAIN_Struct.hpp"
+#include "JE/VFX_EffectInstance.hpp"
+#include "JE/VFXEFFECTTYPE_RAIN_Struct.hpp"
 
 namespace JE {
 	class VFX_Rain : public VFX_EffectInstance, public VFXEFFECTTYPE_RAIN_Struct {
@@ -61,15 +61,15 @@ namespace JE {
 			dword mbr_0xbc;
 		//: Methods
 		public:
-			virt_meth_0x4e5e60;
-			ctor_0x4e5f90;
-			dtor_0x4e61e0;
-			meth_0x4e6460;
-			meth_0x4e64a0;
-			virt_meth_0x4e6a20;
-			virt_meth_0x4e6a40;
-			meth_0x4e6b20;
-			virt_meth_0x4e7330;
+			undefined4 virt_meth_0x4e5e60();
+			void ctor_0x4e5f90();
+			void dtor_0x4e61e0();
+			undefined4 meth_0x4e6460();
+			undefined4 meth_0x4e64a0();
+			undefined4 virt_meth_0x4e6a20();
+			undefined4 virt_meth_0x4e6a40();
+			undefined4 meth_0x4e6b20();
+			undefined4 virt_meth_0x4e7330();
 	}; // VFX_Rain
 } // namespace JE
 

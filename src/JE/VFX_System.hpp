@@ -9,9 +9,9 @@ namespace JE {
 	class VFX_System {
 		//: Methods
 		public:
-			ctor_0x4b80d0;
-			dtor_0x4b8450;
-			virt_meth_0x4b8460;
+			void ctor_0x4b80d0();
+			void dtor_0x4b8450();
+			undefined4 virt_meth_0x4b8460();
 	}; // VFX_System
 } // namespace JE
 

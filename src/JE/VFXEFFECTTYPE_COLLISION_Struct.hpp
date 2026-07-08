@@ -4,13 +4,13 @@
 #define JE_VFXEFFECTTYPE_COLLISION_STRUCT_HPP_
 
 #include "types.hpp"
-#include "je/VFXEFFECTTYPE_BASE_Struct.hpp"
-#include "je/cls_0x4dff90.hpp"
+#include "JE/VFXEFFECTTYPE_BASE_Struct.hpp"
+#include "JE/cls_0x4dff90.hpp"
 
 namespace JE {
 	struct VFXEFFECTTYPE_COLLISION_Struct : public VFXEFFECTTYPE_BASE_Struct, public cls_0x4dff90 {
 		//: Methods
-			ctor_0x4f0e90;
+			void ctor_0x4f0e90();
 	}; // VFXEFFECTTYPE_COLLISION_Struct
 } // namespace JE
 

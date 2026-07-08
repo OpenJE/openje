@@ -4,8 +4,8 @@
 #define JE_CWORLDCONTAINERINTERFACE_HPP_
 
 #include "types.hpp"
-#include "je/GUI/Interface.hpp"
-#include "je/CSound.hpp"
+#include "JE/GUI/Interface.hpp"
+#include "JE/CSound.hpp"
 
 namespace JE {
 	class CWorldContainerInterface : public GUI::Interface, public CSound {
@@ -32,17 +32,17 @@ namespace JE {
 			dword mbr_0x3c;
 		//: Methods
 		public:
-			meth_0x4574b0;
-			meth_0x4574f0;
-			meth_0x457520;
-			virt_meth_0x4575d0;
-			virt_meth_0x4577d0;
-			meth_0x457a10;
-			dtor_0x457d20;
-			ctor_0x457db0;
-			virt_meth_0x458030;
-			meth_0x495290;
-			meth_0x4952b0;
+			undefined4 meth_0x4574b0();
+			undefined4 meth_0x4574f0();
+			undefined4 meth_0x457520();
+			undefined4 virt_meth_0x4575d0();
+			undefined4 virt_meth_0x4577d0();
+			undefined4 meth_0x457a10();
+			void dtor_0x457d20();
+			void ctor_0x457db0();
+			undefined4 virt_meth_0x458030();
+			undefined4 meth_0x495290();
+			undefined4 meth_0x4952b0();
 	}; // CWorldContainerInterface
 } // namespace JE
 

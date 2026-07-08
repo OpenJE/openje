@@ -4,7 +4,7 @@
 #define JE_CLS_0X4CB300_HPP_
 
 #include "types.hpp"
-#include "je/G3D_Transform.hpp"
+#include "JE/G3D_Transform.hpp"
 
 namespace JE {
 	class cls_0x4cb300 {
@@ -19,11 +19,11 @@ namespace JE {
 			dword mbr_0x40;
 		//: Methods
 		public:
-			ctor_0x4cb2e0;
-			dtor_0x4cb300;
-			meth_0x4d07f0;
-			meth_0x4d09b0;
-			meth_0x4d09d0;
+			void ctor_0x4cb2e0();
+			void dtor_0x4cb300();
+			undefined4 meth_0x4d07f0();
+			undefined4 meth_0x4d09b0();
+			undefined4 meth_0x4d09d0();
 	}; // 
 } // namespace JE
 

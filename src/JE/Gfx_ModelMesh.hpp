@@ -4,8 +4,8 @@
 #define JE_GFX_MODELMESH_HPP_
 
 #include "types.hpp"
-#include "je/Gfx_NodeAttribute.hpp"
-#include "je/cls_0x4abc60.hpp"
+#include "JE/Gfx_NodeAttribute.hpp"
+#include "JE/cls_0x4abc60.hpp"
 
 namespace JE {
 	class Gfx_ModelMesh : public Gfx_NodeAttribute, public cls_0x4abc60 {
@@ -40,11 +40,11 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			ctor_0x49ddd0;
-			virt_meth_0x49de80;
-			dtor_0x50e3d0;
-			meth_0x50e4f0;
-			meth_0x50e760;
+			void ctor_0x49ddd0();
+			undefined4 virt_meth_0x49de80();
+			void dtor_0x50e3d0();
+			undefined4 meth_0x50e4f0();
+			undefined4 meth_0x50e760();
 	}; // Gfx_ModelMesh
 } // namespace JE
 

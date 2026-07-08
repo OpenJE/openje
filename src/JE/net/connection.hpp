@@ -4,10 +4,10 @@
 #define JE_NET_CONNECTION_HPP_
 
 #include "types.hpp"
-#include "je/net/packet.hpp"
-#include "je/cls_0x5abd80.hpp"
-#include "je/net/packet.hpp"
-#include "je/net/exception.hpp"
+#include "JE/net/packet.hpp"
+#include "JE/cls_0x5abd80.hpp"
+#include "JE/net/packet.hpp"
+#include "JE/net/exception.hpp"
 
 namespace JE {
     namespace net {
@@ -71,18 +71,18 @@ namespace JE {
                 dword mbr_0xc;
             //: Methods
             public:
-                meth_0x5ab790;
-                meth_0x5ab7a0;
-                meth_0x5ab8e0;
-                meth_0x5abab0;
-                meth_0x5abaf0;
-                meth_0x5abc00;
-                meth_0x5abc70;
+                undefined4 meth_0x5ab790();
+                undefined4 meth_0x5ab7a0();
+                undefined4 meth_0x5ab8e0();
+                undefined4 meth_0x5abab0();
+                undefined4 meth_0x5abaf0();
+                undefined4 meth_0x5abc00();
+                undefined4 meth_0x5abc70();
                 ctor_0x5abje0;
-                dtor_0x5abf90;
-                virt_meth_0x5ac210;
-                meth_0x5ac450;
-                meth_0x5ac500;
+                void dtor_0x5abf90();
+                undefined4 virt_meth_0x5ac210();
+                undefined4 meth_0x5ac450();
+                undefined4 meth_0x5ac500();
         }; // class connection
     } // namespace net
 } // namespace JE

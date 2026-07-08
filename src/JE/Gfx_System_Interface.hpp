@@ -9,8 +9,8 @@ namespace JE {
 	class Gfx_System_Interface {
 		//: Methods
 		public:
-			dtor_0x5bedd0;
-			virt_meth_0x6162e5;
+			void dtor_0x5bedd0();
+			undefined4 virt_meth_0x6162e5();
 	}; // Gfx_System_Interface
 } // namespace JE
 

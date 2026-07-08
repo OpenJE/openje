@@ -4,7 +4,7 @@
 #define JE_CSOUNDSYSTEM_HPP_
 
 #include "types.hpp"
-#include "je/cls_0x50ca00.hpp"
+#include "JE/cls_0x50ca00.hpp"
 
 namespace JE {
 	class CSoundSystem {
@@ -42,20 +42,20 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			meth_0x52a010;
-			meth_0x52a020;
-			meth_0x52a130;
-			meth_0x52a1a0;
-			meth_0x52a2e0;
-			meth_0x52a460;
-			meth_0x52a5f0;
-			meth_0x52a6c0;
-			meth_0x52a790;
-			meth_0x52ab30;
-			meth_0x52abc0;
-			ctor_0x52abf0;
-			dtor_0x52ac70;
-			virt_meth_0x52adf0;
+			undefined4 meth_0x52a010();
+			undefined4 meth_0x52a020();
+			undefined4 meth_0x52a130();
+			undefined4 meth_0x52a1a0();
+			undefined4 meth_0x52a2e0();
+			undefined4 meth_0x52a460();
+			undefined4 meth_0x52a5f0();
+			undefined4 meth_0x52a6c0();
+			undefined4 meth_0x52a790();
+			undefined4 meth_0x52ab30();
+			undefined4 meth_0x52abc0();
+			void ctor_0x52abf0();
+			void dtor_0x52ac70();
+			undefined4 virt_meth_0x52adf0();
 	}; // CSoundSystem
 } // namespace JE
 

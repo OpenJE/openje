@@ -4,7 +4,7 @@
 #define JE_AREAMAPICON_HPP_
 
 #include "types.hpp"
-#include "je/cls_0x4abc60.hpp"
+#include "JE/cls_0x4abc60.hpp"
 
 namespace JE {
 	class AreaMapIcon {

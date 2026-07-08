@@ -4,13 +4,13 @@
 #define JE_VFXEFFECTTYPE_LIGHTNING_STRUCT_HPP_
 
 #include "types.hpp"
-#include "je/VFXEFFECTTYPE_BASE_Struct.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x502110.hpp"
-#include "je/cls_0x50db20.hpp"
-#include "je/cls_0x4dff90.hpp"
+#include "JE/VFXEFFECTTYPE_BASE_Struct.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x502110.hpp"
+#include "JE/cls_0x50db20.hpp"
+#include "JE/cls_0x4dff90.hpp"
 
 namespace JE {
 	struct VFXEFFECTTYPE_LIGHTNING_Struct : public VFXEFFECTTYPE_BASE_Struct, public cls_0x502110, public cls_0x50db20, public cls_0x4dff90 {
@@ -85,10 +85,10 @@ namespace JE {
 			dword mbr_0xf8;
 			dword mbr_0xfc;
 		//: Methods
-			ctor_0x4e9070;
-			meth_0x4e9110;
-			virt_meth_0x4e9150;
-			meth_0x4e9780;
+			void ctor_0x4e9070();
+			undefined4 meth_0x4e9110();
+			undefined4 virt_meth_0x4e9150();
+			undefined4 meth_0x4e9780();
 	}; // VFXEFFECTTYPE_LIGHTNING_Struct
 } // namespace JE
 

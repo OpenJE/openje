@@ -4,8 +4,8 @@
 #define JE_G3D_NODE_HPP_
 
 #include "types.hpp"
-#include "je/G3D_Transform.hpp"
-#include "je/cls_0x48fce0.hpp"
+#include "JE/G3D_Transform.hpp"
+#include "JE/cls_0x48fce0.hpp"
 
 namespace JE {
 	class G3D_Node {
@@ -33,17 +33,17 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			meth_0x4caaa0;
-			virt_meth_0x4cab30;
-			dtor_0x4ccef0;
-			virt_meth_0x4cea90;
-			virt_meth_0x4ceab0;
-			ctor_0x4d7600;
-			meth_0x4d80f0;
-			meth_0x4d9400;
-			virt_meth_0x4da230;
-			virt_meth_0x4da760;
-			virt_meth_0x4dabd0;
+			undefined4 meth_0x4caaa0();
+			undefined4 virt_meth_0x4cab30();
+			void dtor_0x4ccef0();
+			undefined4 virt_meth_0x4cea90();
+			undefined4 virt_meth_0x4ceab0();
+			void ctor_0x4d7600();
+			undefined4 meth_0x4d80f0();
+			undefined4 meth_0x4d9400();
+			undefined4 virt_meth_0x4da230();
+			undefined4 virt_meth_0x4da760();
+			undefined4 virt_meth_0x4dabd0();
 	}; // G3D_Node
 } // namespace JE
 

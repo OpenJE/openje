@@ -4,8 +4,8 @@
 #define JE_CLS_0X455E40_HPP_
 
 #include "types.hpp"
-#include "je/cls_0x4395a0.hpp"
-#include "je/AreaMapNote.hpp"
+#include "JE/cls_0x4395a0.hpp"
+#include "JE/AreaMapNote.hpp"
 
 namespace JE {
 	class cls_0x455e40 : public cls_0x4395a0, public AreaMapNote {
@@ -90,7 +90,7 @@ namespace JE {
 			dword mbr_0xe4;
 		//: Methods
 		public:
-			ctor_0x455e40;
+			void ctor_0x455e40();
 	}; // 
 } // namespace JE
 

@@ -14,7 +14,7 @@ namespace JE {
 			byte mbr_0x4;
 		//: Methods
 		public:
-			dtor_0x45f060;
+			void dtor_0x45f060();
 	}; // 
 } // namespace JE
 

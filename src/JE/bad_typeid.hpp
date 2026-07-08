@@ -4,7 +4,7 @@
 #define JE_BAD_TYPEID_HPP_
 
 #include "types.hpp"
-#include "je/exception.hpp"
+#include "JE/exception.hpp"
 
 namespace JE {
 	class bad_typeid : public exception {
@@ -14,10 +14,10 @@ namespace JE {
 			dword mbr_0x8;
 		//: Methods
 		public:
-			ctor_0x616c09;
-			ctor_0x616c22;
-			dtor_0x616c3a;
-			virt_meth_0x616cad;
+			void ctor_0x616c09();
+			void ctor_0x616c22();
+			void dtor_0x616c3a();
+			undefined4 virt_meth_0x616cad();
 	}; // bad_typeid
 } // namespace JE
 

@@ -12,9 +12,9 @@ namespace JE {
 			dword mbr_0x8;
 			dword mbr_0xc;
 		//: Methods
-			ctor_0x5a1fb0;
-			virt_meth_0x5a1ff0;
-			dtor_0x5a2120;
+			void ctor_0x5a1fb0();
+			undefined4 virt_meth_0x5a1ff0();
+			void dtor_0x5a2120();
 	}; // StoreManager
 } // namespace JE
 

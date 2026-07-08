@@ -4,7 +4,7 @@
 #define JE_CSOUNDPRESETINFO_HPP_
 
 #include "types.hpp"
-#include "je/CSoundFile.hpp"
+#include "JE/CSoundFile.hpp"
 
 namespace JE {
 	class CSoundPresetInfo : public CSoundFile {
@@ -21,9 +21,9 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			ctor_0x52cef0;
-			dtor_0x52cf80;
-			virt_meth_0x52d550;
+			void ctor_0x52cef0();
+			void dtor_0x52cf80();
+			undefined4 virt_meth_0x52d550();
 	}; // CSoundPresetInfo
 } // namespace JE
 

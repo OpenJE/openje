@@ -17,9 +17,9 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			dtor_0x585b10;
-			virt_meth_0x585e00;
-			virt_meth_0x59c230;
+			void dtor_0x585b10();
+			undefined4 virt_meth_0x585e00();
+			undefined4 virt_meth_0x59c230();
 	}; // ModelCache
 } // namespace JE
 

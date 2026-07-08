@@ -9,9 +9,9 @@ namespace JE {
 	class CMessageBoxInterface {
 		//: Methods
 		public:
-			virt_meth_0x4413c0;
-			virt_meth_0x4413d0;
-			virt_meth_0x4413e0;
+			undefined4 virt_meth_0x4413c0();
+			undefined4 virt_meth_0x4413d0();
+			undefined4 virt_meth_0x4413e0();
 	}; // CMessageBoxInterface
 } // namespace JE
 

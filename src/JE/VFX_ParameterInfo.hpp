@@ -4,10 +4,10 @@
 #define JE_VFX_PARAMETERINFO_HPP_
 
 #include "types.hpp"
-#include "je/VFX_Parameter.hpp"
-#include "je/VFX_Parameter.hpp"
-#include "je/VFX_Parameter.hpp"
-#include "je/VFX_Parameter.hpp"
+#include "JE/VFX_Parameter.hpp"
+#include "JE/VFX_Parameter.hpp"
+#include "JE/VFX_Parameter.hpp"
+#include "JE/VFX_Parameter.hpp"
 
 namespace JE {
 	class VFX_ParameterInfo : public VFX_Parameter {
@@ -34,36 +34,36 @@ namespace JE {
 			VFX_Parameter mbr_0xdc;
 		//: Methods
 		public:
-			ctor_0x4fb2d0;
-			dtor_0x4fb370;
-			virt_meth_0x4fb430;
-			ctor_0x4fb5b0;
-			meth_0x4fdfb0;
-			meth_0x4fdfd0;
-			meth_0x4fdff0;
-			meth_0x4fe010;
-			meth_0x4fe040;
-			meth_0x4fe060;
-			meth_0x4fe080;
-			meth_0x4fe0a0;
-			meth_0x4fe0c0;
-			meth_0x4fe140;
-			meth_0x4fe160;
-			meth_0x4fe180;
-			meth_0x4fe1b0;
-			meth_0x4fe280;
-			meth_0x4fe450;
-			meth_0x4fe690;
-			meth_0x4fe880;
-			meth_0x4feb20;
-			meth_0x4feef0;
-			meth_0x4ff1b0;
-			meth_0x4ff970;
-			meth_0x4ffd10;
-			meth_0x500150;
-			meth_0x500760;
-			meth_0x500bc0;
-			meth_0x501000;
+			void ctor_0x4fb2d0();
+			void dtor_0x4fb370();
+			undefined4 virt_meth_0x4fb430();
+			void ctor_0x4fb5b0();
+			undefined4 meth_0x4fdfb0();
+			undefined4 meth_0x4fdfd0();
+			undefined4 meth_0x4fdff0();
+			undefined4 meth_0x4fe010();
+			undefined4 meth_0x4fe040();
+			undefined4 meth_0x4fe060();
+			undefined4 meth_0x4fe080();
+			undefined4 meth_0x4fe0a0();
+			undefined4 meth_0x4fe0c0();
+			undefined4 meth_0x4fe140();
+			undefined4 meth_0x4fe160();
+			undefined4 meth_0x4fe180();
+			undefined4 meth_0x4fe1b0();
+			undefined4 meth_0x4fe280();
+			undefined4 meth_0x4fe450();
+			undefined4 meth_0x4fe690();
+			undefined4 meth_0x4fe880();
+			undefined4 meth_0x4feb20();
+			undefined4 meth_0x4feef0();
+			undefined4 meth_0x4ff1b0();
+			undefined4 meth_0x4ff970();
+			undefined4 meth_0x4ffd10();
+			undefined4 meth_0x500150();
+			undefined4 meth_0x500760();
+			undefined4 meth_0x500bc0();
+			undefined4 meth_0x501000();
 	}; // VFX_ParameterInfo
 } // namespace JE
 

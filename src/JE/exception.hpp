@@ -13,12 +13,12 @@ namespace JE {
 			dword mbr_0x8;
 		//: Methods
 		public:
-			ctor_0x616b12;
-			ctor_0x616b23;
-			ctor_0x616b60;
-			meth_0x616baa;
-			virt_meth_0x616bc0;
-			virt_meth_0x616c75;
+			void ctor_0x616b12();
+			void ctor_0x616b23();
+			void ctor_0x616b60();
+			undefined4 meth_0x616baa();
+			undefined4 virt_meth_0x616bc0();
+			undefined4 virt_meth_0x616c75();
 	}; // exception
 } // namespace JE
 

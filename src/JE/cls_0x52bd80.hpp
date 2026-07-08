@@ -17,7 +17,7 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			ctor_0x52bd80;
+			void ctor_0x52bd80();
 	}; // 
 } // namespace JE
 

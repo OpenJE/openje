@@ -4,7 +4,7 @@
 #define JE_G3D_CAMERA_HPP_
 
 #include "types.hpp"
-#include "je/G3D_BaseAttribute.hpp"
+#include "JE/G3D_BaseAttribute.hpp"
 
 namespace JE {
 	class G3D_Camera : public G3D_BaseAttribute {
@@ -23,12 +23,12 @@ namespace JE {
 			byte mbr_0x8;
 		//: Methods
 		public:
-			ctor_0x4cbab0;
-			virt_meth_0x4cbaf0;
-			virt_meth_0x4ceeb0;
-			virt_meth_0x4d21a0;
-			virt_meth_0x4d2200;
-			virt_meth_0x4d6940;
+			void ctor_0x4cbab0();
+			undefined4 virt_meth_0x4cbaf0();
+			undefined4 virt_meth_0x4ceeb0();
+			undefined4 virt_meth_0x4d21a0();
+			undefined4 virt_meth_0x4d2200();
+			undefined4 virt_meth_0x4d6940();
 	}; // G3D_Camera
 } // namespace JE
 

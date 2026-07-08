@@ -18,8 +18,8 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			ctor_0x4c84c0;
-			virt_meth_0x4c8540;
+			void ctor_0x4c84c0();
+			undefined4 virt_meth_0x4c8540();
 	}; // CSoundFile
 } // namespace JE
 

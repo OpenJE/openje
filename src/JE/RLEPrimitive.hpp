@@ -16,10 +16,10 @@ namespace JE {
 			dword mbr_0x8;
 		//: Methods
 		public:
-			virt_meth_0x409bc0;
-			dtor_0x40aba0;
-			virt_meth_0x40ac20;
-			ctor_0x40b640;
+			undefined4 virt_meth_0x409bc0();
+			void dtor_0x40aba0();
+			undefined4 virt_meth_0x40ac20();
+			void ctor_0x40b640();
 	}; // RLEPrimitive<near struct Entity *>
 } // namespace JE
 

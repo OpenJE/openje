@@ -75,34 +75,34 @@ namespace JE {
                 dword mbr_0x4;
             //: Methods
             public:
-                meth_0x409cb0;
-                meth_0x45a380;
-                meth_0x548d60;
-                meth_0x548f90;
-                meth_0x548fc0;
-                meth_0x5493a0;
-                meth_0x549d30;
-                meth_0x549fe0;
-                meth_0x54a460;
-                meth_0x54aeb0;
-                meth_0x54b050;
-                meth_0x54bd90;
-                meth_0x54de00;
-                meth_0x54ee20;
-                meth_0x54ef90;
-                meth_0x550720;
-                meth_0x5512b0;
-                meth_0x551880;
-                meth_0x551b60;
-                meth_0x551ba0;
-                meth_0x551c80;
-                meth_0x551cf0;
-                meth_0x552000;
-                meth_0x552760;
-                ctor_0x5b9270;
-                dtor_0x5b92a0;
-                virt_meth_0x5b92d0;
-                meth_0x5ca5f0;
+                undefined4 meth_0x409cb0();
+                undefined4 meth_0x45a380();
+                undefined4 meth_0x548d60();
+                undefined4 meth_0x548f90();
+                undefined4 meth_0x548fc0();
+                undefined4 meth_0x5493a0();
+                undefined4 meth_0x549d30();
+                undefined4 meth_0x549fe0();
+                undefined4 meth_0x54a460();
+                undefined4 meth_0x54aeb0();
+                undefined4 meth_0x54b050();
+                undefined4 meth_0x54bd90();
+                undefined4 meth_0x54de00();
+                undefined4 meth_0x54ee20();
+                undefined4 meth_0x54ef90();
+                undefined4 meth_0x550720();
+                undefined4 meth_0x5512b0();
+                undefined4 meth_0x551880();
+                undefined4 meth_0x551b60();
+                undefined4 meth_0x551ba0();
+                undefined4 meth_0x551c80();
+                undefined4 meth_0x551cf0();
+                undefined4 meth_0x552000();
+                undefined4 meth_0x552760();
+                void ctor_0x5b9270();
+                void dtor_0x5b92a0();
+                undefined4 virt_meth_0x5b92d0();
+                undefined4 meth_0x5ca5f0();
         }; // critical_section
     } // namespace net
 } // namespace JE

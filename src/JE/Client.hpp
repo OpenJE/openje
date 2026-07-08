@@ -4,7 +4,7 @@
 #define JE_CLIENT_HPP_
 
 #include "types.hpp"
-#include "je/net/client.hpp"
+#include "JE/net/client.hpp"
 
 namespace JE {
 	class Client : public net::client {
@@ -59,50 +59,50 @@ namespace JE {
 			dword mbr_0xfc;
 		//: Methods
 		public:
-			virt_meth_0x587770;
-			virt_meth_0x587b00;
-			virt_meth_0x587b10;
-			virt_meth_0x587b70;
-			virt_meth_0x587bd0;
-			virt_meth_0x587c30;
-			virt_meth_0x587c90;
-			virt_meth_0x587d00;
-			virt_meth_0x587d60;
-			virt_meth_0x587dc0;
-			virt_meth_0x587e20;
-			virt_meth_0x587e80;
-			virt_meth_0x587ee0;
-			virt_meth_0x5880a0;
-			virt_meth_0x5880c0;
-			virt_meth_0x588170;
-			virt_meth_0x588190;
-			meth_0x5881a0;
-			meth_0x588200;
-			virt_meth_0x588220;
-			meth_0x588230;
-			virt_meth_0x588d90;
-			virt_meth_0x588f50;
-			virt_meth_0x588fe0;
-			meth_0x589130;
-			meth_0x5897d0;
-			meth_0x589d90;
-			virt_meth_0x58a4a0;
-			virt_meth_0x58a620;
-			virt_meth_0x58a960;
-			meth_0x58aad0;
-			virt_meth_0x58ab80;
-			virt_meth_0x58bd80;
-			virt_meth_0x58be40;
-			virt_meth_0x58bf00;
-			virt_meth_0x58bfc0;
-			virt_meth_0x58c080;
-			virt_meth_0x58c140;
-			virt_meth_0x58c200;
-			virt_meth_0x58c380;
-			virt_meth_0x58c660;
-			virt_meth_0x58d9a0;
-			ctor_0x58e900;
-			virt_meth_0x58f010;
+			undefined4 virt_meth_0x587770();
+			undefined4 virt_meth_0x587b00();
+			undefined4 virt_meth_0x587b10();
+			undefined4 virt_meth_0x587b70();
+			undefined4 virt_meth_0x587bd0();
+			undefined4 virt_meth_0x587c30();
+			undefined4 virt_meth_0x587c90();
+			undefined4 virt_meth_0x587d00();
+			undefined4 virt_meth_0x587d60();
+			undefined4 virt_meth_0x587dc0();
+			undefined4 virt_meth_0x587e20();
+			undefined4 virt_meth_0x587e80();
+			undefined4 virt_meth_0x587ee0();
+			undefined4 virt_meth_0x5880a0();
+			undefined4 virt_meth_0x5880c0();
+			undefined4 virt_meth_0x588170();
+			undefined4 virt_meth_0x588190();
+			undefined4 meth_0x5881a0();
+			undefined4 meth_0x588200();
+			undefined4 virt_meth_0x588220();
+			undefined4 meth_0x588230();
+			undefined4 virt_meth_0x588d90();
+			undefined4 virt_meth_0x588f50();
+			undefined4 virt_meth_0x588fe0();
+			undefined4 meth_0x589130();
+			undefined4 meth_0x5897d0();
+			undefined4 meth_0x589d90();
+			undefined4 virt_meth_0x58a4a0();
+			undefined4 virt_meth_0x58a620();
+			undefined4 virt_meth_0x58a960();
+			undefined4 meth_0x58aad0();
+			undefined4 virt_meth_0x58ab80();
+			undefined4 virt_meth_0x58bd80();
+			undefined4 virt_meth_0x58be40();
+			undefined4 virt_meth_0x58bf00();
+			undefined4 virt_meth_0x58bfc0();
+			undefined4 virt_meth_0x58c080();
+			undefined4 virt_meth_0x58c140();
+			undefined4 virt_meth_0x58c200();
+			undefined4 virt_meth_0x58c380();
+			undefined4 virt_meth_0x58c660();
+			undefined4 virt_meth_0x58d9a0();
+			void ctor_0x58e900();
+			undefined4 virt_meth_0x58f010();
 	}; // Client
 } // namespace JE
 

@@ -14,9 +14,9 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			meth_0x405f80;
-			meth_0x560b20;
-			meth_0x561a90;
+			undefined4 meth_0x405f80();
+			undefined4 meth_0x560b20();
+			undefined4 meth_0x561a90();
 	}; // 
 } // namespace JE
 

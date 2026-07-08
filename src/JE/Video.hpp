@@ -19,11 +19,11 @@ namespace JE {
 			dword mbr_0x8;
 			dword mbr_0xc;
 		//: Methods
-			virt_meth_0x5b4f40;
-			meth_0x5b4fc0;
-			ctor_0x5b5080;
-			dtor_0x5b50d0;
-			virt_meth_0x5b5150;
+			undefined4 virt_meth_0x5b4f40();
+			undefined4 meth_0x5b4fc0();
+			void ctor_0x5b5080();
+			void dtor_0x5b50d0();
+			undefined4 virt_meth_0x5b5150();
 	}; // Video
 } // namespace JE
 

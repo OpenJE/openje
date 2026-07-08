@@ -4,8 +4,8 @@
 #define JE_CLS_0X4760EF_HPP_
 
 #include "types.hpp"
-#include "je/cls_0x474824.hpp"
-#include "je/cls_0x474824.hpp"
+#include "JE/cls_0x474824.hpp"
+#include "JE/cls_0x474824.hpp"
 
 namespace JE {
 	class cls_0x4760ef : public cls_0x474824 {
@@ -42,9 +42,9 @@ namespace JE {
 			dword mbr_0xe4;
 		//: Methods
 		public:
-			meth_0x474948;
-			ctor_0x4760ef;
-			meth_0x476257;
+			undefined4 meth_0x474948();
+			void ctor_0x4760ef();
+			undefined4 meth_0x476257();
 	}; // 
 } // namespace JE
 

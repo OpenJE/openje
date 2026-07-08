@@ -4,7 +4,7 @@
 #define JE_CLOADMAPINTERFACE_HPP_
 
 #include "types.hpp"
-#include "je/GUI/Interface.hpp"
+#include "JE/GUI/Interface.hpp"
 
 namespace JE {
 	class CLoadMapInterface : public GUI::Interface {
@@ -34,21 +34,21 @@ namespace JE {
 			dword mbr_0xfc;
 		//: Methods
 		public:
-			dtor_0x43ff40;
-			virt_meth_0x43ffb0;
-			ctor_0x440050;
-			virt_meth_0x4404a0;
-			meth_0x456ee0;
-			meth_0x457010;
-			meth_0x457260;
-			meth_0x457440;
-			meth_0x4574a0;
-			meth_0x4580c0;
-			meth_0x458710;
-			meth_0x495220;
-			meth_0x4955b0;
-			meth_0x495740;
-			meth_0x495b50;
+			void dtor_0x43ff40();
+			undefined4 virt_meth_0x43ffb0();
+			void ctor_0x440050();
+			undefined4 virt_meth_0x4404a0();
+			undefined4 meth_0x456ee0();
+			undefined4 meth_0x457010();
+			undefined4 meth_0x457260();
+			undefined4 meth_0x457440();
+			undefined4 meth_0x4574a0();
+			undefined4 meth_0x4580c0();
+			undefined4 meth_0x458710();
+			undefined4 meth_0x495220();
+			undefined4 meth_0x4955b0();
+			undefined4 meth_0x495740();
+			undefined4 meth_0x495b50();
 	}; // CLoadMapInterface
 } // namespace JE
 

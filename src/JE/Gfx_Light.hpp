@@ -4,7 +4,7 @@
 #define JE_GFX_LIGHT_HPP_
 
 #include "types.hpp"
-#include "je/Gfx_BaseObject.hpp"
+#include "JE/Gfx_BaseObject.hpp"
 
 namespace JE {
 	class Gfx_Light : public Gfx_BaseObject {
@@ -56,11 +56,11 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			meth_0x4245b0;
-			ctor_0x4247e0;
-			virt_meth_0x424840;
-			ctor_0x4b8e50;
-			virt_meth_0x4b9050;
+			undefined4 meth_0x4245b0();
+			void ctor_0x4247e0();
+			undefined4 virt_meth_0x424840();
+			void ctor_0x4b8e50();
+			undefined4 virt_meth_0x4b9050();
 	}; // Gfx_Light
 } // namespace JE
 

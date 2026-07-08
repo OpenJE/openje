@@ -4,7 +4,7 @@
 #define JE_NET_SERVER_CLIENT_HPP_
 
 #include "types.hpp"
-#include "je/net/connection.hpp"
+#include "JE/net/connection.hpp"
 
 namespace JE {
     namespace net {

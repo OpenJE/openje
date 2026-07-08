@@ -4,7 +4,7 @@
 #define JE_CLS_0X4D4650_HPP_
 
 #include "types.hpp"
-#include "je/G3D_Transform.hpp"
+#include "JE/G3D_Transform.hpp"
 
 namespace JE {
 	class cls_0x4d4650 {
@@ -16,7 +16,7 @@ namespace JE {
 			byte mbr_0x4;
 		//: Methods
 		public:
-			ctor_0x4d4650;
+			void ctor_0x4d4650();
 	}; // 
 } // namespace JE
 

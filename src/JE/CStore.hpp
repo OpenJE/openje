@@ -22,11 +22,11 @@ namespace JE {
 			dword mbr_0x8;
 		//: Methods
 		public:
-			meth_0x5a1f10;
-			dtor_0x5a2060;
-			virt_meth_0x5a21b0;
-			ctor_0x5a2280;
-			virt_meth_0x5a24a0;
+			undefined4 meth_0x5a1f10();
+			void dtor_0x5a2060();
+			undefined4 virt_meth_0x5a21b0();
+			void ctor_0x5a2280();
+			undefined4 virt_meth_0x5a24a0();
 	}; // CStore
 } // namespace JE
 

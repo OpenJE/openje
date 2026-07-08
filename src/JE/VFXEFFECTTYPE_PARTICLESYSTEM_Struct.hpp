@@ -4,40 +4,40 @@
 #define JE_VFXEFFECTTYPE_PARTICLESYSTEM_STRUCT_HPP_
 
 #include "types.hpp"
-#include "je/VFXEFFECTTYPE_BASE_Struct.hpp"
-#include "je/cls_0x40a220.hpp"
-#include "je/cls_0x50db20.hpp"
-#include "je/cls_0x40a220.hpp"
-#include "je/cls_0x4dff90.hpp"
-#include "je/cls_0x4dff90.hpp"
-#include "je/cls_0x502110.hpp"
-#include "je/cls_0x50db20.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x40a220.hpp"
-#include "je/cls_0x50db20.hpp"
-#include "je/cls_0x4dff90.hpp"
-#include "je/cls_0x4dff90.hpp"
-#include "je/cls_0x4dff90.hpp"
-#include "je/cls_0x4dff90.hpp"
-#include "je/cls_0x4dff90.hpp"
-#include "je/cls_0x4dff90.hpp"
-#include "je/cls_0x4dff90.hpp"
-#include "je/cls_0x4dff90.hpp"
-#include "je/cls_0x4dff90.hpp"
-#include "je/cls_0x4dff90.hpp"
+#include "JE/VFXEFFECTTYPE_BASE_Struct.hpp"
+#include "JE/cls_0x40a220.hpp"
+#include "JE/cls_0x50db20.hpp"
+#include "JE/cls_0x40a220.hpp"
+#include "JE/cls_0x4dff90.hpp"
+#include "JE/cls_0x4dff90.hpp"
+#include "JE/cls_0x502110.hpp"
+#include "JE/cls_0x50db20.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x40a220.hpp"
+#include "JE/cls_0x50db20.hpp"
+#include "JE/cls_0x4dff90.hpp"
+#include "JE/cls_0x4dff90.hpp"
+#include "JE/cls_0x4dff90.hpp"
+#include "JE/cls_0x4dff90.hpp"
+#include "JE/cls_0x4dff90.hpp"
+#include "JE/cls_0x4dff90.hpp"
+#include "JE/cls_0x4dff90.hpp"
+#include "JE/cls_0x4dff90.hpp"
+#include "JE/cls_0x4dff90.hpp"
+#include "JE/cls_0x4dff90.hpp"
 
 namespace JE {
 	struct VFXEFFECTTYPE_PARTICLESYSTEM_Struct : public VFXEFFECTTYPE_BASE_Struct, public cls_0x50db20, public cls_0x4dff90 {
@@ -280,10 +280,10 @@ namespace JE {
 			dword mbr_0xf8;
 			dword mbr_0xfc;
 		//: Methods
-			ctor_0x4f6d80;
-			meth_0x4f6f40;
-			virt_meth_0x4f7080;
-			meth_0x4f7ae0;
+			void ctor_0x4f6d80();
+			undefined4 meth_0x4f6f40();
+			undefined4 virt_meth_0x4f7080();
+			undefined4 meth_0x4f7ae0();
 	}; // VFXEFFECTTYPE_PARTICLESYSTEM_Struct
 } // namespace JE
 

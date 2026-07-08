@@ -4,8 +4,8 @@
 #define JE_GFX_WATERTILE_HPP_
 
 #include "types.hpp"
-#include "je/Gfx_NodeAttribute.hpp"
-#include "je/cls_0x4abc60.hpp"
+#include "JE/Gfx_NodeAttribute.hpp"
+#include "JE/cls_0x4abc60.hpp"
 
 namespace JE {
 	class Gfx_WaterTile : public Gfx_NodeAttribute, public cls_0x4abc60 {
@@ -135,24 +135,24 @@ namespace JE {
 			byte mbr_0xf8;
 		//: Methods
 		public:
-			meth_0x50fd30;
-			meth_0x50fdc0;
-			meth_0x50fde0;
-			meth_0x50fe10;
-			meth_0x511430;
-			meth_0x5114a0;
-			virt_meth_0x511570;
-			meth_0x511ef0;
-			virt_meth_0x511f70;
-			virt_meth_0x511fd0;
-			ctor_0x512010;
-			meth_0x512330;
-			dtor_0x5125c0;
-			virt_meth_0x5127b0;
-			virt_meth_0x512810;
-			virt_meth_0x512830;
-			meth_0x512850;
-			meth_0x512b40;
+			undefined4 meth_0x50fd30();
+			undefined4 meth_0x50fdc0();
+			undefined4 meth_0x50fde0();
+			undefined4 meth_0x50fe10();
+			undefined4 meth_0x511430();
+			undefined4 meth_0x5114a0();
+			undefined4 virt_meth_0x511570();
+			undefined4 meth_0x511ef0();
+			undefined4 virt_meth_0x511f70();
+			undefined4 virt_meth_0x511fd0();
+			void ctor_0x512010();
+			undefined4 meth_0x512330();
+			void dtor_0x5125c0();
+			undefined4 virt_meth_0x5127b0();
+			undefined4 virt_meth_0x512810();
+			undefined4 virt_meth_0x512830();
+			undefined4 meth_0x512850();
+			undefined4 meth_0x512b40();
 	}; // Gfx_WaterTile
 } // namespace JE
 

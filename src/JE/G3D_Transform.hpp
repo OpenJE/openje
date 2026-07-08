@@ -35,19 +35,19 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			meth_0x4c90c0;
-			meth_0x4c91d0;
-			meth_0x4c9220;
-			meth_0x4ca930;
-			virt_meth_0x4ca9c0;
-			ctor_0x4cb190;
-			dtor_0x4cb1f0;
-			virt_meth_0x4cb220;
-			virt_meth_0x4ce9b0;
-			virt_meth_0x4d0a00;
-			virt_meth_0x4d0b40;
-			ctor_0x4d3780;
-			virt_meth_0x4d4700;
+			undefined4 meth_0x4c90c0();
+			undefined4 meth_0x4c91d0();
+			undefined4 meth_0x4c9220();
+			undefined4 meth_0x4ca930();
+			undefined4 virt_meth_0x4ca9c0();
+			void ctor_0x4cb190();
+			void dtor_0x4cb1f0();
+			undefined4 virt_meth_0x4cb220();
+			undefined4 virt_meth_0x4ce9b0();
+			undefined4 virt_meth_0x4d0a00();
+			undefined4 virt_meth_0x4d0b40();
+			void ctor_0x4d3780();
+			undefined4 virt_meth_0x4d4700();
 	}; // G3D_Transform
 } // namespace JE
 

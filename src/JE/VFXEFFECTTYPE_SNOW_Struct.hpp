@@ -4,12 +4,12 @@
 #define JE_VFXEFFECTTYPE_SNOW_STRUCT_HPP_
 
 #include "types.hpp"
-#include "je/VFXEFFECTTYPE_BASE_Struct.hpp"
-#include "je/cls_0x40a220.hpp"
-#include "je/cls_0x50db20.hpp"
-#include "je/cls_0x4dff90.hpp"
-#include "je/cls_0x4dff90.hpp"
-#include "je/cls_0x4dff90.hpp"
+#include "JE/VFXEFFECTTYPE_BASE_Struct.hpp"
+#include "JE/cls_0x40a220.hpp"
+#include "JE/cls_0x50db20.hpp"
+#include "JE/cls_0x4dff90.hpp"
+#include "JE/cls_0x4dff90.hpp"
+#include "JE/cls_0x4dff90.hpp"
 
 namespace JE {
 	struct VFXEFFECTTYPE_SNOW_Struct : public VFXEFFECTTYPE_BASE_Struct, public cls_0x40a220, public cls_0x50db20, public cls_0x4dff90 {
@@ -60,10 +60,10 @@ namespace JE {
 			dword mbr_0xf4;
 			dword mbr_0xf8;
 		//: Methods
-			ctor_0x4e3fe0;
-			meth_0x4e4070;
-			virt_meth_0x4e40e0;
-			meth_0x4e4480;
+			void ctor_0x4e3fe0();
+			undefined4 meth_0x4e4070();
+			undefined4 virt_meth_0x4e40e0();
+			undefined4 meth_0x4e4480();
 	}; // VFXEFFECTTYPE_SNOW_Struct
 } // namespace JE
 

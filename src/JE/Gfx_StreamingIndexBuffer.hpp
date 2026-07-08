@@ -4,7 +4,7 @@
 #define JE_GFX_STREAMINGINDEXBUFFER_HPP_
 
 #include "types.hpp"
-#include "je/Gfx_IndexBuffer.hpp"
+#include "JE/Gfx_IndexBuffer.hpp"
 
 namespace JE {
 	class Gfx_StreamingIndexBuffer : public Gfx_IndexBuffer {
@@ -16,11 +16,11 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			ctor_0x505650;
-			virt_meth_0x505670;
-			virt_meth_0x505690;
-			dtor_0x5056b0;
-			virt_meth_0x505730;
+			void ctor_0x505650();
+			undefined4 virt_meth_0x505670();
+			undefined4 virt_meth_0x505690();
+			void dtor_0x5056b0();
+			undefined4 virt_meth_0x505730();
 	}; // Gfx_StreamingIndexBuffer
 } // namespace JE
 

@@ -16,8 +16,8 @@ namespace JE {
 			word mbr_0x8;
 		//: Methods
 		public:
-			meth_0x5aca50;
-			meth_0x5acc00;
+			undefined4 meth_0x5aca50();
+			undefined4 meth_0x5acc00();
 	}; // 
 } // namespace JE
 

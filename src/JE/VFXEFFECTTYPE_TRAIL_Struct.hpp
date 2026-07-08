@@ -4,14 +4,14 @@
 #define JE_VFXEFFECTTYPE_TRAIL_STRUCT_HPP_
 
 #include "types.hpp"
-#include "je/VFXEFFECTTYPE_BASE_Struct.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x502110.hpp"
-#include "je/cls_0x50db20.hpp"
-#include "je/cls_0x4dff90.hpp"
-#include "je/cls_0x40a220.hpp"
-#include "je/cls_0x50db20.hpp"
+#include "JE/VFXEFFECTTYPE_BASE_Struct.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x502110.hpp"
+#include "JE/cls_0x50db20.hpp"
+#include "JE/cls_0x4dff90.hpp"
+#include "JE/cls_0x40a220.hpp"
+#include "JE/cls_0x50db20.hpp"
 
 namespace JE {
 	struct VFXEFFECTTYPE_TRAIL_Struct : public VFXEFFECTTYPE_BASE_Struct, public cls_0x4d8d70, public cls_0x50db20 {
@@ -31,9 +31,9 @@ namespace JE {
 			dword mbr_0xec;
 			dword mbr_0xf0;
 		//: Methods
-			ctor_0x4f16d0;
-			meth_0x4f1770;
-			virt_meth_0x4f1810;
+			void ctor_0x4f16d0();
+			undefined4 meth_0x4f1770();
+			undefined4 virt_meth_0x4f1810();
 	}; // VFXEFFECTTYPE_TRAIL_Struct
 } // namespace JE
 

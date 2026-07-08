@@ -4,7 +4,7 @@
 #define JE_CLS_0X526620_HPP_
 
 #include "types.hpp"
-#include "je/cls_0x49f150.hpp"
+#include "JE/cls_0x49f150.hpp"
 
 namespace JE {
 	class cls_0x526620 {
@@ -32,7 +32,7 @@ namespace JE {
 			byte mbr_0x8;
 		//: Methods
 		public:
-			ctor_0x526620;
+			void ctor_0x526620();
 	}; // 
 } // namespace JE
 

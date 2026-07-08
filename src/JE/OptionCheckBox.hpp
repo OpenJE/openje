@@ -4,7 +4,7 @@
 #define JE_OPTIONCHECKBOX_HPP_
 
 #include "types.hpp"
-#include "je/OptionDial.hpp"
+#include "JE/OptionDial.hpp"
 
 namespace JE {
 	class OptionCheckBox : public OptionDial {
@@ -15,10 +15,10 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			ctor_0x4432d0;
-			dtor_0x4432f0;
-			virt_meth_0x443530;
-			virt_meth_0x443e90;
+			void ctor_0x4432d0();
+			void dtor_0x4432f0();
+			undefined4 virt_meth_0x443530();
+			undefined4 virt_meth_0x443e90();
 	}; // OptionCheckBox
 } // namespace JE
 

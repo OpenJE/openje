@@ -4,10 +4,10 @@
 #define JE_VFXEFFECTTYPE_RAIN_STRUCT_HPP_
 
 #include "types.hpp"
-#include "je/VFXEFFECTTYPE_BASE_Struct.hpp"
-#include "je/cls_0x4dff90.hpp"
-#include "je/cls_0x4dff90.hpp"
-#include "je/cls_0x4dff90.hpp"
+#include "JE/VFXEFFECTTYPE_BASE_Struct.hpp"
+#include "JE/cls_0x4dff90.hpp"
+#include "JE/cls_0x4dff90.hpp"
+#include "JE/cls_0x4dff90.hpp"
 
 namespace JE {
 	struct VFXEFFECTTYPE_RAIN_Struct : public VFXEFFECTTYPE_BASE_Struct, public cls_0x4dff90 {
@@ -38,8 +38,8 @@ namespace JE {
 			byte mbr_0xc0;
 			dword mbr_0xc4;
 		//: Methods
-			ctor_0x4e5f20;
-			meth_0x4e6330;
+			void ctor_0x4e5f20();
+			undefined4 meth_0x4e6330();
 	}; // VFXEFFECTTYPE_RAIN_Struct
 } // namespace JE
 

@@ -4,7 +4,7 @@
 #define JE_EDITTOKENINTERFACE_HPP_
 
 #include "types.hpp"
-#include "je/CEngineInterface.hpp"
+#include "JE/CEngineInterface.hpp"
 
 namespace JE {
 	class EditTokenInterface : public CEngineInterface {
@@ -18,11 +18,11 @@ namespace JE {
 			dword mbr_0x58;
 		//: Methods
 		public:
-			ctor_0x5b3e60;
-			virt_meth_0x5b3fd0;
-			meth_0x5b3ff0;
-			meth_0x5b4130;
-			virt_meth_0x5b42a0;
+			void ctor_0x5b3e60();
+			undefined4 virt_meth_0x5b3fd0();
+			undefined4 meth_0x5b3ff0();
+			undefined4 meth_0x5b4130();
+			undefined4 virt_meth_0x5b42a0();
 	}; // EditTokenInterface
 } // namespace JE
 

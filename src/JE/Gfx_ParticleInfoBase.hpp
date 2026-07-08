@@ -45,9 +45,9 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			dtor_0x512d10;
-			virt_deldtor_0x512d20;
-			ctor_0x513160;
+			void dtor_0x512d10();
+			virtual undefined4 virt_deldtor_0x512d20();
+			void ctor_0x513160();
 	}; // Gfx_ParticleInfoBase
 } // namespace JE
 

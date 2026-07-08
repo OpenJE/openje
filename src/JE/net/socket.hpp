@@ -4,7 +4,7 @@
 #define JE_NET_SOCKET_HPP_
 
 #include "types.hpp"
-#include "je/net/exception.hpp"
+#include "JE/net/exception.hpp"
 
 namespace JE {
     namespace net {
@@ -14,11 +14,11 @@ namespace JE {
                 dword mbr_0x4;
             //: Methods
             public:
-                dtor_0x59d4f0;
-                virt_deldtor_0x59d500;
-                meth_0x5b8d40;
-                meth_0x5b8d60;
-                meth_0x5b8e60;
+                void dtor_0x59d4f0();
+                virtual undefined4 virt_deldtor_0x59d500();
+                undefined4 meth_0x5b8d40();
+                undefined4 meth_0x5b8d60();
+                undefined4 meth_0x5b8e60();
         }; // class socket
     } // namespace net
 } // namespace JE

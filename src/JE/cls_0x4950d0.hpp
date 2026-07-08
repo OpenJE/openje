@@ -38,7 +38,7 @@ namespace JE {
 			byte mbr_0x74;
 		//: Methods
 		public:
-			ctor_0x4950d0;
+			void ctor_0x4950d0();
 	}; // 
 } // namespace JE
 

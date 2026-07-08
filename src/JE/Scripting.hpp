@@ -8,12 +8,12 @@
 namespace JE {
 	struct Scripting {
 		//: Methods
-			dtor_0x59bfb0;
-			virt_meth_0x59bfd0;
-			virt_meth_0x59c030;
-			ctor_0x59c040;
-			virt_meth_0x59c080;
-			virt_meth_0x5b1510;
+			void dtor_0x59bfb0();
+			undefined4 virt_meth_0x59bfd0();
+			undefined4 virt_meth_0x59c030();
+			void ctor_0x59c040();
+			undefined4 virt_meth_0x59c080();
+			undefined4 virt_meth_0x5b1510();
 	}; // Scripting
 } // namespace JE
 

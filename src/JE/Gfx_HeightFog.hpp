@@ -4,7 +4,7 @@
 #define JE_GFX_HEIGHTFOG_HPP_
 
 #include "types.hpp"
-#include "je/Gfx_BaseObject.hpp"
+#include "JE/Gfx_BaseObject.hpp"
 
 namespace JE {
 	class Gfx_HeightFog : public Gfx_BaseObject {
@@ -35,9 +35,9 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			ctor_0x505d90;
-			dtor_0x505e50;
-			virt_meth_0x505eb0;
+			void ctor_0x505d90();
+			void dtor_0x505e50();
+			undefined4 virt_meth_0x505eb0();
 	}; // Gfx_HeightFog
 } // namespace JE
 

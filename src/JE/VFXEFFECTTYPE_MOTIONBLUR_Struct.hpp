@@ -4,13 +4,13 @@
 #define JE_VFXEFFECTTYPE_MOTIONBLUR_STRUCT_HPP_
 
 #include "types.hpp"
-#include "je/VFXEFFECTTYPE_BASE_Struct.hpp"
+#include "JE/VFXEFFECTTYPE_BASE_Struct.hpp"
 
 namespace JE {
 	struct VFXEFFECTTYPE_MOTIONBLUR_Struct : public VFXEFFECTTYPE_BASE_Struct {
 		//: Methods
-			virt_meth_0x4e8020;
-			ctor_0x4f6840;
+			undefined4 virt_meth_0x4e8020();
+			void ctor_0x4f6840();
 	}; // VFXEFFECTTYPE_MOTIONBLUR_Struct
 } // namespace JE
 

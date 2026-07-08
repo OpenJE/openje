@@ -4,7 +4,7 @@
 #define JE_CLS_0X434F70_HPP_
 
 #include "types.hpp"
-#include "je/cls_0x4395a0.hpp"
+#include "JE/cls_0x4395a0.hpp"
 
 namespace JE {
 	class cls_0x434f70 : public cls_0x4395a0 {
@@ -49,8 +49,8 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			meth_0x434b70;
-			ctor_0x434f70;
+			undefined4 meth_0x434b70();
+			void ctor_0x434f70();
 	}; // 
 } // namespace JE
 

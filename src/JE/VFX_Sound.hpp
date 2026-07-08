@@ -4,8 +4,8 @@
 #define JE_VFX_SOUND_HPP_
 
 #include "types.hpp"
-#include "je/VFX_EffectInstance.hpp"
-#include "je/VFXEFFECTTYPE_SOUND_Struct.hpp"
+#include "JE/VFX_EffectInstance.hpp"
+#include "JE/VFXEFFECTTYPE_SOUND_Struct.hpp"
 
 namespace JE {
 	class VFX_Sound : public VFX_EffectInstance, public VFXEFFECTTYPE_SOUND_Struct {
@@ -44,34 +44,34 @@ namespace JE {
 			byte mbr_0xc1;
 		//: Methods
 		public:
-			virt_meth_0x4080b0;
-			virt_meth_0x4e0d70;
-			virt_meth_0x4e0dc0;
-			virt_meth_0x4e0e20;
-			meth_0x4e1580;
-			virt_meth_0x4e1850;
-			virt_meth_0x4e1870;
-			virt_meth_0x4e18a0;
-			virt_meth_0x4e18b0;
-			virt_meth_0x4e18c0;
-			virt_meth_0x4e1930;
-			virt_meth_0x4e1b80;
-			meth_0x4e1d00;
-			meth_0x4e1d50;
-			virt_meth_0x4e2d10;
-			virt_meth_0x4e2e40;
-			virt_meth_0x4e2f00;
-			virt_meth_0x4e2f50;
-			dtor_0x4e3140;
-			ctor_0x4e31d0;
-			virt_meth_0x4e3240;
-			virt_meth_0x4e3290;
-			meth_0x4e34b0;
-			virt_meth_0x4e3530;
-			meth_0x4e7450;
-			meth_0x4f1830;
-			meth_0x4f2d50;
-			virt_meth_0x549020;
+			undefined4 virt_meth_0x4080b0();
+			undefined4 virt_meth_0x4e0d70();
+			undefined4 virt_meth_0x4e0dc0();
+			undefined4 virt_meth_0x4e0e20();
+			undefined4 meth_0x4e1580();
+			undefined4 virt_meth_0x4e1850();
+			undefined4 virt_meth_0x4e1870();
+			undefined4 virt_meth_0x4e18a0();
+			undefined4 virt_meth_0x4e18b0();
+			undefined4 virt_meth_0x4e18c0();
+			undefined4 virt_meth_0x4e1930();
+			undefined4 virt_meth_0x4e1b80();
+			undefined4 meth_0x4e1d00();
+			undefined4 meth_0x4e1d50();
+			undefined4 virt_meth_0x4e2d10();
+			undefined4 virt_meth_0x4e2e40();
+			undefined4 virt_meth_0x4e2f00();
+			undefined4 virt_meth_0x4e2f50();
+			void dtor_0x4e3140();
+			void ctor_0x4e31d0();
+			undefined4 virt_meth_0x4e3240();
+			undefined4 virt_meth_0x4e3290();
+			undefined4 meth_0x4e34b0();
+			undefined4 virt_meth_0x4e3530();
+			undefined4 meth_0x4e7450();
+			undefined4 meth_0x4f1830();
+			undefined4 meth_0x4f2d50();
+			undefined4 virt_meth_0x549020();
 	}; // VFX_Sound
 } // namespace JE
 

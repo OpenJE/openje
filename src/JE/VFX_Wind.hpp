@@ -4,9 +4,9 @@
 #define JE_VFX_WIND_HPP_
 
 #include "types.hpp"
-#include "je/VFX_EffectInstance.hpp"
-#include "je/cls_0x4dff90.hpp"
-#include "je/VFXEFFECTTYPE_BASE_Struct.hpp"
+#include "JE/VFX_EffectInstance.hpp"
+#include "JE/cls_0x4dff90.hpp"
+#include "JE/VFXEFFECTTYPE_BASE_Struct.hpp"
 
 namespace JE {
 	class VFX_Wind : public VFX_EffectInstance, public cls_0x4dff90, public VFXEFFECTTYPE_BASE_Struct {
@@ -36,14 +36,14 @@ namespace JE {
 			byte mbr_0x7c;
 		//: Methods
 		public:
-			dtor_0x4e3730;
-			virt_meth_0x4e3790;
-			ctor_0x4e37d0;
-			virt_meth_0x4e3870;
-			virt_meth_0x4e3980;
-			meth_0x4e3e10;
-			virt_meth_0x4e3e60;
-			virt_meth_0x4e5ec0;
+			void dtor_0x4e3730();
+			undefined4 virt_meth_0x4e3790();
+			void ctor_0x4e37d0();
+			undefined4 virt_meth_0x4e3870();
+			undefined4 virt_meth_0x4e3980();
+			undefined4 meth_0x4e3e10();
+			undefined4 virt_meth_0x4e3e60();
+			undefined4 virt_meth_0x4e5ec0();
 	}; // VFX_Wind
 } // namespace JE
 

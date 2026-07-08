@@ -4,7 +4,7 @@
 #define JE_CLS_0X6059E1_HPP_
 
 #include "types.hpp"
-#include "je/cls_0x4d8d70.hpp"
+#include "JE/cls_0x4d8d70.hpp"
 
 namespace JE {
 	class cls_0x6059e1 : public cls_0x4d8d70 {
@@ -19,8 +19,8 @@ namespace JE {
 			dword mbr_0x58;
 		//: Methods
 		public:
-			meth_0x605924;
-			ctor_0x6059e1;
+			undefined4 meth_0x605924();
+			void ctor_0x6059e1();
 	}; // 
 } // namespace JE
 

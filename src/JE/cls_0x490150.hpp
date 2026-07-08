@@ -39,16 +39,16 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			meth_0x490150;
-			meth_0x490510;
-			meth_0x4911b0;
-			meth_0x4913e0;
-			meth_0x4915e0;
-			meth_0x491b10;
-			meth_0x491fc0;
-			meth_0x4931e0;
-			meth_0x494b40;
-			meth_0x494ca0;
+			undefined4 meth_0x490150();
+			undefined4 meth_0x490510();
+			undefined4 meth_0x4911b0();
+			undefined4 meth_0x4913e0();
+			undefined4 meth_0x4915e0();
+			undefined4 meth_0x491b10();
+			undefined4 meth_0x491fc0();
+			undefined4 meth_0x4931e0();
+			undefined4 meth_0x494b40();
+			undefined4 meth_0x494ca0();
 	}; // 
 } // namespace JE
 

@@ -4,7 +4,7 @@
 #define JE_GFX_MODELINSTANCE_HPP_
 
 #include "types.hpp"
-#include "je/Gfx_BaseObject.hpp"
+#include "JE/Gfx_BaseObject.hpp"
 
 namespace JE {
 	class Gfx_ModelInstance : public Gfx_BaseObject {
@@ -63,9 +63,9 @@ namespace JE {
 			byte mbr_0xc9;
 		//: Methods
 		public:
-			dtor_0x49f2c0;
-			ctor_0x4a0400;
-			virt_meth_0x4a0600;
+			void dtor_0x49f2c0();
+			void ctor_0x4a0400();
+			undefined4 virt_meth_0x4a0600();
 	}; // Gfx_ModelInstance
 } // namespace JE
 

@@ -9,7 +9,7 @@ namespace JE {
 	class cls_0x6faf2c {
 		//: Methods
 		public:
-			virt_meth_0x66e4bc;
+			undefined4 virt_meth_0x66e4bc();
 	}; // 
 } // namespace JE
 

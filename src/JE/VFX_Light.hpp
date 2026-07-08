@@ -4,9 +4,9 @@
 #define JE_VFX_LIGHT_HPP_
 
 #include "types.hpp"
-#include "je/VFX_EffectInstance.hpp"
-#include "je/Gfx_LineSystem.hpp"
-#include "je/VFXEFFECTTYPE_LIGHT_Struct.hpp"
+#include "JE/VFX_EffectInstance.hpp"
+#include "JE/Gfx_LineSystem.hpp"
+#include "JE/VFXEFFECTTYPE_LIGHT_Struct.hpp"
 
 namespace JE {
 	class VFX_Light : public VFX_EffectInstance, public Gfx_LineSystem, public VFXEFFECTTYPE_LIGHT_Struct {
@@ -61,13 +61,13 @@ namespace JE {
 			dword mbr_0xb8;
 		//: Methods
 		public:
-			virt_meth_0x4e7470;
-			virt_meth_0x4e7950;
-			dtor_0x4e8040;
-			ctor_0x4e80d0;
-			virt_meth_0x4e8140;
-			meth_0x4e83b0;
-			virt_meth_0x4e83f0;
+			undefined4 virt_meth_0x4e7470();
+			undefined4 virt_meth_0x4e7950();
+			void dtor_0x4e8040();
+			void ctor_0x4e80d0();
+			undefined4 virt_meth_0x4e8140();
+			undefined4 meth_0x4e83b0();
+			undefined4 virt_meth_0x4e83f0();
 	}; // VFX_Light
 } // namespace JE
 

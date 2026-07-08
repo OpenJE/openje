@@ -4,8 +4,8 @@
 #define JE_GUI_WINDOW_HPP_
 
 #include "types.hpp"
-#include "je/GUI/Base.hpp"
-#include "je/GUI/HeapTracker.hpp"
+#include "JE/GUI/Base.hpp"
+#include "JE/GUI/HeapTracker.hpp"
 
 namespace JE {
     namespace GUI {
@@ -78,80 +78,80 @@ namespace JE {
                 dword mbr_0xd18;
             //: Methods
             public:
-                virt_meth_0x420990;
-                meth_0x495a50;
-                virt_meth_0x4af020;
-                virt_meth_0x4af040;
-                virt_meth_0x4af080;
-                virt_meth_0x4af170;
-                virt_meth_0x4af190;
-                virt_meth_0x4af1a0;
-                virt_meth_0x4af1b0;
-                virt_meth_0x4af1e0;
-                virt_meth_0x4af1f0;
-                virt_meth_0x4af250;
-                virt_meth_0x4af260;
-                virt_meth_0x4af270;
-                virt_meth_0x4af280;
-                virt_meth_0x4af290;
-                virt_meth_0x4af2d0;
-                virt_meth_0x4af2e0;
-                virt_meth_0x4af2f0;
+                undefined4 virt_meth_0x420990();
+                undefined4 meth_0x495a50();
+                undefined4 virt_meth_0x4af020();
+                undefined4 virt_meth_0x4af040();
+                undefined4 virt_meth_0x4af080();
+                undefined4 virt_meth_0x4af170();
+                undefined4 virt_meth_0x4af190();
+                undefined4 virt_meth_0x4af1a0();
+                undefined4 virt_meth_0x4af1b0();
+                undefined4 virt_meth_0x4af1e0();
+                undefined4 virt_meth_0x4af1f0();
+                undefined4 virt_meth_0x4af250();
+                undefined4 virt_meth_0x4af260();
+                undefined4 virt_meth_0x4af270();
+                undefined4 virt_meth_0x4af280();
+                undefined4 virt_meth_0x4af290();
+                undefined4 virt_meth_0x4af2d0();
+                undefined4 virt_meth_0x4af2e0();
+                undefined4 virt_meth_0x4af2f0();
                 virt_meth_0x4aje00;
                 virt_meth_0x4aje10;
                 virt_meth_0x4aje20;
                 virt_meth_0x4aje80;
                 virt_meth_0x4aje90;
-                virt_meth_0x4af460;
-                virt_meth_0x4af470;
-                virt_meth_0x4af480;
-                virt_meth_0x4af4c0;
-                virt_meth_0x4af4d0;
-                virt_meth_0x4af4e0;
-                virt_meth_0x4af4f0;
-                virt_meth_0x4af580;
-                virt_meth_0x4af590;
-                virt_meth_0x4af5a0;
-                virt_meth_0x4af5b0;
-                virt_meth_0x4af810;
-                virt_meth_0x4af820;
-                virt_meth_0x4af830;
-                virt_meth_0x4af890;
-                virt_meth_0x4af8a0;
-                virt_meth_0x4af8f0;
-                virt_meth_0x4af980;
-                virt_meth_0x4af9c0;
-                virt_meth_0x4afa90;
-                virt_meth_0x4afb30;
-                virt_meth_0x4afc00;
-                virt_meth_0x4afc70;
+                undefined4 virt_meth_0x4af460();
+                undefined4 virt_meth_0x4af470();
+                undefined4 virt_meth_0x4af480();
+                undefined4 virt_meth_0x4af4c0();
+                undefined4 virt_meth_0x4af4d0();
+                undefined4 virt_meth_0x4af4e0();
+                undefined4 virt_meth_0x4af4f0();
+                undefined4 virt_meth_0x4af580();
+                undefined4 virt_meth_0x4af590();
+                undefined4 virt_meth_0x4af5a0();
+                undefined4 virt_meth_0x4af5b0();
+                undefined4 virt_meth_0x4af810();
+                undefined4 virt_meth_0x4af820();
+                undefined4 virt_meth_0x4af830();
+                undefined4 virt_meth_0x4af890();
+                undefined4 virt_meth_0x4af8a0();
+                undefined4 virt_meth_0x4af8f0();
+                undefined4 virt_meth_0x4af980();
+                undefined4 virt_meth_0x4af9c0();
+                undefined4 virt_meth_0x4afa90();
+                undefined4 virt_meth_0x4afb30();
+                undefined4 virt_meth_0x4afc00();
+                undefined4 virt_meth_0x4afc70();
                 virt_meth_0x4afje0;
-                virt_meth_0x4affa0;
-                virt_meth_0x4b0000;
-                virt_meth_0x4b0040;
-                virt_meth_0x4b0160;
-                virt_meth_0x4b0280;
-                virt_meth_0x4b02c0;
-                virt_meth_0x4b02e0;
-                virt_meth_0x4b0480;
-                virt_meth_0x4b0520;
-                virt_meth_0x4b05a0;
-                virt_meth_0x4b0640;
-                virt_meth_0x4b0660;
-                virt_meth_0x4b0680;
-                virt_meth_0x4b06a0;
-                virt_meth_0x4b06c0;
-                ctor_0x4b0810;
-                virt_meth_0x4b0a40;
-                virt_meth_0x4b0ca0;
-                virt_meth_0x4b0d50;
-                virt_meth_0x4b0df0;
-                virt_meth_0x4b0e10;
-                virt_meth_0x4b10f0;
-                virt_meth_0x4b13f0;
-                meth_0x4b2890;
-                virt_meth_0x5a9320;
-                virt_meth_0x5c0350;
+                undefined4 virt_meth_0x4affa0();
+                undefined4 virt_meth_0x4b0000();
+                undefined4 virt_meth_0x4b0040();
+                undefined4 virt_meth_0x4b0160();
+                undefined4 virt_meth_0x4b0280();
+                undefined4 virt_meth_0x4b02c0();
+                undefined4 virt_meth_0x4b02e0();
+                undefined4 virt_meth_0x4b0480();
+                undefined4 virt_meth_0x4b0520();
+                undefined4 virt_meth_0x4b05a0();
+                undefined4 virt_meth_0x4b0640();
+                undefined4 virt_meth_0x4b0660();
+                undefined4 virt_meth_0x4b0680();
+                undefined4 virt_meth_0x4b06a0();
+                undefined4 virt_meth_0x4b06c0();
+                void ctor_0x4b0810();
+                undefined4 virt_meth_0x4b0a40();
+                undefined4 virt_meth_0x4b0ca0();
+                undefined4 virt_meth_0x4b0d50();
+                undefined4 virt_meth_0x4b0df0();
+                undefined4 virt_meth_0x4b0e10();
+                undefined4 virt_meth_0x4b10f0();
+                undefined4 virt_meth_0x4b13f0();
+                undefined4 meth_0x4b2890();
+                undefined4 virt_meth_0x5a9320();
+                undefined4 virt_meth_0x5c0350();
         }; // class Window
     } // namespace GUI
 } // namespace JE

@@ -9,9 +9,9 @@ namespace JE {
 	class COptionsVideoInterface {
 		//: Methods
 		public:
-			virt_meth_0x449630;
-			virt_meth_0x449640;
-			virt_meth_0x449650;
+			undefined4 virt_meth_0x449630();
+			undefined4 virt_meth_0x449640();
+			undefined4 virt_meth_0x449650();
 	}; // COptionsVideoInterface
 } // namespace JE
 

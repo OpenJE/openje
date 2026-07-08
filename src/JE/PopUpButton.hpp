@@ -22,9 +22,9 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			ctor_0x417040;
-			dtor_0x417290;
-			virt_meth_0x417310;
+			void ctor_0x417040();
+			void dtor_0x417290();
+			undefined4 virt_meth_0x417310();
 	}; // PopUpButton
 } // namespace JE
 

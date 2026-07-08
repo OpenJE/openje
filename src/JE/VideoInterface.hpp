@@ -9,8 +9,8 @@ namespace JE {
 	class VideoInterface {
 		//: Methods
 		public:
-			virt_meth_0x5b4f80;
-			virt_meth_0x5b5b00;
+			undefined4 virt_meth_0x5b4f80();
+			undefined4 virt_meth_0x5b5b00();
 	}; // VideoInterface
 } // namespace JE
 

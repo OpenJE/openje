@@ -4,7 +4,7 @@
 #define JE_G3D_LIGHTMAPSURFACEATTRIBUTE_HPP_
 
 #include "types.hpp"
-#include "je/G3D_BaseAttribute.hpp"
+#include "JE/G3D_BaseAttribute.hpp"
 
 namespace JE {
 	class G3D_LightmapSurfaceAttribute : public G3D_BaseAttribute {
@@ -32,27 +32,27 @@ namespace JE {
 			dword mbr_0x8;
 		//: Methods
 		public:
-			meth_0x442230;
-			meth_0x4c8cd0;
-			meth_0x4ca250;
-			meth_0x4ca270;
-			meth_0x4ca290;
-			meth_0x4ca2b0;
-			virt_meth_0x4cac10;
-			ctor_0x4cb350;
-			virt_meth_0x4cb380;
-			dtor_0x4cb3a0;
-			meth_0x4ce860;
-			virt_meth_0x4cebb0;
-			meth_0x4d0450;
-			meth_0x4d0670;
-			meth_0x4d0690;
-			virt_meth_0x4d0c80;
-			virt_meth_0x4d0f00;
+			undefined4 meth_0x442230();
+			undefined4 meth_0x4c8cd0();
+			undefined4 meth_0x4ca250();
+			undefined4 meth_0x4ca270();
+			undefined4 meth_0x4ca290();
+			undefined4 meth_0x4ca2b0();
+			undefined4 virt_meth_0x4cac10();
+			void ctor_0x4cb350();
+			undefined4 virt_meth_0x4cb380();
+			void dtor_0x4cb3a0();
+			undefined4 meth_0x4ce860();
+			undefined4 virt_meth_0x4cebb0();
+			undefined4 meth_0x4d0450();
+			undefined4 meth_0x4d0670();
+			undefined4 meth_0x4d0690();
+			undefined4 virt_meth_0x4d0c80();
+			undefined4 virt_meth_0x4d0f00();
 			virt_meth_0x4d0je0;
-			meth_0x4d1050;
-			meth_0x4d1180;
-			meth_0x4d4ba0;
+			undefined4 meth_0x4d1050();
+			undefined4 meth_0x4d1180();
+			undefined4 meth_0x4d4ba0();
 	}; // G3D_LightmapSurfaceAttribute
 } // namespace JE
 

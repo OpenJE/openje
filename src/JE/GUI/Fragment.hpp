@@ -4,8 +4,8 @@
 #define JE_GUI_FRAGMENT_HPP_
 
 #include "types.hpp"
-#include "je/GUI/Base.hpp"
-#include "je/cls_0x4abc60.hpp"
+#include "JE/GUI/Base.hpp"
+#include "JE/cls_0x4abc60.hpp"
 
 namespace JE {
     namespace GUI {

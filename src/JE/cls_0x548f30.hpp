@@ -6,7 +6,7 @@
 #include "types.hpp"
 
 namespace JE {
-	class cls_0x548je0 {
+	class cls_0x548f30 {
 		//: Members
 		public:
 			dword mbr_0x180;
@@ -15,8 +15,8 @@ namespace JE {
 			dword mbr_0x298;
 		//: Methods
 		public:
-			meth_0x548je0;
-	}; // 
+			meth_0x548f30;
+	}; //
 } // namespace JE
 
 #endif // JE_CLS_0X548JE0_HPP_

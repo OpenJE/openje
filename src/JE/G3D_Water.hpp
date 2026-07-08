@@ -4,8 +4,8 @@
 #define JE_G3D_WATER_HPP_
 
 #include "types.hpp"
-#include "je/G3D_BaseAttribute.hpp"
-#include "je/cls_0x4d8d70.hpp"
+#include "JE/G3D_BaseAttribute.hpp"
+#include "JE/cls_0x4d8d70.hpp"
 
 namespace JE {
 	class G3D_Water : public G3D_BaseAttribute, public cls_0x4d8d70 {
@@ -42,17 +42,17 @@ namespace JE {
 			dword mbr_0x98;
 		//: Methods
 		public:
-			meth_0x4c8d70;
-			meth_0x4ce730;
-			virt_meth_0x4cef90;
-			virt_meth_0x4cf090;
-			virt_meth_0x4d24a0;
-			virt_meth_0x4d2620;
-			virt_meth_0x4d26d0;
-			ctor_0x4d8120;
-			dtor_0x4d81c0;
-			virt_meth_0x4d9110;
-			ctor_0x4d92a0;
+			undefined4 meth_0x4c8d70();
+			undefined4 meth_0x4ce730();
+			undefined4 virt_meth_0x4cef90();
+			undefined4 virt_meth_0x4cf090();
+			undefined4 virt_meth_0x4d24a0();
+			undefined4 virt_meth_0x4d2620();
+			undefined4 virt_meth_0x4d26d0();
+			void ctor_0x4d8120();
+			void dtor_0x4d81c0();
+			undefined4 virt_meth_0x4d9110();
+			void ctor_0x4d92a0();
 	}; // G3D_Water
 } // namespace JE
 

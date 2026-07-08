@@ -8,10 +8,10 @@
 namespace JE {
 	struct Resources {
 		//: Methods
-			dtor_0x59c0a0;
-			virt_meth_0x59c0c0;
-			virt_meth_0x59c0e0;
-			ctor_0x59c110;
+			void dtor_0x59c0a0();
+			undefined4 virt_meth_0x59c0c0();
+			undefined4 virt_meth_0x59c0e0();
+			void ctor_0x59c110();
 	}; // Resources
 } // namespace JE
 

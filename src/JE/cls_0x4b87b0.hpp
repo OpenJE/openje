@@ -13,7 +13,7 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			ctor_0x4b87b0;
+			void ctor_0x4b87b0();
 	}; // 
 } // namespace JE
 

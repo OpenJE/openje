@@ -4,7 +4,7 @@
 #define JE_REPLYLABEL_HPP_
 
 #include "types.hpp"
-#include "je/GUI/Label.hpp"
+#include "JE/GUI/Label.hpp"
 
 namespace JE {
 	class ReplyLabel : public GUI::Label {
@@ -15,11 +15,11 @@ namespace JE {
 			dword mbr_0xe68;
 		//: Methods
 		public:
-			ctor_0x591ba0;
-			dtor_0x591c10;
-			virt_meth_0x591f40;
-			virt_meth_0x591f50;
-			virt_meth_0x592680;
+			void ctor_0x591ba0();
+			void dtor_0x591c10();
+			undefined4 virt_meth_0x591f40();
+			undefined4 virt_meth_0x591f50();
+			undefined4 virt_meth_0x592680();
 	}; // ReplyLabel
 } // namespace JE
 

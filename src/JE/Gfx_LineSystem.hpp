@@ -4,8 +4,8 @@
 #define JE_GFX_LINESYSTEM_HPP_
 
 #include "types.hpp"
-#include "je/Gfx_NodeAttribute.hpp"
-#include "je/cls_0x4abc60.hpp"
+#include "JE/Gfx_NodeAttribute.hpp"
+#include "JE/cls_0x4abc60.hpp"
 
 namespace JE {
 	class Gfx_LineSystem : public Gfx_NodeAttribute, public cls_0x4abc60 {
@@ -69,11 +69,11 @@ namespace JE {
 			dword mbr_0xfc;
 		//: Methods
 		public:
-			dtor_0x50ef50;
-			virt_meth_0x50f760;
-			meth_0x50f780;
-			ctor_0x50f910;
-			ctor_0x50fb40;
+			void dtor_0x50ef50();
+			undefined4 virt_meth_0x50f760();
+			undefined4 meth_0x50f780();
+			void ctor_0x50f910();
+			void ctor_0x50fb40();
 	}; // Gfx_LineSystem
 } // namespace JE
 

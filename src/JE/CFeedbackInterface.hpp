@@ -9,7 +9,7 @@ namespace JE {
 	class CFeedbackInterface {
 		//: Methods
 		public:
-			virt_meth_0x434470;
+			undefined4 virt_meth_0x434470();
 	}; // CFeedbackInterface
 } // namespace JE
 

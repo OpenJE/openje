@@ -4,7 +4,7 @@
 #define JE_CONDITION_HPP_
 
 #include "types.hpp"
-#include "je/Effect.hpp"
+#include "JE/Effect.hpp"
 
 namespace JE {
 	struct Condition : public Effect {
@@ -24,18 +24,18 @@ namespace JE {
 			byte mbr_0xa;
 			byte mbr_0xb;
 		//: Methods
-			virt_meth_0x5a8c00;
-			virt_meth_0x5a8c20;
-			virt_meth_0x5a8c40;
-			meth_0x5a8c50;
-			ctor_0x5a8d30;
-			virt_meth_0x5a8d70;
-			dtor_0x5a8d80;
-			virt_meth_0x5a8dc0;
-			virt_meth_0x5a8e00;
-			virt_meth_0x5a8eb0;
-			virt_meth_0x5a8ed0;
-			virt_meth_0x5a8f20;
+			undefined4 virt_meth_0x5a8c00();
+			undefined4 virt_meth_0x5a8c20();
+			undefined4 virt_meth_0x5a8c40();
+			undefined4 meth_0x5a8c50();
+			void ctor_0x5a8d30();
+			undefined4 virt_meth_0x5a8d70();
+			void dtor_0x5a8d80();
+			undefined4 virt_meth_0x5a8dc0();
+			undefined4 virt_meth_0x5a8e00();
+			undefined4 virt_meth_0x5a8eb0();
+			undefined4 virt_meth_0x5a8ed0();
+			undefined4 virt_meth_0x5a8f20();
 	}; // Condition
 } // namespace JE
 

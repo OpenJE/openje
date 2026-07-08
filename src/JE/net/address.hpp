@@ -4,7 +4,7 @@
 #define JE_NET_ADDRESS_HPP_
 
 #include "types.hpp"
-#include "je/net/exception.hpp"
+#include "JE/net/exception.hpp"
 
 namespace JE {
     namespace net {
@@ -18,9 +18,9 @@ namespace JE {
                 word mbr_0x8;
             //: Methods
             public:
-                dtor_0x45e410;
-                virt_deldtor_0x45e420;
-                ctor_0x5a07b0;
+                void dtor_0x45e410();
+                virtual undefined4 virt_deldtor_0x45e420();
+                void ctor_0x5a07b0();
         }; // class address
     } // namespace net
 } // namespace JE

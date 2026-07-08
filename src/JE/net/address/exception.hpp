@@ -4,7 +4,7 @@
 #define JE_NET_ADDRESS_EXCEPTION_HPP_
 
 #include "types.hpp"
-#include "je/net/exception.hpp"
+#include "JE/net/exception.hpp"
 
 namespace JE {
     namespace net {
@@ -13,8 +13,8 @@ namespace JE {
                 //: Members
                     dword mbr_0x4;
                 //: Methods
-                    ctor_0x5ac9c0;
-                    ctor_0x5acbe0;
+                    void ctor_0x5ac9c0();
+                    void ctor_0x5acbe0();
             }; // struct exception
         } // namespace address
     } // namespace net

@@ -20,11 +20,11 @@ namespace JE {
 			dword mbr_0x8;
 		//: Methods
 		public:
-			meth_0x5813e0;
-			meth_0x581400;
-			meth_0x581420;
-			meth_0x581430;
-			meth_0x5817a0;
+			undefined4 meth_0x5813e0();
+			undefined4 meth_0x581400();
+			undefined4 meth_0x581420();
+			undefined4 meth_0x581430();
+			undefined4 meth_0x5817a0();
 	}; // 
 } // namespace JE
 

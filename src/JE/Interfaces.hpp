@@ -8,9 +8,9 @@
 namespace JE {
 	struct Interfaces {
 		//: Methods
-			ctor_0x5967f0;
-			meth_0x596830;
-			virt_meth_0x596840;
+			void ctor_0x5967f0();
+			undefined4 meth_0x596830();
+			undefined4 virt_meth_0x596840();
 	}; // Interfaces
 } // namespace JE
 

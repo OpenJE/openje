@@ -4,7 +4,7 @@
 #define JE_G3D_WATERTILE_HPP_
 
 #include "types.hpp"
-#include "je/G3D_Mesh.hpp"
+#include "JE/G3D_Mesh.hpp"
 
 namespace JE {
 	class G3D_WaterTile : public G3D_Mesh {
@@ -39,14 +39,14 @@ namespace JE {
 			dword mbr_0xac;
 		//: Methods
 		public:
-			virt_meth_0x4d6bc0;
-			virt_meth_0x4d6c10;
-			ctor_0x4d98f0;
-			meth_0x4d9dd0;
-			virt_meth_0x4db010;
-			virt_meth_0x4dd060;
-			virt_meth_0x4dd0c0;
-			virt_meth_0x4dd120;
+			undefined4 virt_meth_0x4d6bc0();
+			undefined4 virt_meth_0x4d6c10();
+			void ctor_0x4d98f0();
+			undefined4 meth_0x4d9dd0();
+			undefined4 virt_meth_0x4db010();
+			undefined4 virt_meth_0x4dd060();
+			undefined4 virt_meth_0x4dd0c0();
+			undefined4 virt_meth_0x4dd120();
 	}; // G3D_WaterTile
 } // namespace JE
 

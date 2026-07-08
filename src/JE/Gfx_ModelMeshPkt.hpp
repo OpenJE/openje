@@ -4,7 +4,7 @@
 #define JE_GFX_MODELMESHPKT_HPP_
 
 #include "types.hpp"
-#include "je/Gfx_NodeAttribute.hpp"
+#include "JE/Gfx_NodeAttribute.hpp"
 
 namespace JE {
 	class Gfx_ModelMeshPkt : public Gfx_NodeAttribute {
@@ -32,9 +32,9 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			ctor_0x49e1d0;
-			virt_meth_0x49ebe0;
-			dtor_0x49ec00;
+			void ctor_0x49e1d0();
+			undefined4 virt_meth_0x49ebe0();
+			void dtor_0x49ec00();
 	}; // Gfx_ModelMeshPkt
 } // namespace JE
 

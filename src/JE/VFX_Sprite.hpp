@@ -4,8 +4,8 @@
 #define JE_VFX_SPRITE_HPP_
 
 #include "types.hpp"
-#include "je/VFX_EffectInstance.hpp"
-#include "je/VFXEFFECTTYPE_SPRITE_Struct.hpp"
+#include "JE/VFX_EffectInstance.hpp"
+#include "JE/VFXEFFECTTYPE_SPRITE_Struct.hpp"
 
 namespace JE {
 	class VFX_Sprite : public VFX_EffectInstance, public VFXEFFECTTYPE_SPRITE_Struct {
@@ -81,17 +81,17 @@ namespace JE {
 			dword mbr_0xfc;
 		//: Methods
 		public:
-			virt_meth_0x4f4c50;
-			virt_meth_0x4f4ca0;
-			meth_0x4f4eb0;
-			virt_meth_0x4f4fc0;
-			meth_0x4f5400;
-			dtor_0x4f5db0;
-			virt_meth_0x4f6190;
-			meth_0x4f6390;
-			virt_meth_0x4f63f0;
-			virt_meth_0x4f6410;
-			ctor_0x4f6490;
+			undefined4 virt_meth_0x4f4c50();
+			undefined4 virt_meth_0x4f4ca0();
+			undefined4 meth_0x4f4eb0();
+			undefined4 virt_meth_0x4f4fc0();
+			undefined4 meth_0x4f5400();
+			void dtor_0x4f5db0();
+			undefined4 virt_meth_0x4f6190();
+			undefined4 meth_0x4f6390();
+			undefined4 virt_meth_0x4f63f0();
+			undefined4 virt_meth_0x4f6410();
+			void ctor_0x4f6490();
 	}; // VFX_Sprite
 } // namespace JE
 

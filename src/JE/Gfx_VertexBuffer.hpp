@@ -15,10 +15,10 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			ctor_0x505310;
-			virt_meth_0x505330;
-			dtor_0x5055d0;
-			virt_meth_0x5056d0;
+			void ctor_0x505310();
+			undefined4 virt_meth_0x505330();
+			void dtor_0x5055d0();
+			undefined4 virt_meth_0x5056d0();
 	}; // Gfx_VertexBuffer
 } // namespace JE
 

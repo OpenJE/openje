@@ -14,7 +14,7 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			dtor_0x49dbf0;
+			void dtor_0x49dbf0();
 	}; // Gfx_NodeAttribute
 } // namespace JE
 

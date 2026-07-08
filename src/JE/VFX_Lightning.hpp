@@ -4,8 +4,8 @@
 #define JE_VFX_LIGHTNING_HPP_
 
 #include "types.hpp"
-#include "je/VFX_EffectInstance.hpp"
-#include "je/VFXEFFECTTYPE_LIGHTNING_Struct.hpp"
+#include "JE/VFX_EffectInstance.hpp"
+#include "JE/VFXEFFECTTYPE_LIGHTNING_Struct.hpp"
 
 namespace JE {
 	class VFX_Lightning : public VFX_EffectInstance, public VFXEFFECTTYPE_LIGHTNING_Struct {
@@ -100,20 +100,20 @@ namespace JE {
 			dword mbr_0xfc;
 		//: Methods
 		public:
-			virt_meth_0x4e8e60;
-			meth_0x4e8e90;
+			undefined4 virt_meth_0x4e8e60();
+			undefined4 meth_0x4e8e90();
 			virt_meth_0x4e8je0;
-			virt_meth_0x4e8f70;
-			virt_meth_0x4e9170;
-			virt_meth_0x4e9530;
-			dtor_0x4ea090;
-			virt_meth_0x4ea2e0;
-			virt_meth_0x4ea370;
-			meth_0x4ea6f0;
-			meth_0x4ebbb0;
-			virt_meth_0x4ec990;
-			virt_meth_0x4eceb0;
-			ctor_0x4ecfb0;
+			undefined4 virt_meth_0x4e8f70();
+			undefined4 virt_meth_0x4e9170();
+			undefined4 virt_meth_0x4e9530();
+			void dtor_0x4ea090();
+			undefined4 virt_meth_0x4ea2e0();
+			undefined4 virt_meth_0x4ea370();
+			undefined4 meth_0x4ea6f0();
+			undefined4 meth_0x4ebbb0();
+			undefined4 virt_meth_0x4ec990();
+			undefined4 virt_meth_0x4eceb0();
+			void ctor_0x4ecfb0();
 	}; // VFX_Lightning
 } // namespace JE
 

@@ -12,10 +12,10 @@ namespace JE {
 			dword mbr_0x0;
 		//: Methods
 		public:
-			ctor_0x50ca00;
-			meth_0x50ca20;
-			meth_0x50ca40;
-			meth_0x50ca50;
+			void ctor_0x50ca00();
+			undefined4 meth_0x50ca20();
+			undefined4 meth_0x50ca40();
+			undefined4 meth_0x50ca50();
 	}; // 
 } // namespace JE
 

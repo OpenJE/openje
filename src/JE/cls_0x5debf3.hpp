@@ -29,9 +29,9 @@ namespace JE {
 		//: Methods
 		public:
 			ctor_0x5debje;
-			meth_0x5dec4e;
-			meth_0x5deca4;
-			meth_0x5e14aa;
+			undefined4 meth_0x5dec4e();
+			undefined4 meth_0x5deca4();
+			undefined4 meth_0x5e14aa();
 	}; // 
 } // namespace JE
 

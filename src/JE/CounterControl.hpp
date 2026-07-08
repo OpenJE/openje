@@ -61,29 +61,29 @@ namespace JE {
 			dword mbr_0xc8;
 		//: Methods
 		public:
-			meth_0x4307a0;
-			meth_0x430830;
-			meth_0x430850;
-			meth_0x430890;
-			meth_0x4309b0;
-			meth_0x430a30;
-			meth_0x430a50;
-			meth_0x430c40;
-			meth_0x4310e0;
-			meth_0x431280;
-			meth_0x4313b0;
-			meth_0x431d70;
-			meth_0x431f80;
-			meth_0x4321c0;
-			meth_0x432210;
-			meth_0x432460;
-			meth_0x432b60;
-			dtor_0x432d50;
-			virt_meth_0x432ec0;
-			meth_0x432ee0;
-			meth_0x432f20;
-			meth_0x4332e0;
-			ctor_0x433560;
+			undefined4 meth_0x4307a0();
+			undefined4 meth_0x430830();
+			undefined4 meth_0x430850();
+			undefined4 meth_0x430890();
+			undefined4 meth_0x4309b0();
+			undefined4 meth_0x430a30();
+			undefined4 meth_0x430a50();
+			undefined4 meth_0x430c40();
+			undefined4 meth_0x4310e0();
+			undefined4 meth_0x431280();
+			undefined4 meth_0x4313b0();
+			undefined4 meth_0x431d70();
+			undefined4 meth_0x431f80();
+			undefined4 meth_0x4321c0();
+			undefined4 meth_0x432210();
+			undefined4 meth_0x432460();
+			undefined4 meth_0x432b60();
+			void dtor_0x432d50();
+			undefined4 virt_meth_0x432ec0();
+			undefined4 meth_0x432ee0();
+			undefined4 meth_0x432f20();
+			undefined4 meth_0x4332e0();
+			void ctor_0x433560();
 	}; // CounterControl
 } // namespace JE
 

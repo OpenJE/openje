@@ -4,9 +4,9 @@
 #define JE_VFXEFFECTTYPE_SOUND_STRUCT_HPP_
 
 #include "types.hpp"
-#include "je/VFXEFFECTTYPE_BASE_Struct.hpp"
-#include "je/cls_0x40a220.hpp"
-#include "je/cls_0x40a220.hpp"
+#include "JE/VFXEFFECTTYPE_BASE_Struct.hpp"
+#include "JE/cls_0x40a220.hpp"
+#include "JE/cls_0x40a220.hpp"
 
 namespace JE {
 	struct VFXEFFECTTYPE_SOUND_Struct : public VFXEFFECTTYPE_BASE_Struct, public cls_0x40a220 {
@@ -46,11 +46,11 @@ namespace JE {
 			byte mbr_0xe0;
 			byte mbr_0xe1;
 		//: Methods
-			meth_0x4e1c60;
-			ctor_0x4e3000;
-			meth_0x4e3060;
-			virt_meth_0x4e3120;
-			meth_0x4e3430;
+			undefined4 meth_0x4e1c60();
+			void ctor_0x4e3000();
+			undefined4 meth_0x4e3060();
+			undefined4 virt_meth_0x4e3120();
+			undefined4 meth_0x4e3430();
 	}; // VFXEFFECTTYPE_SOUND_Struct
 } // namespace JE
 

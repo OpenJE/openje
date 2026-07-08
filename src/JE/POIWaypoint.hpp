@@ -4,7 +4,7 @@
 #define JE_POIWAYPOINT_HPP_
 
 #include "types.hpp"
-#include "je/GUI/Label.hpp"
+#include "JE/GUI/Label.hpp"
 
 namespace JE {
 	class POIWaypoint : public GUI::Label {
@@ -20,13 +20,13 @@ namespace JE {
 			dword mbr_0xe7c;
 		//: Methods
 		public:
-			ctor_0x4587e0;
-			dtor_0x4588c0;
-			virt_meth_0x458930;
-			virt_meth_0x458950;
-			virt_meth_0x458980;
-			virt_meth_0x4589d0;
-			virt_meth_0x458a00;
+			void ctor_0x4587e0();
+			void dtor_0x4588c0();
+			undefined4 virt_meth_0x458930();
+			undefined4 virt_meth_0x458950();
+			undefined4 virt_meth_0x458980();
+			undefined4 virt_meth_0x4589d0();
+			undefined4 virt_meth_0x458a00();
 	}; // POIWaypoint
 } // namespace JE
 

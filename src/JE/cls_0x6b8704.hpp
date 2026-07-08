@@ -4,14 +4,14 @@
 #define JE_CLS_0X6B8704_HPP_
 
 #include "types.hpp"
-#include "je/cls_0x6b84f0.hpp"
+#include "JE/cls_0x6b84f0.hpp"
 
 namespace JE {
 	class cls_0x6b8704 : public cls_0x6b84f0 {
 		//: Methods
 		public:
-			ctor_0x5db7cb;
-			virt_meth_0x5dbf5b;
+			void ctor_0x5db7cb();
+			undefined4 virt_meth_0x5dbf5b();
 	}; // 
 } // namespace JE
 

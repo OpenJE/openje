@@ -10,8 +10,8 @@ namespace JE {
         class debug_stream {
             //: Methods
             public:
-                dtor_0x59d4c0;
-                virt_deldtor_0x59d4d0;
+                void dtor_0x59d4c0();
+                virtual undefined4 virt_deldtor_0x59d4d0();
         }; // class debug_stream
     } // namespace net
 } // namespace JE

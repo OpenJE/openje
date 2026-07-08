@@ -20,7 +20,7 @@ namespace JE {
 			dword mbr_0x4100;
 		//: Methods
 		public:
-			meth_0x5aba20;
+			undefined4 meth_0x5aba20();
 	}; // 
 } // namespace JE
 

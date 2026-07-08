@@ -4,7 +4,7 @@
 #define JE_CFLOATINGLABEL_HPP_
 
 #include "types.hpp"
-#include "je/GUI/Label.hpp"
+#include "JE/GUI/Label.hpp"
 
 namespace JE {
 	class CFloatingLabel : public GUI::Label {
@@ -22,11 +22,11 @@ namespace JE {
 			dword mbr_0xe80;
 		//: Methods
 		public:
-			ctor_0x58fa00;
-			dtor_0x58fa90;
-			virt_meth_0x58faf0;
-			virt_meth_0x58fc60;
-			virt_meth_0x58fca0;
+			void ctor_0x58fa00();
+			void dtor_0x58fa90();
+			undefined4 virt_meth_0x58faf0();
+			undefined4 virt_meth_0x58fc60();
+			undefined4 virt_meth_0x58fca0();
 	}; // CFloatingLabel
 } // namespace JE
 

@@ -9,8 +9,8 @@ namespace JE {
 	class cls_0x48fe30 {
 		//: Methods
 		public:
-			ctor_0x48fe30;
-	}; // 
+			void ctor_0x48fe30();
+	}; //
 } // namespace JE
 
 #endif // JE_CLS_0X48FE30_HPP_

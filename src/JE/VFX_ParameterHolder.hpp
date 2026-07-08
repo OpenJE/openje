@@ -19,15 +19,15 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			virt_meth_0x4f9d40;
-			meth_0x4fa3c0;
-			meth_0x4fa880;
-			dtor_0x4fac40;
-			ctor_0x4fad40;
-			virt_meth_0x4fadb0;
-			meth_0x4fadd0;
-			virt_meth_0x4faf20;
-			meth_0x5011a0;
+			undefined4 virt_meth_0x4f9d40();
+			undefined4 meth_0x4fa3c0();
+			undefined4 meth_0x4fa880();
+			void dtor_0x4fac40();
+			void ctor_0x4fad40();
+			undefined4 virt_meth_0x4fadb0();
+			undefined4 meth_0x4fadd0();
+			undefined4 virt_meth_0x4faf20();
+			undefined4 meth_0x5011a0();
 	}; // VFX_ParameterHolder
 } // namespace JE
 

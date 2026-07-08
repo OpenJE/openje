@@ -32,11 +32,11 @@ namespace JE {
 			dword mbr_0xcc;
 		//: Methods
 		public:
-			meth_0x4960d0;
-			meth_0x4961c0;
-			meth_0x496200;
-			meth_0x496250;
-			meth_0x4962c0;
+			undefined4 meth_0x4960d0();
+			undefined4 meth_0x4961c0();
+			undefined4 meth_0x496200();
+			undefined4 meth_0x496250();
+			undefined4 meth_0x4962c0();
 	}; // 
 } // namespace JE
 

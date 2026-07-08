@@ -4,7 +4,7 @@
 #define JE_GFX_SKINMESHPKT_HPP_
 
 #include "types.hpp"
-#include "je/Gfx_NodeAttribute.hpp"
+#include "JE/Gfx_NodeAttribute.hpp"
 
 namespace JE {
 	class Gfx_SkinMeshPkt : public Gfx_NodeAttribute {
@@ -58,11 +58,11 @@ namespace JE {
 			dword mbr_0xc4;
 		//: Methods
 		public:
-			ctor_0x49dea0;
-			virt_meth_0x49e2a0;
-			dtor_0x49e2c0;
-			meth_0x49e3d0;
-			meth_0x507b30;
+			void ctor_0x49dea0();
+			undefined4 virt_meth_0x49e2a0();
+			void dtor_0x49e2c0();
+			undefined4 meth_0x49e3d0();
+			undefined4 meth_0x507b30();
 	}; // Gfx_SkinMeshPkt
 } // namespace JE
 

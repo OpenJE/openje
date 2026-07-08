@@ -20,7 +20,7 @@ namespace JE {
 			byte mbr_0x8;
 		//: Methods
 		public:
-			ctor_0x41f190;
+			void ctor_0x41f190();
 	}; // 
 } // namespace JE
 

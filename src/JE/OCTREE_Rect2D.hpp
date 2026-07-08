@@ -54,12 +54,12 @@ namespace JE {
 			dword mbr_0xb8;
 			dword mbr_0xc;
 		//: Methods
-			meth_0x5b9490;
-			virt_meth_0x5b9510;
-			virt_meth_0x5b9660;
-			virt_meth_0x5b99e0;
-			virt_meth_0x5b9df0;
-			ctor_0x5b9f50;
+			undefined4 meth_0x5b9490();
+			undefined4 virt_meth_0x5b9510();
+			undefined4 virt_meth_0x5b9660();
+			undefined4 virt_meth_0x5b99e0();
+			undefined4 virt_meth_0x5b9df0();
+			void ctor_0x5b9f50();
 	}; // OCTREE_Rect2D
 } // namespace JE
 

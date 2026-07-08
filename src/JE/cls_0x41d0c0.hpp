@@ -14,7 +14,7 @@ namespace JE {
 			byte mbr_0x44;
 		//: Methods
 		public:
-			meth_0x41d0c0;
+			undefined4 meth_0x41d0c0();
 	}; // 
 } // namespace JE
 

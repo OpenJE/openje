@@ -1,7 +1,7 @@
 // Copyright 2024 OpenJE
 
 #include "types.hpp"
-#include "je/Action.hpp"
+#include "JE/Action.hpp"
 
 namespace JE {
     // 0x4066f0

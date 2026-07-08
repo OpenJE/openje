@@ -4,7 +4,7 @@
 #define JE_G3D_OCCLUSIONZONES_HPP_
 
 #include "types.hpp"
-#include "je/G3D_BaseAttribute.hpp"
+#include "JE/G3D_BaseAttribute.hpp"
 
 namespace JE {
 	class G3D_OcclusionZones : public G3D_BaseAttribute {
@@ -20,14 +20,14 @@ namespace JE {
 			dword mbr_0x8;
 		//: Methods
 		public:
-			virt_meth_0x4cb480;
-			virt_meth_0x4d0f60;
-			ctor_0x4d7460;
-			virt_meth_0x4d74e0;
-			dtor_0x4d7500;
-			virt_meth_0x4d9590;
-			virt_meth_0x4d9770;
-			virt_meth_0x4d9830;
+			undefined4 virt_meth_0x4cb480();
+			undefined4 virt_meth_0x4d0f60();
+			void ctor_0x4d7460();
+			undefined4 virt_meth_0x4d74e0();
+			void dtor_0x4d7500();
+			undefined4 virt_meth_0x4d9590();
+			undefined4 virt_meth_0x4d9770();
+			undefined4 virt_meth_0x4d9830();
 	}; // G3D_OcclusionZones
 } // namespace JE
 

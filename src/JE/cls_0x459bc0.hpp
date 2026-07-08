@@ -14,8 +14,8 @@ namespace JE {
 		//: Methods
 		public:
 			meth_0x458je0;
-			meth_0x4590a0;
-			ctor_0x459bc0;
+			undefined4 meth_0x4590a0();
+			void ctor_0x459bc0();
 	}; // 
 } // namespace JE
 

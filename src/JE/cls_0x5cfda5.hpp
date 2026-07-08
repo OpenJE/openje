@@ -9,7 +9,7 @@ namespace JE {
 	class cls_0x5cfda5 {
 		//: Methods
 		public:
-			ctor_0x5cfda5;
+			void ctor_0x5cfda5();
 	}; // 
 } // namespace JE
 

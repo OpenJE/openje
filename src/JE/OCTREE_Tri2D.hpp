@@ -48,14 +48,14 @@ namespace JE {
 			dword mbr_0xa0;
 			dword mbr_0xc;
 		//: Methods
-			meth_0x52f680;
-			virt_meth_0x53b840;
-			meth_0x5bb140;
-			virt_meth_0x5bb1d0;
-			virt_meth_0x5bb2e0;
-			virt_meth_0x5bb630;
-			virt_meth_0x5bb9f0;
-			ctor_0x5bbb40;
+			undefined4 meth_0x52f680();
+			undefined4 virt_meth_0x53b840();
+			undefined4 meth_0x5bb140();
+			undefined4 virt_meth_0x5bb1d0();
+			undefined4 virt_meth_0x5bb2e0();
+			undefined4 virt_meth_0x5bb630();
+			undefined4 virt_meth_0x5bb9f0();
+			void ctor_0x5bbb40();
 	}; // OCTREE_Tri2D
 } // namespace JE
 

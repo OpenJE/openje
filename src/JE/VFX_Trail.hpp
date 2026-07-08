@@ -4,8 +4,8 @@
 #define JE_VFX_TRAIL_HPP_
 
 #include "types.hpp"
-#include "je/VFX_EffectInstance.hpp"
-#include "je/VFXEFFECTTYPE_TRAIL_Struct.hpp"
+#include "JE/VFX_EffectInstance.hpp"
+#include "JE/VFXEFFECTTYPE_TRAIL_Struct.hpp"
 
 namespace JE {
 	class VFX_Trail : public VFX_EffectInstance, public VFXEFFECTTYPE_TRAIL_Struct {
@@ -65,15 +65,15 @@ namespace JE {
 			dword mbr_0xf0;
 		//: Methods
 		public:
-			meth_0x4f11b0;
-			meth_0x4f1470;
-			meth_0x4f1d80;
-			dtor_0x4f2550;
-			virt_meth_0x4f26e0;
-			virt_meth_0x4f2be0;
-			meth_0x4f2cb0;
-			virt_meth_0x4f2d30;
-			ctor_0x4f2dd0;
+			undefined4 meth_0x4f11b0();
+			undefined4 meth_0x4f1470();
+			undefined4 meth_0x4f1d80();
+			void dtor_0x4f2550();
+			undefined4 virt_meth_0x4f26e0();
+			undefined4 virt_meth_0x4f2be0();
+			undefined4 meth_0x4f2cb0();
+			undefined4 virt_meth_0x4f2d30();
+			void ctor_0x4f2dd0();
 	}; // VFX_Trail
 } // namespace JE
 

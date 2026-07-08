@@ -9,9 +9,9 @@ namespace JE {
 	class CMiniMapInterface {
 		//: Methods
 		public:
-			virt_meth_0x4422e0;
-			virt_meth_0x442300;
-			virt_meth_0x442b20;
+			undefined4 virt_meth_0x4422e0();
+			undefined4 virt_meth_0x442300();
+			undefined4 virt_meth_0x442b20();
 	}; // CMiniMapInterface
 } // namespace JE
 

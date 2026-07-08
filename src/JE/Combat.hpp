@@ -18,13 +18,13 @@ namespace JE {
 			byte mbr_0x8;
 			dword mbr_0xc;
 		//: Methods
-			meth_0x5a9440;
-			meth_0x5a95f0;
-			ctor_0x5a9610;
-			virt_meth_0x5a9650;
-			virt_meth_0x5a98b0;
-			dtor_0x5a9a10;
-			virt_meth_0x5a9a90;
+			undefined4 meth_0x5a9440();
+			undefined4 meth_0x5a95f0();
+			void ctor_0x5a9610();
+			undefined4 virt_meth_0x5a9650();
+			undefined4 virt_meth_0x5a98b0();
+			void dtor_0x5a9a10();
+			undefined4 virt_meth_0x5a9a90();
 	}; // Combat
 } // namespace JE
 

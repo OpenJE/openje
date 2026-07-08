@@ -4,7 +4,7 @@
 #define JE_TRANSITIONTRIGGER_HPP_
 
 #include "types.hpp"
-#include "je/Trigger.hpp"
+#include "JE/Trigger.hpp"
 
 namespace JE {
 	struct TransitionTrigger : public Trigger {
@@ -19,12 +19,12 @@ namespace JE {
 			dword mbr_0x4c;
 			byte mbr_0x4d;
 		//: Methods
-			ctor_0x56e3c0;
-			virt_meth_0x56e400;
-			dtor_0x56e420;
-			meth_0x5b1680;
-			virt_meth_0x5b1980;
-			virt_meth_0x5b1a60;
+			void ctor_0x56e3c0();
+			undefined4 virt_meth_0x56e400();
+			void dtor_0x56e420();
+			undefined4 meth_0x5b1680();
+			undefined4 virt_meth_0x5b1980();
+			undefined4 virt_meth_0x5b1a60();
 	}; // TransitionTrigger
 } // namespace JE
 

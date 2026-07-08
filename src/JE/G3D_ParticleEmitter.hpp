@@ -4,7 +4,7 @@
 #define JE_G3D_PARTICLEEMITTER_HPP_
 
 #include "types.hpp"
-#include "je/G3D_BaseAttribute.hpp"
+#include "JE/G3D_BaseAttribute.hpp"
 
 namespace JE {
 	class G3D_ParticleEmitter : public G3D_BaseAttribute {
@@ -22,14 +22,14 @@ namespace JE {
 			dword mbr_0x8;
 		//: Methods
 		public:
-			virt_meth_0x4cac90;
-			ctor_0x4cbb90;
-			virt_meth_0x4cbbd0;
-			dtor_0x4cbbf0;
+			undefined4 virt_meth_0x4cac90();
+			void ctor_0x4cbb90();
+			undefined4 virt_meth_0x4cbbd0();
+			void dtor_0x4cbbf0();
 			virt_meth_0x4ceje0;
-			virt_meth_0x4d2260;
-			virt_meth_0x4d2330;
-			virt_meth_0x4d23e0;
+			undefined4 virt_meth_0x4d2260();
+			undefined4 virt_meth_0x4d2330();
+			undefined4 virt_meth_0x4d23e0();
 	}; // G3D_ParticleEmitter
 } // namespace JE
 

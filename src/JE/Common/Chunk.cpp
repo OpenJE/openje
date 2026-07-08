@@ -1,9 +1,9 @@
 // Copyright 2024 OpenJE
 
-#include "je.hpp"
+#include "JE.hpp"
 #include "types.hpp"
-#include "je/Common/Chunk.hpp"
-#include "je/Re"
+#include "JE/Common/Chunk.hpp"
+#include "JE/Re"
 
 namespace JE {
     namespace Common {

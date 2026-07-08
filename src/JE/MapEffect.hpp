@@ -29,11 +29,11 @@ namespace JE {
 			dword mbr_0x8;
 		//: Methods
 		public:
-			meth_0x5b2d10;
-			meth_0x5b2da0;
-			dtor_0x5b2ed0;
-			ctor_0x5b2fa0;
-			virt_meth_0x5b3050;
+			undefined4 meth_0x5b2d10();
+			undefined4 meth_0x5b2da0();
+			void dtor_0x5b2ed0();
+			void ctor_0x5b2fa0();
+			undefined4 virt_meth_0x5b3050();
 	}; // MapEffect
 } // namespace JE
 

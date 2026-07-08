@@ -4,8 +4,8 @@
 #define JE_GUI_EDIT_HPP_
 
 #include "types.hpp"
-#include "je/GUI/Label.hpp"
-#include "je/cls_0x4abc60.hpp"
+#include "JE/GUI/Label.hpp"
+#include "JE/cls_0x4abc60.hpp"
 
 namespace JE {
     namespace GUI {

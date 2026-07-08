@@ -4,7 +4,7 @@
 #define JE_ACTIONMESSAGE_HPP_
 
 #include "types.hpp"
-#include "je/Action.hpp"
+#include "JE/Action.hpp"
 
 namespace JE {
 	struct ActionMessage : public Action {

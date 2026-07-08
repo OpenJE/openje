@@ -13,15 +13,15 @@ namespace JE {
 			dword mbr_0x8;
 		//: Methods
 		public:
-			meth_0x56d030;
-			meth_0x56d090;
-			meth_0x571d20;
-			meth_0x5722d0;
-			meth_0x572750;
-			meth_0x574950;
-			meth_0x574ce0;
-			meth_0x5753d0;
-			meth_0x577260;
+			undefined4 meth_0x56d030();
+			undefined4 meth_0x56d090();
+			undefined4 meth_0x571d20();
+			undefined4 meth_0x5722d0();
+			undefined4 meth_0x572750();
+			undefined4 meth_0x574950();
+			undefined4 meth_0x574ce0();
+			undefined4 meth_0x5753d0();
+			undefined4 meth_0x577260();
 	}; // 
 } // namespace JE
 

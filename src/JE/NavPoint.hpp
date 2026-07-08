@@ -23,9 +23,9 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			ctor_0x5b2ba0;
-			dtor_0x5b2bd0;
-			virt_meth_0x5b2be0;
+			void ctor_0x5b2ba0();
+			void dtor_0x5b2bd0();
+			undefined4 virt_meth_0x5b2be0();
 	}; // NavPoint
 } // namespace JE
 

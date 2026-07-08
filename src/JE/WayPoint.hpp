@@ -22,9 +22,9 @@ namespace JE {
 			dword mbr_0x8;
 		//: Methods
 		public:
-			ctor_0x5b2c00;
-			dtor_0x5b2c30;
-			virt_meth_0x5b2c60;
+			void ctor_0x5b2c00();
+			void dtor_0x5b2c30();
+			undefined4 virt_meth_0x5b2c60();
 	}; // WayPoint
 } // namespace JE
 

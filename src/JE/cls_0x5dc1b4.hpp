@@ -4,15 +4,15 @@
 #define JE_CLS_0X5DC1B4_HPP_
 
 #include "types.hpp"
-#include "je/cls_0x482ebf.hpp"
-#include "je/cls_0x5d6554.hpp"
-#include "je/cls_0x5d6554.hpp"
-#include "je/cls_0x5d6554.hpp"
-#include "je/cls_0x5d6554.hpp"
-#include "je/cls_0x5d6554.hpp"
-#include "je/cls_0x5d6554.hpp"
-#include "je/cls_0x5d6554.hpp"
-#include "je/cls_0x482ebf.hpp"
+#include "JE/cls_0x482ebf.hpp"
+#include "JE/cls_0x5d6554.hpp"
+#include "JE/cls_0x5d6554.hpp"
+#include "JE/cls_0x5d6554.hpp"
+#include "JE/cls_0x5d6554.hpp"
+#include "JE/cls_0x5d6554.hpp"
+#include "JE/cls_0x5d6554.hpp"
+#include "JE/cls_0x5d6554.hpp"
+#include "JE/cls_0x482ebf.hpp"
 
 namespace JE {
 	class cls_0x5dc1b4 : public cls_0x482ebf, public cls_0x5d6554 {
@@ -47,11 +47,11 @@ namespace JE {
 			dword mbr_0xc4;
 		//: Methods
 		public:
-			meth_0x482ed2;
-			ctor_0x5dc1b4;
-			meth_0x5dc25d;
-			meth_0x5dd0cd;
-			meth_0x5de622;
+			undefined4 meth_0x482ed2();
+			void ctor_0x5dc1b4();
+			undefined4 meth_0x5dc25d();
+			undefined4 meth_0x5dd0cd();
+			undefined4 meth_0x5de622();
 	}; // 
 } // namespace JE
 

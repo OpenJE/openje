@@ -14,9 +14,9 @@ namespace JE {
 			dword mbr_0x8;
 			dword mbr_0xc;
 		//: Methods
-			ctor_0x5b4a60;
-			dtor_0x5b4c60;
-			virt_meth_0x5b4ca0;
+			void ctor_0x5b4a60();
+			void dtor_0x5b4c60();
+			undefined4 virt_meth_0x5b4ca0();
 	}; // FadeManager
 } // namespace JE
 

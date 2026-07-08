@@ -9,9 +9,9 @@ namespace JE {
 	class CEscapeMenuInterface {
 		//: Methods
 		public:
-			virt_meth_0x433910;
-			virt_meth_0x433920;
-			virt_meth_0x434110;
+			undefined4 virt_meth_0x433910();
+			undefined4 virt_meth_0x433920();
+			undefined4 virt_meth_0x434110();
 	}; // CEscapeMenuInterface
 } // namespace JE
 

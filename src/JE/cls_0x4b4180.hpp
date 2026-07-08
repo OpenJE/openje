@@ -12,7 +12,7 @@ namespace JE {
 			dword mbr_0xac;
 		//: Methods
 		public:
-			meth_0x4b4180;
+			undefined4 meth_0x4b4180();
 	}; // 
 } // namespace JE
 

@@ -13,13 +13,13 @@ namespace JE {
 			dword mbr_0x8;
 			dword mbr_0xc;
 		//: Methods
-			virt_meth_0x408d30;
-			virt_meth_0x5a0680;
-			virt_meth_0x5a06b0;
-			dtor_0x5a06e0;
-			virt_meth_0x5a0710;
-			ctor_0x5a0760;
-			virt_meth_0x5a0780;
+			undefined4 virt_meth_0x408d30();
+			undefined4 virt_meth_0x5a0680();
+			undefined4 virt_meth_0x5a06b0();
+			void dtor_0x5a06e0();
+			undefined4 virt_meth_0x5a0710();
+			void ctor_0x5a0760();
+			undefined4 virt_meth_0x5a0780();
 	}; // Party
 } // namespace JE
 

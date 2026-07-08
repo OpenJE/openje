@@ -4,8 +4,8 @@
 #define JE_GFX_PARTICLEINFO_HPP_
 
 #include "types.hpp"
-#include "je/Gfx_ParticleInfoBase.hpp"
-#include "je/cls_0x515ed0.hpp"
+#include "JE/Gfx_ParticleInfoBase.hpp"
+#include "JE/cls_0x515ed0.hpp"
 
 namespace JE {
 	class Gfx_ParticleInfo : public Gfx_ParticleInfoBase, public cls_0x515ed0 {
@@ -50,11 +50,11 @@ namespace JE {
 			byte mbr_0xd0;
 		//: Methods
 		public:
-			meth_0x513af0;
-			ctor_0x514bc0;
-			dtor_0x514c30;
-			virt_meth_0x514c80;
-			ctor_0x516010;
+			undefined4 meth_0x513af0();
+			void ctor_0x514bc0();
+			void dtor_0x514c30();
+			undefined4 virt_meth_0x514c80();
+			void ctor_0x516010();
 	}; // Gfx_ParticleInfo
 } // namespace JE
 

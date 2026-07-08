@@ -4,7 +4,7 @@
 #define JE_VFX_EFFECTINSTANCE_HPP_
 
 #include "types.hpp"
-#include "je/VFXEFFECTTYPE_BASE_Struct.hpp"
+#include "JE/VFXEFFECTTYPE_BASE_Struct.hpp"
 
 namespace JE {
 	class VFX_EffectInstance {
@@ -40,10 +40,10 @@ namespace JE {
 			byte mbr_0xc1;
 		//: Methods
 		public:
-			ctor_0x4e17c0;
-			meth_0x4e18d0;
-			virt_meth_0x4e18e0;
-			virt_meth_0x4e19b0;
+			void ctor_0x4e17c0();
+			undefined4 meth_0x4e18d0();
+			undefined4 virt_meth_0x4e18e0();
+			undefined4 virt_meth_0x4e19b0();
 	}; // VFX_EffectInstance
 } // namespace JE
 

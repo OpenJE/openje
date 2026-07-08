@@ -1,9 +1,9 @@
 // Copyright 2024 OpenJE
 
 #include "types.hpp"
-#include "je/Action.hpp"
-#include "je/ActionAnim.hpp"
-#include "je/net/critical_section.hpp"
+#include "JE/Action.hpp"
+#include "JE/ActionAnim.hpp"
+#include "JE/net/critical_section.hpp"
 
 namespace JE {
     // 0x5a9230

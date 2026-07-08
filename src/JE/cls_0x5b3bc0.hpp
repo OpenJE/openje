@@ -4,7 +4,7 @@
 #define JE_CLS_0X5B3BC0_HPP_
 
 #include "types.hpp"
-#include "je/cls_0x5b38a0.hpp"
+#include "JE/cls_0x5b38a0.hpp"
 
 namespace JE {
 	class cls_0x5b3bc0 : public cls_0x5b38a0 {
@@ -23,12 +23,12 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			meth_0x5b31f0;
-			meth_0x5b32c0;
-			meth_0x5b3990;
-			ctor_0x5b3bc0;
-			meth_0x5b3cf0;
-			meth_0x5b3d50;
+			undefined4 meth_0x5b31f0();
+			undefined4 meth_0x5b32c0();
+			undefined4 meth_0x5b3990();
+			void ctor_0x5b3bc0();
+			undefined4 meth_0x5b3cf0();
+			undefined4 meth_0x5b3d50();
 	}; // 
 } // namespace JE
 

@@ -4,8 +4,8 @@
 #define JE_VFX_MODEL_HPP_
 
 #include "types.hpp"
-#include "je/VFX_EffectInstance.hpp"
-#include "je/VFXEFFECTTYPE_MODEL_Struct.hpp"
+#include "JE/VFX_EffectInstance.hpp"
+#include "JE/VFXEFFECTTYPE_MODEL_Struct.hpp"
 
 namespace JE {
 	class VFX_Model : public VFX_EffectInstance, public VFXEFFECTTYPE_MODEL_Struct {
@@ -117,14 +117,14 @@ namespace JE {
 			virt_meth_0x4je770;
 			virt_meth_0x4je780;
 			meth_0x4jea00;
-			meth_0x4f4000;
-			dtor_0x4f4240;
-			virt_meth_0x4f43d0;
-			meth_0x4f43e0;
-			virt_meth_0x4f45c0;
-			ctor_0x4f4650;
-			meth_0x4f47b0;
-			virt_meth_0x4f4960;
+			undefined4 meth_0x4f4000();
+			void dtor_0x4f4240();
+			undefined4 virt_meth_0x4f43d0();
+			undefined4 meth_0x4f43e0();
+			undefined4 virt_meth_0x4f45c0();
+			void ctor_0x4f4650();
+			undefined4 meth_0x4f47b0();
+			undefined4 virt_meth_0x4f4960();
 	}; // VFX_Model
 } // namespace JE
 

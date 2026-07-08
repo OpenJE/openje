@@ -4,7 +4,7 @@
 #define JE_WATERTILEMODELINSTANCE_HPP_
 
 #include "types.hpp"
-#include "je/ModelInstance.hpp"
+#include "JE/ModelInstance.hpp"
 
 namespace JE {
 	class WaterTileModelInstance : public ModelInstance {
@@ -22,16 +22,16 @@ namespace JE {
 			dword mbr_0x70;
 		//: Methods
 		public:
-			virt_meth_0x5639a0;
-			meth_0x563bb0;
-			meth_0x563e30;
-			meth_0x563ff0;
-			meth_0x564050;
-			dtor_0x564620;
-			virt_meth_0x564900;
-			ctor_0x565540;
-			meth_0x565bb0;
-			meth_0x565f50;
+			undefined4 virt_meth_0x5639a0();
+			undefined4 meth_0x563bb0();
+			undefined4 meth_0x563e30();
+			undefined4 meth_0x563ff0();
+			undefined4 meth_0x564050();
+			void dtor_0x564620();
+			undefined4 virt_meth_0x564900();
+			void ctor_0x565540();
+			undefined4 meth_0x565bb0();
+			undefined4 meth_0x565f50();
 	}; // WaterTileModelInstance
 } // namespace JE
 

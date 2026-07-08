@@ -4,7 +4,7 @@
 #define JE_GFX_RS_SK_B_LM_HEIGHTFOG_HPP_
 
 #include "types.hpp"
-#include "je/Gfx_RenderStyle.hpp"
+#include "JE/Gfx_RenderStyle.hpp"
 
 namespace JE {
 	class Gfx_RS_SK_B_LM_HeightFog : public Gfx_RenderStyle {
@@ -18,20 +18,20 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			virt_meth_0x5365f0;
-			virt_meth_0x536640;
-			virt_meth_0x536670;
-			dtor_0x537830;
-			virt_meth_0x5378c0;
-			virt_meth_0x5378d0;
-			virt_meth_0x5378e0;
-			virt_meth_0x5378f0;
-			virt_meth_0x537910;
-			virt_meth_0x537940;
-			virt_meth_0x537960;
-			ctor_0x541340;
-			virt_meth_0x541380;
-			virt_meth_0x5417b0;
+			undefined4 virt_meth_0x5365f0();
+			undefined4 virt_meth_0x536640();
+			undefined4 virt_meth_0x536670();
+			void dtor_0x537830();
+			undefined4 virt_meth_0x5378c0();
+			undefined4 virt_meth_0x5378d0();
+			undefined4 virt_meth_0x5378e0();
+			undefined4 virt_meth_0x5378f0();
+			undefined4 virt_meth_0x537910();
+			undefined4 virt_meth_0x537940();
+			undefined4 virt_meth_0x537960();
+			void ctor_0x541340();
+			undefined4 virt_meth_0x541380();
+			undefined4 virt_meth_0x5417b0();
 	}; // Gfx_RS_SK_B_LM_HeightFog
 } // namespace JE
 

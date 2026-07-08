@@ -14,8 +14,8 @@ namespace JE {
 			dword mbr_0x8;
 		//: Methods
 		public:
-			virt_meth_0x4cb170;
-			dtor_0x4cb670;
+			undefined4 virt_meth_0x4cb170();
+			void dtor_0x4cb670();
 	}; // G3D_BaseAttribute
 } // namespace JE
 

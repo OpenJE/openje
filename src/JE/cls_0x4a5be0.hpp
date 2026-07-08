@@ -4,7 +4,7 @@
 #define JE_CLS_0X4A5BE0_HPP_
 
 #include "types.hpp"
-#include "je/cls_0x4a67f0.hpp"
+#include "JE/cls_0x4a67f0.hpp"
 
 namespace JE {
 	class cls_0x4a5be0 {
@@ -62,18 +62,18 @@ namespace JE {
 			byte mbr_0xc4;
 		//: Methods
 		public:
-			meth_0x4a4c90;
-			meth_0x4a55d0;
-			meth_0x4a5640;
-			ctor_0x4a5be0;
-			meth_0x4a5d70;
-			meth_0x4a5ea0;
-			meth_0x4a5f20;
-			meth_0x4a5f60;
-			meth_0x4a6070;
-			meth_0x4a62b0;
-			ctor_0x4a6880;
-			meth_0x548d10;
+			undefined4 meth_0x4a4c90();
+			undefined4 meth_0x4a55d0();
+			undefined4 meth_0x4a5640();
+			void ctor_0x4a5be0();
+			undefined4 meth_0x4a5d70();
+			undefined4 meth_0x4a5ea0();
+			undefined4 meth_0x4a5f20();
+			undefined4 meth_0x4a5f60();
+			undefined4 meth_0x4a6070();
+			undefined4 meth_0x4a62b0();
+			void ctor_0x4a6880();
+			undefined4 meth_0x548d10();
 	}; // 
 } // namespace JE
 

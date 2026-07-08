@@ -4,8 +4,8 @@
 #define JE_VFX_SNOW_HPP_
 
 #include "types.hpp"
-#include "je/VFX_EffectInstance.hpp"
-#include "je/VFXEFFECTTYPE_SNOW_Struct.hpp"
+#include "JE/VFX_EffectInstance.hpp"
+#include "JE/VFXEFFECTTYPE_SNOW_Struct.hpp"
 
 namespace JE {
 	class VFX_Snow : public VFX_EffectInstance, public VFXEFFECTTYPE_SNOW_Struct {
@@ -81,17 +81,17 @@ namespace JE {
 			dword mbr_0xbc;
 		//: Methods
 		public:
-			virt_meth_0x4e1890;
-			virt_meth_0x4e3eb0;
-			virt_meth_0x4e3f10;
-			ctor_0x4e4100;
-			dtor_0x4e4310;
-			meth_0x4e4680;
-			meth_0x4e4700;
-			virt_meth_0x4e4db0;
-			virt_meth_0x4e4dd0;
-			meth_0x4e4f00;
-			virt_meth_0x4e5d20;
+			undefined4 virt_meth_0x4e1890();
+			undefined4 virt_meth_0x4e3eb0();
+			undefined4 virt_meth_0x4e3f10();
+			void ctor_0x4e4100();
+			void dtor_0x4e4310();
+			undefined4 meth_0x4e4680();
+			undefined4 meth_0x4e4700();
+			undefined4 virt_meth_0x4e4db0();
+			undefined4 virt_meth_0x4e4dd0();
+			undefined4 meth_0x4e4f00();
+			undefined4 virt_meth_0x4e5d20();
 	}; // VFX_Snow
 } // namespace JE
 

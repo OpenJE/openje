@@ -4,7 +4,7 @@
 #define JE_CLS_0X523B20_HPP_
 
 #include "types.hpp"
-#include "je/cls_0x52f780.hpp"
+#include "JE/cls_0x52f780.hpp"
 
 namespace JE {
 	class cls_0x523b20 : public cls_0x52f780 {
@@ -13,7 +13,7 @@ namespace JE {
 			dword mbr_0x8;
 		//: Methods
 		public:
-			ctor_0x523b20;
+			void ctor_0x523b20();
 	}; // 
 } // namespace JE
 

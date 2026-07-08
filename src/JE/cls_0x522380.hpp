@@ -9,12 +9,12 @@ namespace JE {
 	class cls_0x522380 {
 		//: Methods
 		public:
-			meth_0x522000;
-			meth_0x522100;
-			meth_0x522210;
-			meth_0x5222a0;
-			meth_0x522310;
-			ctor_0x522380;
+			undefined4 meth_0x522000();
+			undefined4 meth_0x522100();
+			undefined4 meth_0x522210();
+			undefined4 meth_0x5222a0();
+			undefined4 meth_0x522310();
+			void ctor_0x522380();
 	}; // 
 } // namespace JE
 

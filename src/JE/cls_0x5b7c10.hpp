@@ -4,7 +4,7 @@
 #define JE_CLS_0X5B7C10_HPP_
 
 #include "types.hpp"
-#include "je/CEngineInterface.hpp"
+#include "JE/CEngineInterface.hpp"
 
 namespace JE {
 	class cls_0x5b7c10 : public CEngineInterface {
@@ -17,7 +17,7 @@ namespace JE {
 			byte mbr_0xc;
 		//: Methods
 		public:
-			ctor_0x5b7c10;
+			void ctor_0x5b7c10();
 	}; // 
 } // namespace JE
 

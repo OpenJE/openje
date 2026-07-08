@@ -4,7 +4,7 @@
 #define JE_G3D_MESH_HPP_
 
 #include "types.hpp"
-#include "je/G3D_BaseAttribute.hpp"
+#include "JE/G3D_BaseAttribute.hpp"
 
 namespace JE {
 	class G3D_Mesh : public G3D_BaseAttribute {
@@ -47,17 +47,17 @@ namespace JE {
 			dword mbr_0x98;
 		//: Methods
 		public:
-			meth_0x4ccc10;
-			virt_meth_0x4d2e80;
-			virt_meth_0x4d2f40;
-			ctor_0x4d7a20;
-			meth_0x4d8c10;
-			dtor_0x4d9130;
-			virt_meth_0x4d9d30;
-			meth_0x4d9d50;
-			virt_meth_0x4db040;
-			virt_meth_0x4db810;
-			virt_meth_0x4dc330;
+			undefined4 meth_0x4ccc10();
+			undefined4 virt_meth_0x4d2e80();
+			undefined4 virt_meth_0x4d2f40();
+			void ctor_0x4d7a20();
+			undefined4 meth_0x4d8c10();
+			void dtor_0x4d9130();
+			undefined4 virt_meth_0x4d9d30();
+			undefined4 meth_0x4d9d50();
+			undefined4 virt_meth_0x4db040();
+			undefined4 virt_meth_0x4db810();
+			undefined4 virt_meth_0x4dc330();
 	}; // G3D_Mesh
 } // namespace JE
 

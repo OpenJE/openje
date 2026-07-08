@@ -4,10 +4,10 @@
 #define JE_RESOURCESYSTEM_HPP_
 
 #include "types.hpp"
-#include "je/cls_0x50db20.hpp"
-#include "je/cls_0x50dbb0.hpp"
-#include "je/cls_0x50ca00.hpp"
-#include "je/cls_0x50db20.hpp"
+#include "JE/cls_0x50db20.hpp"
+#include "JE/cls_0x50dbb0.hpp"
+#include "JE/cls_0x50ca00.hpp"
+#include "JE/cls_0x50db20.hpp"
 
 namespace JE {
     // cls_0x49c610

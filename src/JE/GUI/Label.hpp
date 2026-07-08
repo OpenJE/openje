@@ -4,8 +4,8 @@
 #define JE_GUI_LABEL_HPP_
 
 #include "types.hpp"
-#include "je/GUI/Window.hpp"
-#include "je/cls_0x4abc60.hpp"
+#include "JE/GUI/Window.hpp"
+#include "JE/cls_0x4abc60.hpp"
 
 namespace JE {
     namespace GUI {
@@ -118,59 +118,59 @@ namespace JE {
                 dword mbr_0xe60;
             //: Methods
             public:
-                virt_meth_0x4588a0;
-                virt_meth_0x4588b0;
-                virt_meth_0x4a7740;
-                virt_meth_0x4a7750;
-                virt_meth_0x4a7760;
-                virt_meth_0x4a7770;
-                virt_meth_0x4a7780;
-                virt_meth_0x4a7790;
-                virt_meth_0x4a77a0;
-                virt_meth_0x4a7810;
-                virt_meth_0x4a7820;
-                virt_meth_0x4a7860;
-                virt_meth_0x4a7890;
-                virt_meth_0x4a78a0;
-                virt_meth_0x4a78b0;
-                virt_meth_0x4a78c0;
-                virt_meth_0x4a78d0;
-                virt_meth_0x4a7900;
-                virt_meth_0x4a7940;
-                virt_meth_0x4a7990;
-                virt_meth_0x4a7b20;
-                virt_meth_0x4a7b30;
-                virt_meth_0x4a7bc0;
-                virt_meth_0x4a7d40;
-                meth_0x4a7d60;
-                meth_0x4a7ec0;
-                virt_meth_0x4a80d0;
-                meth_0x4a8340;
-                meth_0x4a8490;
-                meth_0x4a8940;
-                virt_meth_0x4a8a90;
-                virt_meth_0x4a8ab0;
-                virt_meth_0x4a8b00;
-                dtor_0x4a8f40;
-                virt_meth_0x4a9060;
-                ctor_0x4a90e0;
-                virt_meth_0x4a92f0;
-                meth_0x4a93a0;
-                virt_meth_0x4aa130;
-                virt_meth_0x4aa150;
-                virt_meth_0x4aa250;
-                virt_meth_0x4aa280;
-                virt_meth_0x4aa2b0;
-                virt_meth_0x4aa2d0;
-                virt_meth_0x4aa310;
-                virt_meth_0x4aa330;
-                virt_meth_0x4aa360;
-                virt_meth_0x4aa380;
-                virt_meth_0x4aa3a0;
-                virt_meth_0x4aa3c0;
-                virt_meth_0x4aa3e0;
-                virt_meth_0x4aa640;
-                meth_0x4b0a50;
+                undefined4 virt_meth_0x4588a0();
+                undefined4 virt_meth_0x4588b0();
+                undefined4 virt_meth_0x4a7740();
+                undefined4 virt_meth_0x4a7750();
+                undefined4 virt_meth_0x4a7760();
+                undefined4 virt_meth_0x4a7770();
+                undefined4 virt_meth_0x4a7780();
+                undefined4 virt_meth_0x4a7790();
+                undefined4 virt_meth_0x4a77a0();
+                undefined4 virt_meth_0x4a7810();
+                undefined4 virt_meth_0x4a7820();
+                undefined4 virt_meth_0x4a7860();
+                undefined4 virt_meth_0x4a7890();
+                undefined4 virt_meth_0x4a78a0();
+                undefined4 virt_meth_0x4a78b0();
+                undefined4 virt_meth_0x4a78c0();
+                undefined4 virt_meth_0x4a78d0();
+                undefined4 virt_meth_0x4a7900();
+                undefined4 virt_meth_0x4a7940();
+                undefined4 virt_meth_0x4a7990();
+                undefined4 virt_meth_0x4a7b20();
+                undefined4 virt_meth_0x4a7b30();
+                undefined4 virt_meth_0x4a7bc0();
+                undefined4 virt_meth_0x4a7d40();
+                undefined4 meth_0x4a7d60();
+                undefined4 meth_0x4a7ec0();
+                undefined4 virt_meth_0x4a80d0();
+                undefined4 meth_0x4a8340();
+                undefined4 meth_0x4a8490();
+                undefined4 meth_0x4a8940();
+                undefined4 virt_meth_0x4a8a90();
+                undefined4 virt_meth_0x4a8ab0();
+                undefined4 virt_meth_0x4a8b00();
+                void dtor_0x4a8f40();
+                undefined4 virt_meth_0x4a9060();
+                void ctor_0x4a90e0();
+                undefined4 virt_meth_0x4a92f0();
+                undefined4 meth_0x4a93a0();
+                undefined4 virt_meth_0x4aa130();
+                undefined4 virt_meth_0x4aa150();
+                undefined4 virt_meth_0x4aa250();
+                undefined4 virt_meth_0x4aa280();
+                undefined4 virt_meth_0x4aa2b0();
+                undefined4 virt_meth_0x4aa2d0();
+                undefined4 virt_meth_0x4aa310();
+                undefined4 virt_meth_0x4aa330();
+                undefined4 virt_meth_0x4aa360();
+                undefined4 virt_meth_0x4aa380();
+                undefined4 virt_meth_0x4aa3a0();
+                undefined4 virt_meth_0x4aa3c0();
+                undefined4 virt_meth_0x4aa3e0();
+                undefined4 virt_meth_0x4aa640();
+                undefined4 meth_0x4b0a50();
         }; // class Label
     } // namespace GUI
 } // namespace JE

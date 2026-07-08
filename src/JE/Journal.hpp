@@ -12,10 +12,10 @@ namespace JE {
 			dword mbr_0x8;
 			dword mbr_0xc;
 		//: Methods
-			ctor_0x5a0520;
-			dtor_0x5a0560;
-			virt_meth_0x5a05c0;
-			virt_meth_0x5a05f0;
+			void ctor_0x5a0520();
+			void dtor_0x5a0560();
+			undefined4 virt_meth_0x5a05c0();
+			undefined4 virt_meth_0x5a05f0();
 	}; // Journal
 } // namespace JE
 

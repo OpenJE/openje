@@ -20,24 +20,24 @@ namespace JE {
 			dword mbr_0x8;
 		//: Methods
 		public:
-			ctor_0x51f010;
-			meth_0x51f280;
-			virt_meth_0x51f550;
-			meth_0x520100;
-			meth_0x534bf0;
-			virt_meth_0x534c40;
-			meth_0x534ce0;
-			meth_0x534df0;
-			meth_0x534ea0;
-			meth_0x534f70;
-			meth_0x535010;
-			meth_0x535260;
-			meth_0x535370;
-			meth_0x5356b0;
-			meth_0x535850;
-			meth_0x535a80;
-			meth_0x535b40;
-			meth_0x535cc0;
+			void ctor_0x51f010();
+			undefined4 meth_0x51f280();
+			undefined4 virt_meth_0x51f550();
+			undefined4 meth_0x520100();
+			undefined4 meth_0x534bf0();
+			undefined4 virt_meth_0x534c40();
+			undefined4 meth_0x534ce0();
+			undefined4 meth_0x534df0();
+			undefined4 meth_0x534ea0();
+			undefined4 meth_0x534f70();
+			undefined4 meth_0x535010();
+			undefined4 meth_0x535260();
+			undefined4 meth_0x535370();
+			undefined4 meth_0x5356b0();
+			undefined4 meth_0x535850();
+			undefined4 meth_0x535a80();
+			undefined4 meth_0x535b40();
+			undefined4 meth_0x535cc0();
 	}; // Gfx_Texture
 } // namespace JE
 

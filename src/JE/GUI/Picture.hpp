@@ -4,7 +4,7 @@
 #define JE_GUI_PICTURE_HPP_
 
 #include "types.hpp"
-#include "je/GUI/Window.hpp"
+#include "JE/GUI/Window.hpp"
 
 namespace JE {
     namespace GUI {
@@ -21,20 +21,20 @@ namespace JE {
                 dword mbr_0xd28;
             //: Methods
             public:
-                ctor_0x4aa8b0;
-                virt_meth_0x4aa8f0;
-                virt_meth_0x4aa920;
-                virt_meth_0x4aa9b0;
-                virt_meth_0x4aaa90;
-                dtor_0x4aaaa0;
-                virt_meth_0x4aab20;
-                virt_meth_0x4aaef0;
-                meth_0x4aaf10;
-                virt_meth_0x4ab160;
-                virt_meth_0x4ab190;
-                virt_meth_0x4ab1f0;
-                virt_meth_0x4ab490;
-                virt_meth_0x4ab530;
+                void ctor_0x4aa8b0();
+                undefined4 virt_meth_0x4aa8f0();
+                undefined4 virt_meth_0x4aa920();
+                undefined4 virt_meth_0x4aa9b0();
+                undefined4 virt_meth_0x4aaa90();
+                void dtor_0x4aaaa0();
+                undefined4 virt_meth_0x4aab20();
+                undefined4 virt_meth_0x4aaef0();
+                undefined4 meth_0x4aaf10();
+                undefined4 virt_meth_0x4ab160();
+                undefined4 virt_meth_0x4ab190();
+                undefined4 virt_meth_0x4ab1f0();
+                undefined4 virt_meth_0x4ab490();
+                undefined4 virt_meth_0x4ab530();
         }; // class Picture
     } // namespace GUI
 } // namespace JE

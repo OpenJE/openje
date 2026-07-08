@@ -4,8 +4,8 @@
 #define JE_CLS_0X4C0190_HPP_
 
 #include "types.hpp"
-#include "je/cls_0x4abc60.hpp"
-#include "je/Gfx_Camera.hpp"
+#include "JE/cls_0x4abc60.hpp"
+#include "JE/Gfx_Camera.hpp"
 
 namespace JE {
 	class cls_0x4c0190 {
@@ -89,12 +89,12 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			meth_0x424880;
-			meth_0x4248f0;
-			meth_0x424db0;
-			meth_0x429d20;
-			meth_0x4bffd0;
-			ctor_0x4c0190;
+			undefined4 meth_0x424880();
+			undefined4 meth_0x4248f0();
+			undefined4 meth_0x424db0();
+			undefined4 meth_0x429d20();
+			undefined4 meth_0x4bffd0();
+			void ctor_0x4c0190();
 	}; // 
 } // namespace JE
 

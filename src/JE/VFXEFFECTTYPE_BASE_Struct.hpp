@@ -4,10 +4,10 @@
 #define JE_VFXEFFECTTYPE_BASE_STRUCT_HPP_
 
 #include "types.hpp"
-#include "je/cls_0x502110.hpp"
-#include "je/cls_0x50db20.hpp"
-#include "je/cls_0x4dff90.hpp"
-#include "je/cls_0x4d8d70.hpp"
+#include "JE/cls_0x502110.hpp"
+#include "JE/cls_0x50db20.hpp"
+#include "JE/cls_0x4dff90.hpp"
+#include "JE/cls_0x4d8d70.hpp"
 
 namespace JE {
 	struct VFXEFFECTTYPE_BASE_Struct {
@@ -55,12 +55,12 @@ namespace JE {
 			dword mbr_0xf8;
 			dword mbr_0xfc;
 		//: Methods
-			ctor_0x4e0f00;
-			dtor_0x4e1750;
-			virt_meth_0x4e17a0;
-			meth_0x4e3d10;
-			meth_0x4f10c0;
-			meth_0x4f2ab0;
+			void ctor_0x4e0f00();
+			void dtor_0x4e1750();
+			undefined4 virt_meth_0x4e17a0();
+			undefined4 meth_0x4e3d10();
+			undefined4 meth_0x4f10c0();
+			undefined4 meth_0x4f2ab0();
 	}; // VFXEFFECTTYPE_BASE_Struct
 } // namespace JE
 

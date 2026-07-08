@@ -4,7 +4,7 @@
 #define JE_EFFECTTREERINGTRIGGER_HPP_
 
 #include "types.hpp"
-#include "je/EffectTreeTrigger.hpp"
+#include "JE/EffectTreeTrigger.hpp"
 
 namespace JE {
 	struct EffectTreeRingTrigger : public EffectTreeTrigger {
@@ -27,11 +27,11 @@ namespace JE {
 			dword mbr_0x88;
 			dword mbr_0x8c;
 		//: Methods
-			ctor_0x5b1fa0;
-			dtor_0x5b1fd0;
-			virt_meth_0x5b1fe0;
-			virt_meth_0x5b2050;
-			virt_meth_0x5b20b0;
+			void ctor_0x5b1fa0();
+			void dtor_0x5b1fd0();
+			undefined4 virt_meth_0x5b1fe0();
+			undefined4 virt_meth_0x5b2050();
+			undefined4 virt_meth_0x5b20b0();
 	}; // EffectTreeRingTrigger
 } // namespace JE
 

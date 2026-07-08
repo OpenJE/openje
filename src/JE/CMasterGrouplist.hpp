@@ -4,7 +4,7 @@
 #define JE_CMASTERGROUPLIST_HPP_
 
 #include "types.hpp"
-#include "je/CSoundFile.hpp"
+#include "JE/CSoundFile.hpp"
 
 namespace JE {
 	class CMasterGrouplist : public CSoundFile {
@@ -19,10 +19,10 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			ctor_0x52dfb0;
-			virt_meth_0x52e040;
-			meth_0x52e220;
-			dtor_0x52e390;
+			void ctor_0x52dfb0();
+			undefined4 virt_meth_0x52e040();
+			undefined4 meth_0x52e220();
+			void dtor_0x52e390();
 	}; // CMasterGrouplist
 } // namespace JE
 

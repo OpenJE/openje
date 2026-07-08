@@ -4,7 +4,7 @@
 #define JE_SERVER_CLIENT_HPP_
 
 #include "types.hpp"
-#include "je/net/server/client.hpp"
+#include "JE/net/server/client.hpp"
 
 namespace JE {
     namespace Server {

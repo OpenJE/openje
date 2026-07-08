@@ -33,9 +33,9 @@ namespace JE {
 			dword mbr_0x8;
 		//: Methods
 		public:
-			dtor_0x445690;
-			virt_meth_0x445720;
-			ctor_0x445c10;
+			void dtor_0x445690();
+			undefined4 virt_meth_0x445720();
+			void ctor_0x445c10();
 	}; // HotKeyWindowFormat
 } // namespace JE
 

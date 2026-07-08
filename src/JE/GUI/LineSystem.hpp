@@ -4,7 +4,7 @@
 #define JE_GUI_LINESYSTEM_HPP_
 
 #include "types.hpp"
-#include "je/cls_0x4abc60.hpp"
+#include "JE/cls_0x4abc60.hpp"
 
 namespace JE {
     namespace GUI {
@@ -71,15 +71,15 @@ namespace JE {
                 byte mbr_0xfc;
             //: Methods
             public:
-                virt_meth_0x4add40;
-                virt_meth_0x4add80;
-                meth_0x4adda0;
-                virt_meth_0x4ae120;
-                dtor_0x4ae630;
-                meth_0x4ae730;
-                virt_meth_0x4aec80;
-                virt_meth_0x4aeca0;
-                ctor_0x4aedd0;
+                undefined4 virt_meth_0x4add40();
+                undefined4 virt_meth_0x4add80();
+                undefined4 meth_0x4adda0();
+                undefined4 virt_meth_0x4ae120();
+                void dtor_0x4ae630();
+                undefined4 meth_0x4ae730();
+                undefined4 virt_meth_0x4aec80();
+                undefined4 virt_meth_0x4aeca0();
+                void ctor_0x4aedd0();
         }; // class LineSystem
     } // namespace GUI
 } // namespace JE

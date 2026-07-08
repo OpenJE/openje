@@ -9,10 +9,10 @@ namespace JE {
 	class CActionbarInterface {
 		//: Methods
 		public:
-			virt_meth_0x4172a0;
-			virt_meth_0x4172b0;
-			virt_meth_0x4172c0;
-			virt_meth_0x41cfe0;
+			undefined4 virt_meth_0x4172a0();
+			undefined4 virt_meth_0x4172b0();
+			undefined4 virt_meth_0x4172c0();
+			undefined4 virt_meth_0x41cfe0();
 	}; // CActionbarInterface
 } // namespace JE
 

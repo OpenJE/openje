@@ -21,10 +21,10 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			ctor_0x5e768b;
-			meth_0x5e76c5;
-			meth_0x5e77d7;
-			meth_0x5e8841;
+			void ctor_0x5e768b();
+			undefined4 meth_0x5e76c5();
+			undefined4 meth_0x5e77d7();
+			undefined4 meth_0x5e8841();
 	}; // 
 } // namespace JE
 

@@ -20,9 +20,9 @@ namespace JE {
 			dword mbr_0x8;
 		//: Methods
 		public:
-			dtor_0x5a1f80;
-			virt_meth_0x5a2100;
-			ctor_0x5a2330;
+			void dtor_0x5a1f80();
+			undefined4 virt_meth_0x5a2100();
+			void ctor_0x5a2330();
 	}; // CStoreItem
 } // namespace JE
 

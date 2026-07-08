@@ -4,9 +4,9 @@
 #define JE_CLS_0X50DB20_HPP_
 
 #include "types.hpp"
-#include "je/VFX_Parameter.hpp"
-#include "je/G3D_Water.hpp"
-#include "je/cls_0x40a220.hpp"
+#include "JE/VFX_Parameter.hpp"
+#include "JE/G3D_Water.hpp"
+#include "JE/cls_0x40a220.hpp"
 
 namespace JE {
 	class cls_0x50db20 {
@@ -123,90 +123,91 @@ namespace JE {
 			dword mbr_0xfc;
 		//: Methods
 		public:
-			meth_0x401440;
-			meth_0x401490;
-			meth_0x4014b0;
-			meth_0x401510;
-			meth_0x401940;
-			meth_0x401a40;
-			meth_0x401b20;
-			meth_0x401bd0;
-			ctor_0x404bc0;
-			meth_0x40acc0;
-			meth_0x4174f0;
-			meth_0x417870;
-			meth_0x41e4b0;
-			ctor_0x41fc60;
-			meth_0x425bd0;
-			meth_0x430800;
-			meth_0x4324b0;
-			meth_0x432510;
-			meth_0x432f60;
-			meth_0x433430;
-			ctor_0x4346b0;
-			meth_0x45ce10;
-			meth_0x4971c0;
-			ctor_0x497370;
-			ctor_0x499860;
-			meth_0x4b2ec0;
-			meth_0x4b5e60;
-			meth_0x4b5eb0;
-			meth_0x4b5f90;
-			meth_0x4b6010;
-			meth_0x4c5dc0;
-			meth_0x4c60a0;
-			meth_0x4c8610;
-			meth_0x4c8650;
-			meth_0x4c8690;
-			meth_0x4c86e0;
-			meth_0x4cb240;
-			meth_0x4cd070;
-			ctor_0x4cfe20;
-			ctor_0x4d0150;
-			ctor_0x4d02a0;
-			meth_0x4d05e0;
-			meth_0x4d1290;
-			meth_0x4d16a0;
-			ctor_0x4d35c0;
-			meth_0x4d5100;
-			ctor_0x4d7b10;
-			meth_0x4d7bc0;
-			ctor_0x4d9390;
-			ctor_0x4da1c0;
-			ctor_0x4df0d0;
-			ctor_0x4df140;
-			ctor_0x4e0020;
-			ctor_0x4e0090;
-			ctor_0x4e1900;
-			ctor_0x4e1990;
-			ctor_0x4e1d80;
-			meth_0x4f9e60;
-			ctor_0x4f9f40;
-			ctor_0x4f9fb0;
-			ctor_0x50c980;
-			ctor_0x50da90;
-			dtor_0x50db20;
-			ctor_0x52d4c0;
-			ctor_0x52ea80;
-			ctor_0x557b80;
-			ctor_0x56f5f0;
-			ctor_0x56f7d0;
-			ctor_0x570060;
-			meth_0x571110;
-			ctor_0x590220;
-			meth_0x592880;
-			ctor_0x592940;
-			meth_0x592fb0;
-			ctor_0x5931b0;
-			meth_0x594370;
-			ctor_0x59dda0;
-			ctor_0x5a4d90;
-			meth_0x5a9ab0;
-			meth_0x5a9e60;
-			ctor_0x5b5220;
-			meth_0x6141dd;
-			ctor_0x614a7f;
-	}; // 
+			undefined4 meth_0x401440();
+			undefined4 meth_0x401490();
+			undefined4 meth_0x4014b0();
+			undefined4 meth_0x401510();
+			undefined4 meth_0x401940();
+			undefined4 meth_0x401a40();
+			undefined4 meth_0x401b20();
+			undefined4 meth_0x401bd0(const char* param_1, int param_2);
+			void ctor_0x404bc0();
+			undefined4 meth_0x40acc0();
+			undefined4 meth_0x4174f0();
+			undefined4 meth_0x417870();
+			undefined4 meth_0x41e4b0();
+			void ctor_0x41fc60();
+			undefined4 meth_0x425bd0();
+			undefined4 meth_0x430800();
+			undefined4 meth_0x4324b0();
+			undefined4 meth_0x432510();
+			undefined4 meth_0x432f60();
+			undefined4 meth_0x433430();
+			void ctor_0x4346b0();
+			undefined4 meth_0x45ce10();
+			undefined4 meth_0x4971c0();
+			void ctor_0x497370();
+			void ctor_0x499860();
+			undefined4 meth_0x4b2ec0();
+			undefined4 meth_0x4b5e60();
+			undefined4 meth_0x4b5eb0();
+			undefined4 meth_0x4b5f90();
+			undefined4 meth_0x4b6010();
+			undefined4 meth_0x4c5dc0();
+			undefined4 meth_0x4c60a0();
+			undefined4 meth_0x4c8610();
+			undefined4 meth_0x4c8650();
+			undefined4 meth_0x4c8690();
+			undefined4 meth_0x4c86e0();
+			undefined4 meth_0x4cb240();
+			undefined4 meth_0x4cd070();
+			void ctor_0x4cfe20();
+			void ctor_0x4d0150();
+			void ctor_0x4d02a0();
+			undefined4 meth_0x4d05e0();
+			undefined4 meth_0x4d1290();
+			undefined4 meth_0x4d16a0();
+			void ctor_0x4d35c0();
+			undefined4 meth_0x4d5100();
+			void ctor_0x4d7b10();
+			undefined4 meth_0x4d7bc0();
+			void ctor_0x4d9390();
+			void ctor_0x4da1c0();
+			void ctor_0x4df0d0();
+			void ctor_0x4df140();
+			void ctor_0x4e0020();
+			void ctor_0x4e0090();
+			void ctor_0x4e1900();
+			void ctor_0x4e1990();
+			void ctor_0x4e1d80();
+			undefined4 meth_0x4f9e60();
+			void ctor_0x4f9f40();
+			void ctor_0x4f9fb0();
+			void ctor_0x50c980();
+			void ctor_0x50da90();
+			void dtor_0x50db20();
+			void ctor_0x52d4c0();
+			void ctor_0x52ea80();
+			void ctor_0x557b80();
+			void ctor_0x56f5f0();
+			void ctor_0x56f7d0();
+			void ctor_0x570060();
+			undefined4 meth_0x571110();
+			void ctor_0x590220();
+			undefined4 meth_0x592880();
+			void ctor_0x592940();
+			undefined4 meth_0x592fb0();
+			void ctor_0x5931b0();
+			undefined4 meth_0x594370();
+			void ctor_0x59dda0();
+			void ctor_0x5a4d90();
+			undefined4 meth_0x5a9ab0();
+			undefined4 meth_0x5a9e60();
+			void ctor_0x5b5220();
+			undefined4 meth_0x6141dd();
+			void ctor_0x614a7f();
+			cls_0x50db20() {}
+	}; //
 } // namespace JE
 
 #endif // JE_CLS_0X50DB20_HPP_

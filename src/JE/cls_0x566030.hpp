@@ -4,7 +4,7 @@
 #define JE_CLS_0X566030_HPP_
 
 #include "types.hpp"
-#include "je/cls_0x50db20.hpp"
+#include "JE/cls_0x50db20.hpp"
 
 namespace JE {
 	class cls_0x566030 {
@@ -19,8 +19,8 @@ namespace JE {
 			dword mbr_0x4;
 		//: Methods
 		public:
-			meth_0x5655b0;
-			ctor_0x566030;
+			undefined4 meth_0x5655b0();
+			void ctor_0x566030();
 	}; // 
 } // namespace JE
 

@@ -4,7 +4,7 @@
 #define JE_CLS_0X594A60_HPP_
 
 #include "types.hpp"
-#include "je/cls_0x50dbb0.hpp"
+#include "JE/cls_0x50dbb0.hpp"
 
 namespace JE {
 	class cls_0x594a60 {
@@ -22,7 +22,7 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			ctor_0x594a60;
+			void ctor_0x594a60();
 	}; // 
 } // namespace JE
 

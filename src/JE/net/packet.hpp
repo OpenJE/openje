@@ -4,7 +4,7 @@
 #define JE_NET_PACKET_HPP_
 
 #include "types.hpp"
-#include "je/net/buffer.hpp"
+#include "JE/net/buffer.hpp"
 
 namespace JE {
     namespace net {
@@ -30,18 +30,18 @@ namespace JE {
                 dword mbr_0xc;
             //: Methods
             public:
-                meth_0x45f0b0;
-                meth_0x45f130;
-                meth_0x45f1b0;
+                undefined4 meth_0x45f0b0();
+                undefined4 meth_0x45f130();
+                undefined4 meth_0x45f1b0();
                 ctor_0x45je00;
-                meth_0x46cfb0;
-                meth_0x552bd0;
-                meth_0x588d30;
-                virt_meth_0x59d670;
-                ctor_0x5abce0;
-                meth_0x5ac5b0;
-                meth_0x5ac630;
-                meth_0x5ac7b0;
+                undefined4 meth_0x46cfb0();
+                undefined4 meth_0x552bd0();
+                undefined4 meth_0x588d30();
+                undefined4 virt_meth_0x59d670();
+                void ctor_0x5abce0();
+                undefined4 meth_0x5ac5b0();
+                undefined4 meth_0x5ac630();
+                undefined4 meth_0x5ac7b0();
         }; // class packet
     } // namespace net
 } // namespace JE

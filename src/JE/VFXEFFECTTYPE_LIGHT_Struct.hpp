@@ -4,13 +4,13 @@
 #define JE_VFXEFFECTTYPE_LIGHT_STRUCT_HPP_
 
 #include "types.hpp"
-#include "je/VFXEFFECTTYPE_BASE_Struct.hpp"
-#include "je/cls_0x4dff90.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x4d8d70.hpp"
-#include "je/cls_0x4d8d70.hpp"
+#include "JE/VFXEFFECTTYPE_BASE_Struct.hpp"
+#include "JE/cls_0x4dff90.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x4d8d70.hpp"
+#include "JE/cls_0x4d8d70.hpp"
 
 namespace JE {
 	struct VFXEFFECTTYPE_LIGHT_Struct : public VFXEFFECTTYPE_BASE_Struct, public cls_0x4dff90 {
@@ -63,8 +63,8 @@ namespace JE {
 			dword mbr_0xf8;
 			dword mbr_0xfc;
 		//: Methods
-			ctor_0x4e7f90;
-			meth_0x4e8160;
+			void ctor_0x4e7f90();
+			undefined4 meth_0x4e8160();
 	}; // VFXEFFECTTYPE_LIGHT_Struct
 } // namespace JE
 

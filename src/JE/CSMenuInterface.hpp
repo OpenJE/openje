@@ -4,7 +4,7 @@
 #define JE_CSMENUINTERFACE_HPP_
 
 #include "types.hpp"
-#include "je/CEngineInterface.hpp"
+#include "JE/CEngineInterface.hpp"
 
 namespace JE {
 	class CSMenuInterface : public CEngineInterface {
@@ -25,10 +25,10 @@ namespace JE {
 			dword mbr_0xd4c;
 		//: Methods
 		public:
-			virt_meth_0x568b40;
-			virt_meth_0x568b50;
-			virt_meth_0x568b60;
-			ctor_0x568e50;
+			undefined4 virt_meth_0x568b40();
+			undefined4 virt_meth_0x568b50();
+			undefined4 virt_meth_0x568b60();
+			void ctor_0x568e50();
 	}; // CSMenuInterface
 } // namespace JE
 

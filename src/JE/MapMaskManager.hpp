@@ -27,9 +27,9 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			dtor_0x598400;
-			ctor_0x598560;
-			virt_meth_0x598610;
+			void dtor_0x598400();
+			void ctor_0x598560();
+			undefined4 virt_meth_0x598610();
 	}; // MapMaskManager
 } // namespace JE
 

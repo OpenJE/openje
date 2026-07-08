@@ -9,9 +9,9 @@ namespace JE {
 	class CMainmenuInterface {
 		//: Methods
 		public:
-			virt_meth_0x440940;
-			virt_meth_0x440950;
-			virt_meth_0x440fb0;
+			undefined4 virt_meth_0x440940();
+			undefined4 virt_meth_0x440950();
+			undefined4 virt_meth_0x440fb0();
 	}; // CMainmenuInterface
 } // namespace JE
 

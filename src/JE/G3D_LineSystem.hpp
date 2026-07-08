@@ -4,7 +4,7 @@
 #define JE_G3D_LINESYSTEM_HPP_
 
 #include "types.hpp"
-#include "je/G3D_BaseAttribute.hpp"
+#include "JE/G3D_BaseAttribute.hpp"
 
 namespace JE {
 	class G3D_LineSystem : public G3D_BaseAttribute {
@@ -20,14 +20,14 @@ namespace JE {
 			dword mbr_0x8;
 		//: Methods
 		public:
-			virt_meth_0x4cbc50;
-			virt_meth_0x4cbcc0;
-			ctor_0x4d78f0;
-			virt_meth_0x4d7940;
-			dtor_0x4d7960;
-			virt_meth_0x4d8270;
-			virt_meth_0x4d84e0;
-			virt_meth_0x4d8630;
+			undefined4 virt_meth_0x4cbc50();
+			undefined4 virt_meth_0x4cbcc0();
+			void ctor_0x4d78f0();
+			undefined4 virt_meth_0x4d7940();
+			void dtor_0x4d7960();
+			undefined4 virt_meth_0x4d8270();
+			undefined4 virt_meth_0x4d84e0();
+			undefined4 virt_meth_0x4d8630();
 	}; // G3D_LineSystem
 } // namespace JE
 

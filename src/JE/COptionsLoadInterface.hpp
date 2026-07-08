@@ -10,8 +10,8 @@ namespace JE {
 		//: Methods
 		public:
 			virt_meth_0x423je0;
-			virt_meth_0x448800;
-			virt_meth_0x448810;
+			undefined4 virt_meth_0x448800();
+			undefined4 virt_meth_0x448810();
 	}; // COptionsLoadInterface
 } // namespace JE
 

@@ -20,14 +20,14 @@ namespace JE {
 			dword mbr_0x8;
 			dword mbr_0xc;
 		//: Methods
-			virt_meth_0x53b290;
-			virt_meth_0x53b3c0;
-			virt_meth_0x53b400;
-			meth_0x5ba0e0;
-			virt_meth_0x5ba110;
-			virt_meth_0x5ba150;
-			virt_meth_0x5ba2b0;
-			ctor_0x5ba470;
+			undefined4 virt_meth_0x53b290();
+			undefined4 virt_meth_0x53b3c0();
+			undefined4 virt_meth_0x53b400();
+			undefined4 meth_0x5ba0e0();
+			undefined4 virt_meth_0x5ba110();
+			undefined4 virt_meth_0x5ba150();
+			undefined4 virt_meth_0x5ba2b0();
+			void ctor_0x5ba470();
 	}; // OCTREE_Ring2D
 } // namespace JE
 

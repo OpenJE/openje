@@ -13,14 +13,14 @@ namespace JE {
 			dword mbr_0x8;
 		//: Methods
 		public:
-			meth_0x4b91b0;
-			meth_0x4b99f0;
-			meth_0x4b9a90;
-			meth_0x4b9fb0;
-			meth_0x4ba510;
-			meth_0x4ba5d0;
-			meth_0x4bb150;
-			meth_0x4bb770;
+			undefined4 meth_0x4b91b0();
+			undefined4 meth_0x4b99f0();
+			undefined4 meth_0x4b9a90();
+			undefined4 meth_0x4b9fb0();
+			undefined4 meth_0x4ba510();
+			undefined4 meth_0x4ba5d0();
+			undefined4 meth_0x4bb150();
+			undefined4 meth_0x4bb770();
 	}; // 
 } // namespace JE
 

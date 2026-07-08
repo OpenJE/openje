@@ -4,13 +4,13 @@
 #define JE_GFX_AFTERIMAGEINFO_HPP_
 
 #include "types.hpp"
-#include "je/Gfx_ParticleInfoBase.hpp"
+#include "JE/Gfx_ParticleInfoBase.hpp"
 
 namespace JE {
 	class Gfx_AfterImageInfo : public Gfx_ParticleInfoBase {
 		//: Methods
 		public:
-			virt_meth_0x512d40;
+			undefined4 virt_meth_0x512d40();
 	}; // Gfx_AfterImageInfo
 } // namespace JE
 

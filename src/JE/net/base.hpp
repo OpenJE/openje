@@ -4,7 +4,7 @@
 #define JE_NET_BASE_HPP_
 
 #include "types.hpp"
-#include "je/net/critical_section.hpp"
+#include "JE/net/critical_section.hpp"
 
 namespace JE {
     namespace net {
@@ -36,9 +36,9 @@ namespace JE {
                 dword mbr_0xc;
             //: Methods
             public:
-                meth_0x59d530;
-                virt_meth_0x59d650;
-                ctor_0x59d6d0;
+                undefined4 meth_0x59d530();
+                undefined4 virt_meth_0x59d650();
+                void ctor_0x59d6d0();
         }; // class base
     } // namespace net
 } // namespace JE

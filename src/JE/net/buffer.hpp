@@ -4,7 +4,7 @@
 #define JE_NET_BUFFER_HPP_
 
 #include "types.hpp"
-#include "je/net/exception.hpp"
+#include "JE/net/exception.hpp"
 
 namespace JE {
     namespace net {
@@ -16,8 +16,8 @@ namespace JE {
                 byte mbr_0x4;
             //: Methods
             public:
-                virt_deldtor_0x45f240;
-                dtor_0x45f280;
+                virtual undefined4 virt_deldtor_0x45f240();
+                void dtor_0x45f280();
         }; // class buffer
     } // namespace net
 } // namespace JE

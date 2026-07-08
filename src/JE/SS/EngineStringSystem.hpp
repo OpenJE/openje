@@ -4,7 +4,7 @@
 #define JE_SS_ENGINESTRINGSYSTEM_HPP_
 
 #include "types.hpp"
-#include "je/SS/StringSystem.hpp"
+#include "JE/SS/StringSystem.hpp"
 
 namespace JE {
     namespace SS {
@@ -16,11 +16,11 @@ namespace JE {
                 dword mbr_0x174;
             //: Methods
             public:
-                virt_meth_0x56bca0;
-                meth_0x56be30;
-                virt_meth_0x56c260;
-                ctor_0x56c360;
-                dtor_0x56c3e0;
+                undefined4 virt_meth_0x56bca0();
+                undefined4 meth_0x56be30();
+                undefined4 virt_meth_0x56c260();
+                void ctor_0x56c360();
+                void dtor_0x56c3e0();
         }; // class EngineStringSystem
     } // namespace SS
 } // namespace JE

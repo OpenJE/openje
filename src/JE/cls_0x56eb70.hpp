@@ -4,7 +4,7 @@
 #define JE_CLS_0X56EB70_HPP_
 
 #include "types.hpp"
-#include "je/G3D_Mesh.hpp"
+#include "JE/G3D_Mesh.hpp"
 
 namespace JE {
 	class cls_0x56eb70 {
@@ -25,8 +25,8 @@ namespace JE {
 			dword mbr_0x8;
 		//: Methods
 		public:
-			meth_0x56e460;
-			ctor_0x56eb70;
+			undefined4 meth_0x56e460();
+			void ctor_0x56eb70();
 	}; // 
 } // namespace JE
 

@@ -49,11 +49,11 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			meth_0x424670;
-			meth_0x4c6200;
-			meth_0x4c62f0;
-			ctor_0x4c6740;
-			virt_meth_0x529ef0;
+			undefined4 meth_0x424670();
+			undefined4 meth_0x4c6200();
+			undefined4 meth_0x4c62f0();
+			void ctor_0x4c6740();
+			undefined4 virt_meth_0x529ef0();
 	}; // Gfx_CamCtrl
 } // namespace JE
 

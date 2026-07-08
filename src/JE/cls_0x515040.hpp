@@ -4,7 +4,7 @@
 #define JE_CLS_0X515040_HPP_
 
 #include "types.hpp"
-#include "je/cls_0x4abc60.hpp"
+#include "JE/cls_0x4abc60.hpp"
 
 namespace JE {
 	class cls_0x515040 {
@@ -42,15 +42,15 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			meth_0x41f200;
-			meth_0x41f630;
-			meth_0x41fdf0;
-			meth_0x4b6670;
-			meth_0x4c0ea0;
-			meth_0x4e42c0;
-			meth_0x4e6140;
-			ctor_0x515040;
-			meth_0x5150c0;
+			undefined4 meth_0x41f200();
+			undefined4 meth_0x41f630();
+			undefined4 meth_0x41fdf0();
+			undefined4 meth_0x4b6670();
+			undefined4 meth_0x4c0ea0();
+			undefined4 meth_0x4e42c0();
+			undefined4 meth_0x4e6140();
+			void ctor_0x515040();
+			undefined4 meth_0x5150c0();
 	}; // 
 } // namespace JE
 

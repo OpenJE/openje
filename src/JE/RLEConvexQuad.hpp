@@ -4,7 +4,7 @@
 #define JE_RLECONVEXQUAD<NEAR STRUCT ENTITY *>_HPP_
 
 #include "types.hpp"
-#include "je/RLEPrimitive.hpp"
+#include "JE/RLEPrimitive.hpp"
 
 namespace JE {
 	class RLEConvexQuad<near struct Entity *> : public RLEPrimitive<near struct Entity *> {
@@ -29,14 +29,14 @@ namespace JE {
 			dword mbr_0x54;
 		//: Methods
 		public:
-			virt_meth_0x40a4b0;
-			ctor_0x40c9b0;
-			virt_meth_0x40cb80;
-			virt_meth_0x40cbb0;
-			virt_meth_0x40cbd0;
-			virt_meth_0x40cbf0;
-			virt_meth_0x40cc60;
-			virt_meth_0x54ffb0;
+			undefined4 virt_meth_0x40a4b0();
+			void ctor_0x40c9b0();
+			undefined4 virt_meth_0x40cb80();
+			undefined4 virt_meth_0x40cbb0();
+			undefined4 virt_meth_0x40cbd0();
+			undefined4 virt_meth_0x40cbf0();
+			undefined4 virt_meth_0x40cc60();
+			undefined4 virt_meth_0x54ffb0();
 	}; // RLEConvexQuad<near struct Entity *>
 } // namespace JE
 

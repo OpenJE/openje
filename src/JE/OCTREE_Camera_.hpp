@@ -110,16 +110,16 @@ namespace JE {
 			dword mbr_0xf4;
 			dword mbr_0xf8;
 		//: Methods
-			ctor_0x5b0020;
-			virt_meth_0x5bbcb0;
-			virt_meth_0x5bbd70;
-			virt_meth_0x5bbfd0;
-			virt_meth_0x5bc040;
-			virt_meth_0x5bc080;
-			virt_meth_0x5bc1f0;
-			virt_meth_0x5bc530;
-			virt_meth_0x5bcd20;
-			virt_meth_0x5bcdd0;
+			void ctor_0x5b0020();
+			undefined4 virt_meth_0x5bbcb0();
+			undefined4 virt_meth_0x5bbd70();
+			undefined4 virt_meth_0x5bbfd0();
+			undefined4 virt_meth_0x5bc040();
+			undefined4 virt_meth_0x5bc080();
+			undefined4 virt_meth_0x5bc1f0();
+			undefined4 virt_meth_0x5bc530();
+			undefined4 virt_meth_0x5bcd20();
+			undefined4 virt_meth_0x5bcdd0();
 	}; // OCTREE_Camera_
 } // namespace JE
 

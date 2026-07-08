@@ -9,9 +9,9 @@ namespace JE {
 	class COptionsInterface {
 		//: Methods
 		public:
-			virt_meth_0x4422f0;
-			virt_meth_0x4433d0;
-			virt_meth_0x443570;
+			undefined4 virt_meth_0x4422f0();
+			undefined4 virt_meth_0x4433d0();
+			undefined4 virt_meth_0x443570();
 	}; // COptionsInterface
 } // namespace JE
 

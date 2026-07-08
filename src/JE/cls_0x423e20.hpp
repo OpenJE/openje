@@ -22,13 +22,13 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			meth_0x423e20;
-			meth_0x423e50;
-			meth_0x423ec0;
-			meth_0x423f40;
-			meth_0x424140;
-			meth_0x424340;
-			meth_0x424520;
+			undefined4 meth_0x423e20();
+			undefined4 meth_0x423e50();
+			undefined4 meth_0x423ec0();
+			undefined4 meth_0x423f40();
+			undefined4 meth_0x424140();
+			undefined4 meth_0x424340();
+			undefined4 meth_0x424520();
 	}; // 
 } // namespace JE
 

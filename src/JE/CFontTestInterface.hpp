@@ -9,8 +9,8 @@ namespace JE {
 	class CFontTestInterface {
 		//: Methods
 		public:
-			virt_meth_0x5b77b0;
-			virt_meth_0x5b8a10;
+			undefined4 virt_meth_0x5b77b0();
+			undefined4 virt_meth_0x5b8a10();
 	}; // CFontTestInterface
 } // namespace JE
 
