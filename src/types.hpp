@@ -209,7 +209,7 @@ typedef uint64             ulonglong;
 #define __noreturn      /* nothing */
 #define __usercall      /* nothing */
 #define __userpurge     /* nothing */
-#define __spoils(...)   /* nothing */
+#define __spoils    /* nothing */
 
 #define __hidden        /* nothing */
 #define __return_ptr    /* nothing */

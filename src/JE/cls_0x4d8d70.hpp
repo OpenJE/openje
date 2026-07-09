@@ -27,7 +27,7 @@ namespace JE {
 	public:
 		int* meth_0x545710(int param_1);
 		int* meth_0x56f520(int *param_1, int *param_2);
-		int meth_0x59f200(int param_1, char param_2, int param_3, int param_4);
+		int* meth_0x59f200(int param_1, char param_2, int param_3, int param_4);
 		int* meth_0x59f3e0(int param_1, int *param_2);
 		int meth_0x5ace40(unsigned int *param_1);
 	};

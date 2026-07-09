@@ -11,7 +11,7 @@
 namespace JE {
 
     // 0x545710 — BST search: find existing command node by name.
-    int* __thiscall cls_0x4d8d70::meth_0x545710(cls_0x4d8d70 *this, int param_1) {
+    int* cls_0x4d8d70::meth_0x545710(int param_1) {
         int v2;
         int mbr_0x4_val;
 
@@ -45,7 +45,7 @@ namespace JE {
     }
 
     // 0x56F520 — Value lookup/comparison.
-    int* __thiscall cls_0x4d8d70::meth_0x56f520(cls_0x4d8d70 *this, int *param_1, int *param_2) {
+    int* cls_0x4d8d70::meth_0x56f520(int *param_1, int *param_2) {
         int *v5 = reinterpret_cast<int*>(this->meth_0x4cbdf0(param_2));
 
         const char *str_v5, *str_p2;
@@ -72,7 +72,7 @@ namespace JE {
     }
 
     // 0x5ACE40 — Wrapper around meth_0x56f520, used in Startup.
-    int __thiscall cls_0x4d8d70::meth_0x5ace40(cls_0x4d8d70 *this, unsigned int *param_1) {
+    int cls_0x4d8d70::meth_0x5ace40(unsigned int *param_1) {
         int *result = this->meth_0x56f520(param_1, reinterpret_cast<int*>(*param_1));
 
         if (result == reinterpret_cast<int*>(this->mbr_0x4)) {
@@ -83,7 +83,7 @@ namespace JE {
     }
 
     // 0x59F3E0 — BST insert/search: used by RegisterCommand for new commands.
-    int* __thiscall cls_0x4d8d70::meth_0x59f3e0(cls_0x4d8d70 *this, int param_1, int *param_2) {
+    int* cls_0x4d8d70::meth_0x59f3e0(int param_1, int *param_2) {
         int v5 = *reinterpret_cast<int*>(static_cast<char*>(this->mbr_0x4) + 4);
         int *parent = this->mbr_0x4;
 
@@ -120,7 +120,7 @@ namespace JE {
     }
 
     // 0x59F200 — Node creation / rebalancing stub.
-    int* __thiscall cls_0x4d8d70::meth_0x59f200(cls_0x4d8d70 *this, int param_1, char param_2, int param_3, int param_4) {
+    int* cls_0x4d8d70::meth_0x59f200(int param_1, char param_2, int param_3, int param_4) {
         // Full STL map/set rebalancing deferred — return control block pointer.
         return reinterpret_cast<int*>(this->mbr_0x4);
     }

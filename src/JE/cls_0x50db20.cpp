@@ -7,7 +7,7 @@ namespace JE {
 
     // 0x401BD0 — String copy/setter. Copies param_1 (length param_2) into this string buffer,
     // using SSO inline storage for short strings or heap allocation for longer ones.
-    undefined4 __thiscall cls_0x50db20::meth_0x401bd0(cls_0x50db20 *this, const char *param_1, int param_2) {
+    undefined4 cls_0x50db20::meth_0x401bd0(const char *param_1, int param_2) {
         unsigned int capacity;
 
         capacity = this->mbr_0x70;
