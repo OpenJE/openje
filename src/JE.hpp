@@ -4,10 +4,11 @@
 #define JE_HPP_
 
 #include <windows.h>
+#include <cstdarg>
 
 namespace JE {
     // 0x707CF0
-    static bool bool_0x707cf0;
+    extern bool bool_0x707cf0;
 
     // 0x48CC40
     void FatalError( const char *format, ... );

@@ -25,11 +25,12 @@ namespace JE {
 		char _pad[4];  // IDA reports total size = 56 bytes (0x38)
 	//: Methods (only implemented methods declared — remaining ~150 from IDA are stubs)
 	public:
-		int* meth_0x545710(int param_1);
+		int* meth_0x545710(int *param_1);
 		int* meth_0x56f520(int *param_1, int *param_2);
 		int* meth_0x59f200(int param_1, char param_2, int param_3, int param_4);
-		int* meth_0x59f3e0(int param_1, int *param_2);
-		int meth_0x5ace40(unsigned int *param_1);
+	int* meth_0x59f3e0(int *param_1, int *param_2);
+		int meth_0x5ace40(int *param_1);
+		int meth_0x4cbdf0(int *param_1);
 	};
 } // namespace JE
 

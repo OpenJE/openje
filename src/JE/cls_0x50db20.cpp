@@ -27,7 +27,7 @@ namespace JE {
         }
 
         this->mbr_0x70 = static_cast<byte>(param_2);
-        return this;
+        return (undefined4)this;
     }
 
 } // namespace JE

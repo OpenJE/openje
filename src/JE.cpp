@@ -1,6 +1,9 @@
 // OpenJE
 
 #include <cstdio>
+#include <cstdarg>
+#include <stdio.h>
+#include <stdlib.h>
 
 #include <windows.h>
 
@@ -11,7 +14,7 @@ namespace JE {
 	// 0x48CC40
 	void FatalError( const char *format, ... ) {
 		tracing::instrument( tracing::LOCATION, "format=\"%s\"", &format );
-		char *v1 = '\0';
+		char *v1 = 0;
 		char buffer [ 1024 ];
 		va_list arg_list;
 
@@ -54,9 +57,13 @@ namespace JE {
 		char Buffer[ 1024 ];
 		unsigned int retaddr;
 
+		va_list args;
+
+		va_start( args, Format );
+
 		if ( !bool_0x707cf0 ) {
 			bool_0x707cf0 = true;
-			FormatAndWriteToBuffer( Buffer, a1, Format );
+			FormatAndWriteToBuffer( Buffer, a1, args );
 			//if ( *(_DWORD *)char_arr_0x707d60 ) {
 				//sub_496E00( (int)&F3::global_cls_0x4cc1e0, Buffer );
 				//cls_0x4cc1e0::meth_0x496990_496990( &F3::global_cls_0x4cc1e0, v2 );
@@ -64,6 +71,10 @@ namespace JE {
 			//}
 			bool_0x707cf0 = false;
 		}
+
+		va_end( args );
 	}
+	// 0x707CF0
+	bool bool_0x707cf0 = false;
 } // namespace JE
 //

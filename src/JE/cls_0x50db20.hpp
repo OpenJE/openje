@@ -71,7 +71,7 @@ namespace JE {
 			dword mbr_0x64;
 			dword mbr_0x68;
 			dword mbr_0x6c;
-			dword mbr_0x70;
+			byte mbr_0x70;
 			byte mbr_0x71;
 			dword mbr_0x74;
 			dword mbr_0x78;
@@ -127,7 +127,7 @@ namespace JE {
 			undefined4 meth_0x401490();
 			undefined4 meth_0x4014b0();
 			undefined4 meth_0x401510();
-			undefined4 meth_0x401940();
+			undefined4 meth_0x401940(int param_1, int param_2);
 			undefined4 meth_0x401a40();
 			undefined4 meth_0x401b20();
 			undefined4 meth_0x401bd0(const char* param_1, int param_2);
