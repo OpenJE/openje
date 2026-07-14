@@ -30,4 +30,8 @@ namespace JE {
         return (undefined4)this;
     }
 
+    undefined4 cls_0x50db20::meth_0x401940(int param_1, int param_2) {
+        return 0;
+    }
+
 } // namespace JE

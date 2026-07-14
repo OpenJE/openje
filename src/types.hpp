@@ -26,7 +26,7 @@ typedef uint64             _QWORD;
 
 typedef uint8              BYTE;
 typedef uint16             WORD;
-typedef uint32             DWORD;
+//typedef uint32             DWORD;
 typedef uint64             QWORD;
 
 typedef uint8              byte;
@@ -91,10 +91,10 @@ typedef uint64             ulonglong;
 #define SWORD2(x)     SWORDn(x, 2)
 #define SWORD3(x)     SWORDn(x, 3)
 
-#define LOBYTE(x)     BYTE0(x)
-#define HIBYTE(x)     BYTE1(x)
-#define LOWORD(x)     WORD0(x)
-#define HIWORD(x)     WORD1(x)
+//#define LOBYTE(x)     BYTE0(x)
+//#define HIBYTE(x)     BYTE1(x)
+//#define LOWORD(x)     WORD0(x)
+//#define HIWORD(x)     WORD1(x)
 #define LODWORD(x)    DWORD0(x)
 #define HIDWORD(x)    DWORD1(x)
 

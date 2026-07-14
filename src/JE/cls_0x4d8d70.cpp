@@ -125,4 +125,8 @@ namespace JE {
         return reinterpret_cast<int*>(this->mbr_0x4);
     }
 
+    int cls_0x4d8d70::meth_0x4cbdf0(int *param_1) {
+        return 0;
+    }
+
 } // namespace JE
