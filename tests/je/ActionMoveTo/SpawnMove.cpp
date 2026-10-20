@@ -94,6 +94,22 @@ int main( int argc, char** argv ) {
 	        pc->pos[0], pc->pos[2], box->pos[0], box->pos[2], d, pc->movingFlag );
 	check( d < 3.0f, "spawned Default_PC walked to the boxcar" );
 
+	// multi-map registry + EMEP placement (Junktown: 35 EME2 records, entry ids 1/2)
+	{
+		int jId = F3::MapCreate( "00_03_Tutorial_Junktown.map" );
+		check( jId == 2 && F3::LoadedMapCount() == 2, "second map registered with id 2" );
+		JE::Map* jm = F3::FindLoadedMap( jId );
+		int jn = jm ? F3::SpawnMapEntities( jm, "00_03_Tutorial_Junktown.map" ) : 0;
+		check( jn == 35, "35 junktown entities spawned (some templates may be missing: ok)" );
+		check( jm && jm->EntityCount() == 35, "junktown map owns 35 entities" );
+		F3::SpawnedEntity* e0 = (F3::SpawnedEntity*)jm->m_entities[0];
+		check( e0 && e0->mapId == 2, "junktown entities carry registry mapId 2" );
+		float ring[18];
+		check( jm && jm->GetEntryPoint( 1, ring ) == 6, "junktown entry ring present" );
+		check( F3::PlaceEntityAtEntryPoint( e0, jm, 1, 0 ) == 1, "placement at entry 1 slot 0" );
+		check( e0->pos[0] == ring[0] && e0->pos[2] == ring[2], "placed exactly at ring point" );
+	}
+
 	// synthetic clamp coverage: cur > max collapses to max (0x463910)
 	{
 		unsigned char fake[12 + 32];
