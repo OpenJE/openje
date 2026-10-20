@@ -13,6 +13,7 @@
 // Every expected value here is file-derived (see docs/f3/GUILoadingRecon.md sec 2, which lists
 // the header/root/rect/name of all 25 shipped .int lumps as walked out of Interface.grp).
 #include "JE/GUI/InterfaceFile.hpp"
+#include "JE/PathManager.hpp"
 #include "JE/ResourceSystem.hpp"
 #include "JE/Resources.hpp"
 #include "JE/HostHooks.hpp"
@@ -28,6 +29,7 @@ namespace JE { namespace Host {
 	void* GetEngineStringSystem() { return 0; }
 	bool IsServerContext() { return true; }
 	int TickMilliseconds() { return 0; }
+	JE::PathManager* GetPathJobQueue() { return 0; }   // host seam (chat/from-A.md C-24)
 	void TickWorldEntities( int ms ) { (void)ms; }
 } }
 
