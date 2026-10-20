@@ -1,6 +1,7 @@
 // Copyright 2024 OpenJE
 
 #include "tracing.hpp"
+#include <stddef.h>
 #include "JE/AnimationCache.hpp"
 
 namespace JE {
@@ -33,7 +34,7 @@ namespace JE {
     // 0x59bca0
     undefined4* AnimationCache::virt_meth_0x59bca0(byte param_1) {
         tracing::instrument( tracing::LOCATION, "" );
-        return nullptr;
+        return NULL;
     } // virt_meth_0x59bca0
 
 } // namespace JE

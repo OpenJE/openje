@@ -4,9 +4,10 @@
 #define JE_ANIMATIONCACHE_HPP_
 
 #include "types.hpp"
+#include "JE/Subsystem.hpp"
 
 namespace JE {
-	class AnimationCache {
+	class AnimationCache : public Subsystem {
 		//: Members
 		public:
 			dword mbr_0x10;

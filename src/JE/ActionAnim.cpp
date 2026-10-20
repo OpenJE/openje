@@ -36,26 +36,26 @@ namespace JE {
     }
 
     // 0x5a9280
-    undefined4 ActionAnim::virt_meth_0x5a9280( int param1 ) {
+    undefined4 ActionAnim::virt_meth_0x5a9280( int param_1 ) {
         Entity *this_00;
-        ulonglong uVar1;
+        ulonglong uVar1 = 0;
 
         this_00 = this->entity;
-        Entity::meth_0x548d80( this_00, this->mbr_0x18, this->mbr_0x1c );
-        this_00->field_0x288 = 0;
-        net::critical_section::meth_0x548fc0( (net::critical_section *)this_00 );
-        uVar1 = sub_616e24();
+        // Entity::meth_0x548d80( this_00, this->mbr_0x18, this->mbr_0x1c ); // stub: signature mismatch (takes 0 params)
+        this_00->mbr_0x288 = 0;
+        // net::critical_section::meth_0x548fc0( (net::critical_section *)this_00 ); // stub: undefined function
+        // uVar1 = sub_616e24(); // stub: undefined function
         this->mbr_0x24 = param_1 - (int)uVar1;
         return 0;
     }
 
     // 0x5a92f0
     undefined4 ActionAnim::virt_meth_0x5a92f0() {
-
+        return 0;
     }
 
     // 0x5a9310
     undefined4 ActionAnim::virt_meth_0x5a9310() {
-
+        return 0;
     }
 } // namespace JE
