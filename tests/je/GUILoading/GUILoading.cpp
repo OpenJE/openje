@@ -14,6 +14,7 @@
 // the header/root/rect/name of all 25 shipped .int lumps as walked out of Interface.grp).
 #include "JE/GUI/InterfaceFile.hpp"
 #include "JE/GUI/SkinDefaults.hpp"
+#include "JE/GUI/SkinFragments.hpp"
 #include "JE/VFX_Parameter.hpp"
 #include "JE/PathManager.hpp"
 #include "JE/ResourceSystem.hpp"
@@ -69,6 +70,41 @@ static unsigned walkSkins( JE::GUI::Widget* w, unsigned* named, unsigned* plausi
 	for ( unsigned c = 0; c < w->nChildren; ++c ) { count += walkSkins( w->children[c], named, plausible ); }
 	return count;
 }
+
+// File-scope because two blocks use it: the per-file corpus check above and the T-007
+// nine-slice/texture-coverage audit below (both iterate the same 25 shipped resources).
+struct ExpectedInt {
+    const char* resource; unsigned a2; unsigned char flag; unsigned nRoots;
+    unsigned rootType; int rootRect[4]; const char* rootName;
+};
+static const ExpectedInt kExpected[] = {
+    { "Actionbar.INT", 4, 0, 1, 0, { 0, 0, 96, 96 }, "winActionbar" },
+    { "AddNote.INT", 4, 0, 1, 0, { 28, 120, 344, 264 }, "AddNoteWin" },
+    { "AreaMap.INT", 3, 0, 1, 0, { 0, 0, 1024, 614 }, "winAreaMap" },
+    { "AreaMapNote.INT", 4, 0, 1, 0, { 100, 100, 294, 214 }, "winAreaMapNote" },
+    { "CharGen_NAS.INT", 4, 0, 1, 0, { 8, 36, 539, 128 }, "winNAS" },
+    { "CharacterGeneration.INT", 4, 0, 1, 0, { 0, 0, 800, 600 }, "winCharGen" },
+    { "Container.INT", 4, 0, 1, 0, { 0, 0, 256, 176 }, "Main" },
+    { "Debug.INT", 3, 0, 1, 0, { 130, 140, 583, 171 }, "DebugWin" },
+    { "DebugTools.INT", 3, 0, 1, 0, { 228, 18, 424, 450 }, "DebugToolsWin" },
+    { "Dialog.INT", 3, 0, 2, 0, { 152, 140, 532, 260 }, "SpeakerWin" },
+    { "EditToken.INT", 4, 0, 1, 0, { 0, 0, 298, 166 }, "Main" },
+    { "EscapeMenu.INT", 4, 0, 1, 0, { 344, 160, 440, 256 }, "EscapeMenuWin" },
+    { "Feedback.INT", 3, 0, 1, 0, { 130, 140, 581, 164 }, "FeedbackWin" },
+    { "Inventory.INT", 4, 0, 1, 0, { 0, 0, 96, 96 }, "winInventory" },
+    { "Loading.INT", 2, 0, 1, 0, { 232, 184, 783, 476 }, "LoadingWin" },
+    { "Mainmenu.INT", 4, 0, 1, 0, { 0, 0, 1024, 768 }, "MainmenuWin" },
+    { "MessageBox.INT", 4, 0, 1, 0, { 0, 0, 386, 162 }, "winMessageBox" },
+    { "MiniMap.INT", 4, 0, 1, 0, { 10, 620, 290, 752 }, "winMiniMap" },
+    { "Options.INT", 4, 0, 1, 0, { 0, 0, 96, 96 }, "winOptions" },
+    { "Options_Game.INT", 4, 0, 1, 0, { 0, 0, 96, 96 }, "Window" },
+    { "Options_Hotkeys.INT", 4, 0, 1, 0, { 0, 0, 96, 96 }, "Window" },
+    { "Options_Load.INT", 4, 0, 1, 0, { 0, 0, 96, 96 }, "Window" },
+    { "Options_Multiplayer.INT", 4, 0, 1, 0, { 0, 0, 96, 96 }, "Window" },
+    { "Options_Video.INT", 4, 0, 1, 0, { 0, 0, 96, 96 }, "Window" },
+    { "PipBoy.INT", 4, 0, 1, 2, { 0, -1, 1024, 609 }, "picPipBoy" },
+};
+enum { EXPECTED_INT_COUNT = 25 };
 
 int main( int argc, char** argv ) {
 	if ( argc < 2 ) { printf( "usage: %s <data-root>\n", argv[0] ); return 2; }
@@ -154,38 +190,6 @@ int main( int argc, char** argv ) {
    (resource.rht ftype 1600). Only root[0] is decoded here on purpose: a root is a
    whole recursive widget record, so a flat python walk desyncs past the first one -
    multi-root files are covered by RootCount() and by the full-tree C++ parse. */
-struct ExpectedInt {
-    const char* resource; unsigned a2; unsigned char flag; unsigned nRoots;
-    unsigned rootType; int rootRect[4]; const char* rootName;
-};
-static const ExpectedInt kExpected[] = {
-    { "Actionbar.INT", 4, 0, 1, 0, { 0, 0, 96, 96 }, "winActionbar" },
-    { "AddNote.INT", 4, 0, 1, 0, { 28, 120, 344, 264 }, "AddNoteWin" },
-    { "AreaMap.INT", 3, 0, 1, 0, { 0, 0, 1024, 614 }, "winAreaMap" },
-    { "AreaMapNote.INT", 4, 0, 1, 0, { 100, 100, 294, 214 }, "winAreaMapNote" },
-    { "CharGen_NAS.INT", 4, 0, 1, 0, { 8, 36, 539, 128 }, "winNAS" },
-    { "CharacterGeneration.INT", 4, 0, 1, 0, { 0, 0, 800, 600 }, "winCharGen" },
-    { "Container.INT", 4, 0, 1, 0, { 0, 0, 256, 176 }, "Main" },
-    { "Debug.INT", 3, 0, 1, 0, { 130, 140, 583, 171 }, "DebugWin" },
-    { "DebugTools.INT", 3, 0, 1, 0, { 228, 18, 424, 450 }, "DebugToolsWin" },
-    { "Dialog.INT", 3, 0, 2, 0, { 152, 140, 532, 260 }, "SpeakerWin" },
-    { "EditToken.INT", 4, 0, 1, 0, { 0, 0, 298, 166 }, "Main" },
-    { "EscapeMenu.INT", 4, 0, 1, 0, { 344, 160, 440, 256 }, "EscapeMenuWin" },
-    { "Feedback.INT", 3, 0, 1, 0, { 130, 140, 581, 164 }, "FeedbackWin" },
-    { "Inventory.INT", 4, 0, 1, 0, { 0, 0, 96, 96 }, "winInventory" },
-    { "Loading.INT", 2, 0, 1, 0, { 232, 184, 783, 476 }, "LoadingWin" },
-    { "Mainmenu.INT", 4, 0, 1, 0, { 0, 0, 1024, 768 }, "MainmenuWin" },
-    { "MessageBox.INT", 4, 0, 1, 0, { 0, 0, 386, 162 }, "winMessageBox" },
-    { "MiniMap.INT", 4, 0, 1, 0, { 10, 620, 290, 752 }, "winMiniMap" },
-    { "Options.INT", 4, 0, 1, 0, { 0, 0, 96, 96 }, "winOptions" },
-    { "Options_Game.INT", 4, 0, 1, 0, { 0, 0, 96, 96 }, "Window" },
-    { "Options_Hotkeys.INT", 4, 0, 1, 0, { 0, 0, 96, 96 }, "Window" },
-    { "Options_Load.INT", 4, 0, 1, 0, { 0, 0, 96, 96 }, "Window" },
-    { "Options_Multiplayer.INT", 4, 0, 1, 0, { 0, 0, 96, 96 }, "Window" },
-    { "Options_Video.INT", 4, 0, 1, 0, { 0, 0, 96, 96 }, "Window" },
-    { "PipBoy.INT", 4, 0, 1, 2, { 0, -1, 1024, 609 }, "picPipBoy" },
-};
-enum { EXPECTED_INT_COUNT = 25 };
 		unsigned parsed = 0, exact = 0, mismatch = 0;
 		for ( unsigned i = 0; i < (unsigned)EXPECTED_INT_COUNT; ++i ) {
 			const ExpectedInt& x = kExpected[i];
@@ -388,6 +392,110 @@ enum { EXPECTED_INT_COUNT = 25 };
 		check( ct.SectionNameAt( 0 ) != NULL && ct.EntryCount( "First" ) == 2
 		       && ct.EntryKeyAt( "First", 0 ) != NULL && ct.EntryValueAt( "First", 0 ) != NULL,
 		       "all four accessors work through a const VFX_Parameter&" );
+	}
+
+	// ---- T-007: nine-slice semantics and texture-key coverage over the whole corpus ------
+	// Rules and totals here were measured by parsing all 25 shipped ".int" files and counting
+	// violations; they are the shipped data speaking, not our parser's opinion (a wrong field
+	// width shows up as a violation count, not as a plausible-looking number).
+	{
+		static char seen[240][64];        unsigned nSeen = 0;
+		static char missing[16][64];      unsigned nMissing = 0;
+		unsigned resolved = 0, files = 0;
+		JE::GUI::SkinAudit total;
+
+		for ( unsigned i = 0; i < (unsigned)EXPECTED_INT_COUNT; ++i ) {
+			JE::GUI::InterfaceFile f;
+			if ( f.Load( kExpected[i].resource ) != 1 ) { continue; }
+			++files;
+
+			JE::GUI::SkinAudit a;
+			for ( unsigned r = 0; r < f.RootCount(); ++r ) {
+				JE::GUI::AuditWidgetTree( f.Root( r ), a );
+			}
+			if ( !a.Clean() ) {
+				printf( "     %s skin rules broken: mode=%u corner=%u hEdge=%u vEdge=%u reserved=%u centre=%u\n",
+				        kExpected[i].resource, a.modeMismatch, a.cornerBad, a.hEdgeBad,
+				        a.vEdgeBad, a.reservedBad, a.centreBad );
+			}
+			total.widgets += a.widgets; total.records += a.records;
+			total.namedRecords += a.namedRecords; total.unnamedRecords += a.unnamedRecords;
+			total.modeMismatch += a.modeMismatch; total.cornerBad += a.cornerBad;
+			total.hEdgeBad += a.hEdgeBad; total.vEdgeBad += a.vEdgeBad;
+			total.reservedBad += a.reservedBad; total.centreBad += a.centreBad;
+
+			char key[64];
+			for ( unsigned r = 0; r < f.RootCount(); ++r ) {
+				const char* names[200];
+				unsigned n = JE::GUI::CollectTextureNames( f.Root( r ), names, 200 );
+				for ( unsigned k = 0; k < n; ++k ) {
+					int dup = 0;
+					for ( unsigned s2 = 0; s2 < nSeen; ++s2 ) {
+						if ( strcmp( seen[s2], names[k] ) == 0 ) { dup = 1; break; }
+					}
+					if ( dup || nSeen >= 240 ) { continue; }
+					strncpy( seen[nSeen], names[k], 63 ); seen[nSeen][63] = 0; ++nSeen;
+					if ( JE::GUI::DeriveTextureKey( names[k], key, sizeof( key ) )
+					     && rs.ResourceExists_0x49abd0( key ) ) {
+						++resolved;
+					} else if ( nMissing < 16 ) {
+						strncpy( missing[nMissing], names[k], 63 ); missing[nMissing][63] = 0; ++nMissing;
+					}
+				}
+			}
+		}
+
+		check( files == 25, "all 25 shipped interfaces audited" );
+		check( total.widgets == 1596, "corpus widget count" );
+		check( total.records == total.widgets * JE::GUI::SLOT_COUNT
+		       && total.records == 14364, "9 skin records per widget across the corpus" );
+		check( total.namedRecords == 13932 && total.unnamedRecords == 432,
+		       "named/unnamed record split" );
+		check( total.modeMismatch == 0, "d28 equals the slot's expected piece mode everywhere" );
+		check( total.cornerBad == 0, "corner rects are exactly the source piece size everywhere" );
+		check( total.hEdgeBad == 0, "horizontal edges keep the piece height (width stretches)" );
+		check( total.vEdgeBad == 0, "vertical edges keep the piece width (height stretches)" );
+		check( total.reservedBad == 0, "the two zero-only fields stay zero in all 14364 records" );
+		check( total.centreBad == 0, "centre pieces are authored as-is (0) or as fill (3) only" );
+
+		check( nSeen == 165, "165 distinct texture names across the shipped interfaces" );
+		check( resolved == 157, "157 of them are shipped image resources (ftype 200, key minus ext)" );
+		check( nMissing == 8, "exactly 8 do not resolve" );
+		static const char* const kExpectedMissing[] = {
+			"main-left.bmp", "main-lowerleft.bmp", "main-lowermiddle.bmp", "main-lowerright.bmp",
+			"main-right.bmp", "main-upperleft.bmp", "main-uppermiddle.bmp", "main-upperright.bmp"
+		};
+		unsigned missOk = 0;
+		for ( unsigned m = 0; m < nMissing; ++m ) {
+			for ( unsigned e = 0; e < 8; ++e ) {
+				if ( strcmp( missing[m], kExpectedMissing[e] ) == 0 ) { ++missOk; break; }
+			}
+		}
+		check( missOk == 8, "the unresolved set is exactly the superseded main-*.bmp family" );
+
+		// DeriveTextureKey unit behaviour. Every shipped name has exactly one '.', so the
+		// multi-dot rule below is OUR choice, not a verified original behaviour.
+		char k[16];
+		check( JE::GUI::DeriveTextureKey( "quickslot-left.bmp", k, sizeof( k ) ) == 1
+		       && strcmp( k, "quickslot-left" ) == 0, "key strips the extension" );
+		check( JE::GUI::DeriveTextureKey( "noext", k, sizeof( k ) ) == 1
+		       && strcmp( k, "noext" ) == 0, "a name without a dot passes through" );
+		check( JE::GUI::DeriveTextureKey( "a-name-that-is-too-long.bmp", k, sizeof( k ) ) == 0,
+		       "a key that does not fit is refused rather than truncated" );
+		check( JE::GUI::DeriveTextureKey( "", k, sizeof( k ) ) == 0, "empty name yields no key" );
+
+		// Slot semantics, straight from the shipped distribution (0 exceptions over 14364).
+		check( JE::GUI::ExpectedMode( JE::GUI::SLOT_UPPER_LEFT ) == JE::GUI::PIECE_AS_IS
+		       && JE::GUI::ExpectedMode( JE::GUI::SLOT_LOWER_RIGHT ) == JE::GUI::PIECE_AS_IS,
+		       "corners are mode 0" );
+		check( JE::GUI::ExpectedMode( JE::GUI::SLOT_UPPER_MIDDLE ) == JE::GUI::PIECE_HORIZONTAL
+		       && JE::GUI::ExpectedMode( JE::GUI::SLOT_LOWER_MIDDLE ) == JE::GUI::PIECE_HORIZONTAL,
+		       "top/bottom edges are mode 1" );
+		check( JE::GUI::ExpectedMode( JE::GUI::SLOT_MIDDLE_LEFT ) == JE::GUI::PIECE_VERTICAL
+		       && JE::GUI::ExpectedMode( JE::GUI::SLOT_MIDDLE_RIGHT ) == JE::GUI::PIECE_VERTICAL,
+		       "left/right edges are mode 2" );
+		check( JE::GUI::ExpectedMode( JE::GUI::SLOT_CENTER ) == JE::GUI::PIECE_MODE_ANY_CENTRE,
+		       "only the centre slot has a free mode" );
 	}
 
 	if ( !g_fail ) { printf( "OK: GUI .int loading tests passed\n" ); return 0; }
