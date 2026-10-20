@@ -17,6 +17,11 @@ namespace JE {
 		// 0x56AF50 - F3::TickMilliseconds (timeGetTime wrapper used by the engine scheduler,
 		// the world frame pump and the A* 90 ms job budget).
 		int TickMilliseconds();
+		// Per-entity server tick driven by World::ServerUpdate_0x545D60 (original entity loop
+		// at 0x545E71: vft+96 sync + ServerUpdate per entity). Game layer iterates spawned
+		// entities and ticks their attached actions.
+		void TickWorldEntities( int ms );
+
 		// World-server path queue (the subobject vft+100 getter ActionMoveTo registers jobs
 		// through, 0x55b5b8/0x55b7bf). In this architecture steerer == PathManager living at
 		// world+0xF0; the getter returns it (queue = its job list at +8/+0xC).

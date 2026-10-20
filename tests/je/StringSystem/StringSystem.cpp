@@ -15,6 +15,7 @@
 #include "JE/Resources.hpp"
 #include "JE/World.hpp"
 #include "JE/HostHooks.hpp"
+#include "JE/PathManager.hpp"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,6 +28,9 @@ namespace JE { namespace Host {
 	void* GetParameterTree() { return g_testParams; }
 	static JE::SS::EngineStringSystem g_testEss;
 	void* GetEngineStringSystem() { return &g_testEss; }
+	int TickMilliseconds() { return 0; }
+	void TickWorldEntities( int ) {}
+	JE::PathManager* GetPathJobQueue() { return 0; }
 } }
 
 static int g_fail = 0;

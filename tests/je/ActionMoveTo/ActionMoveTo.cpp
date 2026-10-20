@@ -27,6 +27,7 @@ namespace JE { namespace Host {
 	void* GetEngineStringSystem() { return 0; }
 	int TickMilliseconds() { return 0; }
 	JE::PathManager* GetPathJobQueue() { return g_queue; }
+	void TickWorldEntities( int ) {}
 } }
 
 struct TestMover : JE::Mover {};

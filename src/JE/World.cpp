@@ -3,6 +3,8 @@
 #include "tracing.hpp"
 #include "JE.hpp"
 #include "JE/World.hpp"
+#include "JE/PathManager.hpp"
+#include "JE/HostHooks.hpp"
 #include "JE/HostHooks.hpp"
 #include "JE/VFX_Parameter.hpp"
 #include <time.h>
@@ -68,5 +70,21 @@ namespace JE {
 		m_state = newState;
 		return newState;
 	} // ChangeState_0x5454f0
+
+	// 0x545D60 core: ProcessJobs(pathMgr) + per-entity server tick. See header for the full
+	// original structure and the deliberately-deferred parts (world time / rounds / gfx list).
+	void World::ServerUpdate_0x545d60( int ms ) {
+		tracing::instrument( tracing::LOCATION, "ms=%d", ms );
+
+		// 0x545E18: JE::PathSteerer::ProcessJobs_0x563090(this->mbr_0xf0)
+		PathManager* pm = GetPathManager();
+		if ( pm ) {
+			pm->ProcessJobs();
+		}
+
+		// 0x545E71-0x545ECC: for each live entity (state != 5): entity vft[24](time) then
+		// ServerUpdate(entity, time). Entities/actions live in the game layer; seam call:
+		Host::TickWorldEntities( ms );
+	} // ServerUpdate_0x545d60
 
 } // namespace JE

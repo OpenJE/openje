@@ -6,7 +6,7 @@
 #include "types.hpp"
 #include "JE/Subsystem.hpp"
 
-namespace JE { class VFX_Parameter; }
+namespace JE { class VFX_Parameter; class PathManager; }
 
 namespace JE {
 	struct World : public Subsystem {
@@ -33,6 +33,18 @@ namespace JE {
 			//   "Invalid state change in World::ChangeState()." (the state-4 exit message in the
 			//   original says "Entity::ChangeState()." - kept verbatim at 0x54555D).
 			int  ChangeState_0x5454f0( int newState );
+
+			// JE::World vft[16] 0x545D60 - server frame pump. Core verified behavior
+			// (0x545E03-0x545ECC): advance world time, PathManager::ProcessJobs on
+			// world+0xF0, then per-entity server ticks (entity vft+96 + ServerUpdate) and
+			// round accounting. Port scope: ProcessJobs + entity tick seam; time/round
+			// machinery deferred with the GameTime reconstruction (see notes). NOTE: no
+			// static caller exists in the original .text - the session layer (Server/GUI
+			// thread) invokes it; subsystem vft[3] Tick stays empty per 0x404B70 evidence.
+			void ServerUpdate_0x545d60( int ms );
+
+			// seam for F3::GameWorld (path manager lives at world+0xF0 there)
+			virtual PathManager* GetPathManager() { return 0; }
 			int  m_state;            // +0x38
 			int  m_pauseStampMS;     // +0x58
 			int  m_pauseAccumMS;     // +0x5C

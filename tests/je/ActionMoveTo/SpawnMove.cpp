@@ -9,6 +9,7 @@
 #include "JE/ResourceSystem.hpp"
 #include "JE/Resources.hpp"
 #include "JE/HostHooks.hpp"
+#include "JE/World.hpp"
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
@@ -22,6 +23,7 @@ namespace JE { namespace Host {
 	void* GetParameterTree() { return 0; }
 	void* GetEngineStringSystem() { return 0; }
 	int TickMilliseconds() { return 0; }
+	void TickWorldEntities( int ms ) { F3::TickWorldEntities( ms ); }
 	JE::PathManager* GetPathJobQueue() { return g_queue; }
 } }
 // Resources host hooks duplicated guard: MapEntitySpawn.cpp references Host via LoadStartupMaps only.
@@ -31,6 +33,14 @@ struct PCAction : JE::ActionMoveTo {
 	PCAction() : t(0) {}
 	virtual float GetMoveSpeed() { return 8.0f; }
 	virtual JE::Entity* ResolveTarget() { return reinterpret_cast<JE::Entity*>(t); }
+};
+
+// world double exposing the path-manager seam like F3::GameWorld (world+0xF0) does
+struct TestWorld : JE::World {
+	JE::PathManager* m_overridePm;
+	TestWorld() : m_overridePm(0) {}
+	virtual JE::PathManager* GetPathManager() { return m_overridePm; }
+	virtual void ApplyWorldClockParams() {}
 };
 
 int main( int argc, char** argv ) {
