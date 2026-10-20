@@ -19,8 +19,8 @@ namespace JE {
             //: Methods
                 Chunk(); // ctor_0x4a1ca0
                 virtual ~Chunk(); // dtor_0x409270, virt_deldtor_0x409280
-                undefined4 Read( undefined4 param_1, int param_2 ); // meth_0x4a1cc0
-                void SkipToEnd(); // meth_0x4a1d50
+                undefined4 Read( void* stream ); // meth_0x4a1cc0 (JE::ResourceSystem::MemStream*)
+                char SkipToEnd(); // meth_0x4a1d50 (stream from mbr_0x18 set by Read)
         }; // struct Chunk
     } // namespace Common
 } // namespace JE
