@@ -80,7 +80,8 @@ int main() {
 		F3::AmmoMods a;                                          // all zero
 		// rand fixed 0 -> raw = 3+0 + 2 = 5; dt=6 -> dmg = 5 - 3 - (0 + 0 % 4 = 0) = 2
 		g_randSeq[0] = 0; g_randSeq[1] = 0; g_randN = 0;
-		check( F3::CalculateDamage( m, t, a, 9, TestRand ) == 0, "part 9 -> no body part" );
+		check( F3::CalculateDamage( m, t, a, 9, TestRand ) == 2,
+		       "part 9 is a PREFLIGHT cancel, not a formula zero (0x409f90 && !usable)" );
 		g_randN = 0;
 		check( F3::CalculateDamage( m, t, a, 0, TestRand ) == 2, "raw - dt/2 - rand(0,dt/2)" );
 		// max roll: rand seq 4,4 -> raw = 3+4+2 = 9; dt 6 -> 9-3-(3+4%4=1)=2? compute:
@@ -96,11 +97,16 @@ int main() {
 		a.dtPenetration = 10;
 		g_randN = 0;
 		check( F3::CalculateDamage( m, t, a, 0, TestRand ) == 6, "DT floors at 0" );
-		// second DT row for style 5/6
-		m.style = 5; t.dtMode56[0] = 100;
+		// (style-based row select was the doc's loose wording - verified PART-based, see hpp)
+		m.style = 5; t.dt[0] = 6;
+		g_randN = 0;
+		check( F3::CalculateDamage( m, t, a, 0, TestRand ) == 6, "style 5 alone uses GENERIC row" );
+		m.style = 0;
+		// second DT row when called-shot PART is 5/6
+		m.style = 0; t.dtParts56[0] = 100;
 		a.dtPenetration = 0;
 		g_randN = 0;   // roll0 -> raw 3+2=5; dt 100 -> 50 + rand(0,50)=... rand 0 -> 0 -> dmg 0 (floor)
-		check( F3::CalculateDamage( m, t, a, 0, TestRand ) == 0, "damage floors at 0 vs heavy DT" );
+		check( F3::CalculateDamage( m, t, a, 5, TestRand ) == 0, "part 5/6 second DT row; damage floors at 0" );
 	}
 
 	// ---- to-hit (0x413150 / 0x412fe0, session 23 §2-§4) ----------------------------

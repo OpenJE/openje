@@ -3,6 +3,7 @@
 // from the repo root with the staged data dir arg.
 #define JE_TEST_ALLOW_PROTECTED_MEMBER_ACCESS 1
 #include "F3/MapEntitySpawn.hpp"
+#include "F3/GameActionAttack.hpp"
 #include "F3/GameActionMoveTo.hpp"
 #include "F3/GamePathManager.hpp"
 #include "JE/SpatialGrid.hpp"
@@ -269,6 +270,49 @@ int main( int argc, char** argv ) {
 		check( F3::ParseGentBlock( fake, sizeof(fake), out ) == 1, "ParseGentBlock finds GENT" );
 		check( out[6] == 50 && out[7] == 50, "cur>max clamped to max" );
 		check( out[5] == 7, "f6 preserved" );
+	}
+
+	// ---- GameActionAttack (session 21 state machine + finisher) -------------------------
+	{
+		static int seqCtr = 0;
+		struct R { static int Fn() { ++seqCtr; return seqCtr; } };
+		F3::GameActionAttack::s_rand = &R::Fn;
+
+		F3::SpawnedEntity attacker, victim;
+		attacker.entityState = F3::kStateActive;
+		victim.entityState = F3::kStateActive;
+		attacker.combat.skills[F3::kSkillMelee] = 100;   // total 150 -> chance caps at 95
+		victim.statMax = 10; victim.statCur = 10;
+		attacker.pos[0] = 5.0f; victim.pos[0] = 5.5f;    // within reach 1
+
+		F3::AttackModeRecord m = F3::GameActionAttack::MakeUnarmedMode( 2, 2, 1, 0 );
+		F3::GameActionAttack at;
+		at.Start( &attacker, &victim, 0, &m );
+		int fin = 0; for ( int i = 0; i < 5 && !at.Update( 100 + i ); ++i ) {}
+		check( at.finished, "attack completes one drained series" );
+		check( victim.statCur == 8, "queued damage applied: raw 2 (+bonus 0), DT 0 -> -2" );
+
+		F3::SpawnedEntity frail; frail.entityState = F3::kStateActive;
+		frail.statMax = 1; frail.statCur = 1; frail.pos[0] = 5.0f;
+		attacker.pos[0] = 5.2f;
+		F3::GameActionAttack at2; at2.Start( &attacker, &frail, 0, &m );
+		at2.Update( 100 );
+		check( frail.statCur == 0, "HP floored at 0" );
+		check( frail.entityState == F3::kStateDead, "0 HP -> DYING -> DEAD (server flip)" );
+
+		F3::SpawnedEntity distant; distant.entityState = F3::kStateActive;
+		distant.statMax = 5; distant.statCur = 5; distant.pos[0] = 20.0f;
+		attacker.pos[0] = 0.0f;
+		F3::GameActionAttack at3; at3.Start( &attacker, &distant, 0, &m );
+		check( at3.Update( 100 ) == 0 && attacker.pos[0] > 0.0f,
+		       "out of reach: step-toward deviation, not finished" );
+		int guard = 0;
+		while ( !at3.Update( 200 + guard * 16 ) && guard < 300 ) { ++guard; }
+		check( guard < 300 && distant.statCur < 5, "converged into reach and hit" );
+
+		F3::GameActionAttack at4; at4.Start( &attacker, &frail, 0, &m );
+		check( at4.Update( 400 ) == 1, "attack on DEAD target self-finishes" );
+		F3::GameActionAttack::s_rand = 0;
 	}
 
 	if ( g_fail == 0 ) { printf("OK: spawn+move vertical slice passed\n"); return 0; }
