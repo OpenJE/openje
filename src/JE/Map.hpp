@@ -4,201 +4,124 @@
 #define JE_MAP_HPP_
 
 #include "types.hpp"
+#include "JE/Common/Chunk.hpp"
+#include "JE/ResourceSystem.hpp"
 
 namespace JE {
-	struct Map {
+	// JE::Map - map file container reader. Primary vftable 0x699FA4 (30 slots). The chunk
+	// router is ChunkDispatcher_0x56c770 (slot [14]); its switch calls readers via BYTE offsets
+	// on the vft pointer, which map to primary-table slots as verified below (function EAs are
+	// the ground truth; they are what the reimplementation routes on):
+	//   tag  'EMAP' -> 0x56C9D0 (vft+60, slot 15)  'EMEP' -> 0x573BF0   'EMTR' -> 0x575050
+	//   tag  'EMEN' -> 0x575A40   'EME2' -> 0x56CCF0   '2MWT' -> 0x56CD70
+	//   tag  'ECAM' -> 0x5742B0   'EMFG' -> 0x575180   'EMNO' -> 0x576940
+	//   tag  'EMNP' -> 0x576C30   'EPTH' -> 0x578FB0   'EMSD' -> 0x56CF30
+	//   tag  'EMEF' -> 0x56CF50
+	// NOTE: an earlier survey recorded these as "slots [15..27]" one-per-tag; the +4-byte
+	// offsets in the decompiled dispatcher are slot INDICES not bytes, so the true table is
+	// (bytes from *vft): +60 EMAPreader(0x56C9D0) +72(=slot18) 0x573BF0 EMEP ... The tag->EA
+	// pairs above (directly from the switch in 0x56C770) are authoritative.
+	// A second legacy numeric 'EMAP' reader exists at 0x573B00 (u8 + 24 u32 + apply via
+	// sub_5731F0) but is NOT routed by the shipping dispatcher.
+	//
+	// STRING OBJECT ALIGNMENT (verified against ctor_0x57b330 + GetOctree_0x56d960):
+	// the four EMAP strings land in std::string objects at +0x2C (octree ".8" - GetOctree
+	// reads THIS one; its buffer alias +0x30 and cap +0x44 are the same object), +0x4C (rle
+	// collision), +0x68 (texture _AM.dds), +0x90 (empty 4th read in shipped maps). Map+0x10
+	// holds the map file name (assigned by Create). Map::Create_0x57B8A0 fallback: if the
+	// +0x4C object is empty it appends ".8" to the name and stores at +0x90 ("7892321" =
+	// literal .8 fourcc bytes idiom). Grid builder: mbr_0x84 <- sub_57B2A0(string), mbr_0x88
+	// <- sub_57A8A0(cols,rows) - both deferred; bounds live in the octree at +0x6C..0x80
+	// (root NODE INFO AABB, Default_StartMap = {-1,-1,-1}-{71,1,51}), lerped by
+	// CellToWorld_0x560710 against grid cols/rows at mbr_0x84[0]/[1].
+	//
+	// EMAP v5 body (VERIFIED on Mainmenu.map / Default_StartMap.map / tutorial maps):
+	//   u32 map+0x28; {u16 len,chars} x4 strings -> map+0x2C octree ("Name.8"), map+0x4C
+	//   collision ("Name.rle"), map+0x68 texture ("Name_AM.dds"), map+0x90; then gated on the
+	//   CHUNK VERSION field: >=1 3 fog bytes (stored shifted +0x113..+0x115, +0x116=0x80);
+	//   >=2 u8 bool -> +0x1D8; >=3 four bytes -> +0x113..+0x116 again; >=4 u8 bool -> +0x1D9;
+	//   >=5 u8 -> +0x1B1(!=0), 3 u8 packed per 0x56CC4D -> +0x1B4, 3 u32 -> +0x1B8/1BC/1C0,
+	//   copies +0x1C4=+0x1B1, +0x1C8=+0x1B4, +0x1CC/1D0/1D4 = the three u32s.
+	//
+	// Chunk framing (verified against Maps/Engine grp lumps): header
+	// {tag:u32, version:u32, size:u32} where SIZE INCLUDES the 12-byte header; chunk stream
+	// advances by size (Chunk::SkipToEnd = absolute seek to consumedAtHeaderStart + size).
+	//
+	// DEVIATION: original string members are MSVC std::string (0x1C each, SSO). We store
+	// owned char* at the same offsets (no SSO needed; free() in dtor).
+	class Map {
 		//: Members
-			dword mbr_0x10;
-			dword mbr_0x100;
-			dword mbr_0x104;
-			dword mbr_0x108;
-			dword mbr_0x10c;
-			dword mbr_0x110;
-			dword mbr_0x111;
-			dword mbr_0x112;
-			byte mbr_0x113;
-			byte mbr_0x114;
-			byte mbr_0x115;
-			byte mbr_0x116;
-			dword mbr_0x118;
-			dword mbr_0x11c;
-			dword mbr_0x120;
-			dword mbr_0x124;
-			dword mbr_0x128;
-			dword mbr_0x12c;
-			dword mbr_0x130;
-			dword mbr_0x134;
-			dword mbr_0x138;
-			dword mbr_0x13c;
-			dword mbr_0x140;
-			dword mbr_0x144;
-			dword mbr_0x154;
-			dword mbr_0x158;
-			byte mbr_0x15c;
-			dword mbr_0x160;
-			dword mbr_0x164;
-			dword mbr_0x168;
-			dword mbr_0x16c;
-			dword mbr_0x170;
-			dword mbr_0x174;
-			byte mbr_0x178;
-			dword mbr_0x17c;
-			dword mbr_0x180;
-			dword mbr_0x184;
-			dword mbr_0x188;
-			dword mbr_0x18c;
-			dword mbr_0x190;
-			dword mbr_0x194;
-			dword mbr_0x198;
-			dword mbr_0x19c;
-			dword mbr_0x1a0;
-			dword mbr_0x1a4;
-			dword mbr_0x1a8;
-			dword mbr_0x1ac;
-			byte mbr_0x1b0;
-			byte mbr_0x1b1;
-			dword mbr_0x1b4;
-			dword mbr_0x1b8;
-			dword mbr_0x1bc;
-			dword mbr_0x1c0;
-			byte mbr_0x1c4;
-			dword mbr_0x1cc;
-			dword mbr_0x1d0;
-			dword mbr_0x1d4;
-			byte mbr_0x1d8;
-			byte mbr_0x1d9;
-			dword mbr_0x1dc;
-			dword mbr_0x1e0;
-			dword mbr_0x1e4;
-			dword mbr_0x1e8;
-			dword mbr_0x1ec;
-			dword mbr_0x1f0;
-			dword mbr_0x1f4;
-			dword mbr_0x1f8;
-			dword mbr_0x1fc;
-			dword mbr_0x20;
-			dword mbr_0x200;
-			dword mbr_0x204;
-			dword mbr_0x208;
-			dword mbr_0x20c;
-			dword mbr_0x210;
-			dword mbr_0x214;
-			dword mbr_0x218;
-			dword mbr_0x21c;
-			dword mbr_0x220;
-			dword mbr_0x228;
-			dword mbr_0x22c;
-			dword mbr_0x230;
-			dword mbr_0x234;
-			dword mbr_0x238;
-			dword mbr_0x23c;
-			dword mbr_0x24;
-			dword mbr_0x240;
-			dword mbr_0x244;
-			dword mbr_0x248;
-			dword mbr_0x24c;
-			dword mbr_0x250;
-			dword mbr_0x254;
-			dword mbr_0x28;
-			dword mbr_0x2c;
-			dword mbr_0x30;
-			dword mbr_0x4;
-			dword mbr_0x40;
-			dword mbr_0x44;
-			dword mbr_0x48;
-			dword mbr_0x4c;
-			dword mbr_0x50;
-			dword mbr_0x60;
-			dword mbr_0x64;
-			dword mbr_0x68;
-			dword mbr_0x6c;
-			dword mbr_0x7c;
-			byte mbr_0x8;
-			dword mbr_0x80;
-			dword mbr_0x84;
-			dword mbr_0x88;
-			dword mbr_0x8c;
-			dword mbr_0x90;
-			dword mbr_0x94;
-			dword mbr_0xa4;
-			dword mbr_0xa8;
-			dword mbr_0xac;
-			byte mbr_0xb0;
-			dword mbr_0xb4;
-			dword mbr_0xb8;
-			dword mbr_0xbc;
-			dword mbr_0xc;
-			dword mbr_0xc0;
-			dword mbr_0xc4;
-			dword mbr_0xc8;
-			dword mbr_0xcc;
-			dword mbr_0xd0;
-			dword mbr_0xd4;
-			dword mbr_0xd8;
-			dword mbr_0xdc;
-			dword mbr_0xe0;
-			dword mbr_0xe4;
-			dword mbr_0xe8;
-			dword mbr_0xec;
-			dword mbr_0xf0;
-			dword mbr_0xf4;
-			dword mbr_0xf8;
-			dword mbr_0xfc;
+		public:
+			dword  mbr_0x4;      // compiler-generated slot area in original
+			byte   gap_0x8[0x20];
+			dword  mbr_0x28;     // EMAP 4-byte field (flags/count)
+			char*  mbr_0x2C;     // octree resource name ("<map>.8")     @map+0x2C
+			byte   gap_0x30[0x1C];
+			char*  mbr_0x4C;     // collision resource name ("<map>.rle") @map+0x4C
+			char*  mbr_0x68;     // texture resource name                 @map+0x68
+			byte   gap_0x6C[0x18];
+			dword  mbr_0x84;     // grid cols  (CreateGridDims_0x57b2a0 <- .rle header u32 #1)
+			dword  mbr_0x88;     // grid rows  (.rle header u32 #2)
+			byte   gap_0x8C[4];
+			char*  mbr_0x90;     // 4th EMAP string                       @map+0x90
+			byte   gap_0x94[0x7C];
+			dword  mbr_0x110;    // fog bytes store (only +0x113..+0x116 used)
+			byte   gap_0x114[4];
+			byte   mbr_0x118;
+			byte   gap_0x119[0x98];
+			dword  mbr_0x1B1;    // +0x1B1 bool, +0x1B4 dword share a dword pair; kept coarse
+			dword  mbr_0x1B4;
+			float  mbr_0x1B8;    // EMAP v5 extra u32 #1 (250.0 in shipped maps; ctor default
+			                     // 16384.0f = 0x46000000) - candidate view/scale param
+			float  mbr_0x1BC;    // #2 (500.0 shipped; ctor 524288.0f)
+			float  mbr_0x1C0;    // #3 (1.0 Mainmenu/Default, 0.0 Junktown; ctor 1.0f)
+			dword  mbr_0x1C4;    // +0x1C4 bool, +0x1C8 float (raw bits)
+			float  mbr_0x1C8;
+			dword  mbr_0x1CC;    // copies of the three u32s per 0x56CCD4
+			dword  mbr_0x1D0;
+			dword  mbr_0x1D4;
+			byte   mbr_0x1D8;
+			byte   mbr_0x1D9;
+			// RLE grid storage (deviation: original = RB-tree of run nodes at map+0x84; we keep
+			// cols/rows at the same-named fields and a flattened mask array).
+			unsigned char* m_pCellMasks;
 		//: Methods
-			undefined4 virt_meth_0x46c900();
-			undefined4 virt_meth_0x46cb30();
-			undefined4 virt_meth_0x56c470();
-			undefined4 virt_meth_0x56c480();
-			undefined4 virt_meth_0x56c490();
-			undefined4 virt_meth_0x56c4c0();
-			undefined4 virt_meth_0x56c510();
-			undefined4 meth_0x56c6c0();
-			undefined4 virt_meth_0x56c770();
-			undefined4 virt_meth_0x56c9d0();
-			undefined4 virt_meth_0x56ccf0();
-			undefined4 virt_meth_0x56cd70();
-			virt_meth_0x56cje0;
-			undefined4 virt_meth_0x56cf50();
-			undefined4 meth_0x56d210();
-			undefined4 meth_0x56d440();
-			undefined4 meth_0x56d960();
-			undefined4 meth_0x56dd90();
-			undefined4 meth_0x56de70();
-			undefined4 virt_meth_0x56ded0();
-			undefined4 virt_meth_0x56df50();
-			undefined4 virt_meth_0x56dfe0();
-			undefined4 virt_meth_0x56e580();
-			undefined4 meth_0x56e770();
-			undefined4 meth_0x56e7e0();
-			undefined4 virt_meth_0x56e850();
-			undefined4 virt_meth_0x56e970();
-			undefined4 meth_0x56e9e0();
-			undefined4 meth_0x56f0a0();
-			undefined4 meth_0x56f230();
-			undefined4 meth_0x571000();
-			undefined4 meth_0x571320();
-			undefined4 meth_0x572480();
-			undefined4 meth_0x5724f0();
-			undefined4 meth_0x572560();
-			undefined4 meth_0x572f10();
-			undefined4 meth_0x573230();
-			undefined4 virt_meth_0x573b00();
-			undefined4 virt_meth_0x573bf0();
-			virt_meth_0x573je0;
-			undefined4 virt_meth_0x5742b0();
-			undefined4 meth_0x574430();
-			undefined4 meth_0x574f60();
-			undefined4 virt_meth_0x575050();
-			undefined4 virt_meth_0x575180();
-			undefined4 virt_meth_0x575a40();
-			undefined4 meth_0x5763c0();
-			undefined4 virt_meth_0x576940();
-			undefined4 virt_meth_0x576c30();
-			undefined4 virt_meth_0x578fb0();
-			void dtor_0x57ac20();
-			void ctor_0x57b330();
-			undefined4 virt_meth_0x57b880();
-			undefined4 meth_0x57b8a0();
+		public:
+			Map();
+			virtual ~Map();
+			// 0x574F60 - open the named resource and run the chunk loop. The original first
+			// invokes 4 reset virtuals (0x571320/0x574430/0x5724F0/0x572560 - per-map state
+			// clears, unmodeled); kept as no-ops with the call sites documented.
+			char LoadFromFile( const char* resourceName );
+			// vft 0x56C770 - tag -> reader routing with faithful per-kind error strings.
+			virtual char ReadChunk( Common::Chunk* chunk, ResourceSystem::MemStream* stream );
+			// vft[15] 0x56C9D0 - EMAP v5 (layout table above).
+			virtual char ReadEMAP( Common::Chunk* chunk, ResourceSystem::MemStream* stream );
+			// 0x57AA00 - RLE collision grid loader (called by CreateGridDims_0x57b2a0 on the
+			// ".rle" resource). Wire format VERIFIED on Default_StartMap.rle (144x104, 306 runs,
+			// exact file fit): header {u32 cols, u32 rows} then per row, runs of
+			// {u32 count, u8 mask} until x >= cols (count summed per row == cols). The original
+			// inserts (x, mask-group) nodes into an RB-tree multimap (map+0xA8 region); we keep
+			// the flattened per-cell mask vector (same query semantics, see IsCellBlocked).
+			// Observed masks: 0x2F (47) floor, 0x02 blocked/hole (Default_StartMap interior).
+			char LoadRleGrid( const unsigned char* data, unsigned len );
+			// grid query: dimensions + cell mask (0 = unloaded).
+			unsigned GridCols() const { return mbr_0x84; }
+			unsigned GridRows() const { return mbr_0x88; }
+			unsigned char GetCellMask( unsigned col, unsigned row ) const {
+				if ( !m_pCellMasks || col >= mbr_0x84 || row >= mbr_0x88 ) return 0xFF;
+				return m_pCellMasks[col + row * mbr_0x84];
+			}
+			// Blocked test (interim rule, flag-bit semantics unverified): mask == 2 blocks.
+			int IsCellBlocked( unsigned col, unsigned row ) const {
+				return GetCellMask( col, row ) == 0x02;
+			}
+
+			// 0x573B00 - legacy numeric EMAP (1+72+24 body via AllocateEmapStruct); present in
+			// the vft but NOT routed by ChunkDispatcher_0x56c770. Kept for reference.
+			char ReadEMAPLegacy( Common::Chunk* chunk, ResourceSystem::MemStream* stream );
+			// vft[6]-adjacent 0x46CB30 on GameMap side - allocate the legacy EMAP payload.
+			virtual void* AllocateEmapStruct();
 	}; // Map
 } // namespace JE
 
