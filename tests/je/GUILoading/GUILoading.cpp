@@ -146,31 +146,74 @@ int main( int argc, char** argv ) {
 	{
 		// Every remaining shipped interface must parse: a single misaligned width anywhere in the
 		// window/label/button/picture record shows up as a failure on one of these.
-		static const char* ALL[] = {
-			"Actionbar.INT", "AddNote.INT", "AreaMap.INT", "AreaMapNote.INT", "CharGen_NAS.INT",
-			"CharacterGeneration.INT", "Container.INT", "Debug.INT", "DebugTools.INT",
-			"Dialog.INT", "EditToken.INT", "EscapeMenu.INT", "Feedback.INT", "Inventory.INT",
-			"Mainmenu.INT", "MessageBox.INT", "MiniMap.INT", "Options.INT", "Options_Game.INT",
-			"Options_Hotkeys.INT", "Options_Load.INT", "Options_Multiplayer.INT",
-			"Options_Video.INT", "PipBoy.INT"
-		};
-		unsigned parsed = 0, exact = 0;
-		for ( unsigned i = 0; i < sizeof( ALL ) / sizeof( ALL[0] ); ++i ) {
+/* Header + FIRST root per file, read straight out of Interface.grp lumps
+   (resource.rht ftype 1600). Only root[0] is decoded here on purpose: a root is a
+   whole recursive widget record, so a flat python walk desyncs past the first one -
+   multi-root files are covered by RootCount() and by the full-tree C++ parse. */
+struct ExpectedInt {
+    const char* resource; unsigned a2; unsigned char flag; unsigned nRoots;
+    unsigned rootType; int rootRect[4]; const char* rootName;
+};
+static const ExpectedInt kExpected[] = {
+    { "Actionbar.INT", 4, 0, 1, 0, { 0, 0, 96, 96 }, "winActionbar" },
+    { "AddNote.INT", 4, 0, 1, 0, { 28, 120, 344, 264 }, "AddNoteWin" },
+    { "AreaMap.INT", 3, 0, 1, 0, { 0, 0, 1024, 614 }, "winAreaMap" },
+    { "AreaMapNote.INT", 4, 0, 1, 0, { 100, 100, 294, 214 }, "winAreaMapNote" },
+    { "CharGen_NAS.INT", 4, 0, 1, 0, { 8, 36, 539, 128 }, "winNAS" },
+    { "CharacterGeneration.INT", 4, 0, 1, 0, { 0, 0, 800, 600 }, "winCharGen" },
+    { "Container.INT", 4, 0, 1, 0, { 0, 0, 256, 176 }, "Main" },
+    { "Debug.INT", 3, 0, 1, 0, { 130, 140, 583, 171 }, "DebugWin" },
+    { "DebugTools.INT", 3, 0, 1, 0, { 228, 18, 424, 450 }, "DebugToolsWin" },
+    { "Dialog.INT", 3, 0, 2, 0, { 152, 140, 532, 260 }, "SpeakerWin" },
+    { "EditToken.INT", 4, 0, 1, 0, { 0, 0, 298, 166 }, "Main" },
+    { "EscapeMenu.INT", 4, 0, 1, 0, { 344, 160, 440, 256 }, "EscapeMenuWin" },
+    { "Feedback.INT", 3, 0, 1, 0, { 130, 140, 581, 164 }, "FeedbackWin" },
+    { "Inventory.INT", 4, 0, 1, 0, { 0, 0, 96, 96 }, "winInventory" },
+    { "Loading.INT", 2, 0, 1, 0, { 232, 184, 783, 476 }, "LoadingWin" },
+    { "Mainmenu.INT", 4, 0, 1, 0, { 0, 0, 1024, 768 }, "MainmenuWin" },
+    { "MessageBox.INT", 4, 0, 1, 0, { 0, 0, 386, 162 }, "winMessageBox" },
+    { "MiniMap.INT", 4, 0, 1, 0, { 10, 620, 290, 752 }, "winMiniMap" },
+    { "Options.INT", 4, 0, 1, 0, { 0, 0, 96, 96 }, "winOptions" },
+    { "Options_Game.INT", 4, 0, 1, 0, { 0, 0, 96, 96 }, "Window" },
+    { "Options_Hotkeys.INT", 4, 0, 1, 0, { 0, 0, 96, 96 }, "Window" },
+    { "Options_Load.INT", 4, 0, 1, 0, { 0, 0, 96, 96 }, "Window" },
+    { "Options_Multiplayer.INT", 4, 0, 1, 0, { 0, 0, 96, 96 }, "Window" },
+    { "Options_Video.INT", 4, 0, 1, 0, { 0, 0, 96, 96 }, "Window" },
+    { "PipBoy.INT", 4, 0, 1, 2, { 0, -1, 1024, 609 }, "picPipBoy" },
+};
+enum { EXPECTED_INT_COUNT = 25 };
+		unsigned parsed = 0, exact = 0, mismatch = 0;
+		for ( unsigned i = 0; i < (unsigned)EXPECTED_INT_COUNT; ++i ) {
+			const ExpectedInt& x = kExpected[i];
 			JE::GUI::InterfaceFile f;
-			if ( f.Load( ALL[i] ) == 1 && f.RootCount() >= 1 && f.Root( 0 )->name ) { ++parsed; }
-			else { printf( "     parse failed: %s\n", ALL[i] ); continue; }
-			// The decisive alignment test: the readers must land exactly on the end of the lump.
+			if ( f.Load( x.resource ) != 1 ) { printf( "     parse failed: %s\n", x.resource ); continue; }
+			++parsed;
+			if ( f.FormatVersion() != x.a2 || f.FileFlag() != x.flag || f.RootCount() != x.nRoots ) {
+				printf( "     %s header mismatch: a2 %u/%u flag %u/%u roots %u/%u\n", x.resource,
+				        f.FormatVersion(), x.a2, (unsigned)f.FileFlag(), (unsigned)x.flag,
+				        f.RootCount(), x.nRoots );
+				++mismatch;
+			}
+			JE::GUI::Widget* w = f.Root( 0 );
+			if ( !w || w->type != x.rootType || w->rect[0] != x.rootRect[0]
+			     || w->rect[1] != x.rootRect[1] || w->rect[2] != x.rootRect[2]
+			     || w->rect[3] != x.rootRect[3] || !w->name || strcmp( w->name, x.rootName ) != 0 ) {
+				printf( "     %s root[0] mismatch (got type=%d rect=%d,%d,%d,%d name=%s)\n", x.resource,
+				        w ? (int)w->type : -1, w ? w->rect[0] : 0, w ? w->rect[1] : 0,
+				        w ? w->rect[2] : 0, w ? w->rect[3] : 0, w && w->name ? w->name : "(null)" );
+				++mismatch;
+			}
 			void* buf = 0; int len = 0;
-			if ( rs.ReadResource( ALL[i], &buf, &len ) == 1 ) {
+			if ( rs.ReadResource( x.resource, &buf, &len ) == 1 ) {
 				if ( (int)f.BytesConsumed() == len ) { ++exact; }
-				else { printf( "     %s consumed %u of %d bytes\n", ALL[i], f.BytesConsumed(), len ); }
+				else { printf( "     %s consumed %u of %d bytes\n", x.resource, f.BytesConsumed(), len ); }
 				free( buf );
-			} else { printf( "     %s not readable via ReadResource\n", ALL[i] ); }
+			}
 		}
-		check( parsed == sizeof( ALL ) / sizeof( ALL[0] ),
-		       "all 24 name-referenced shipped .int files parse to a named root" );
-		check( exact == sizeof( ALL ) / sizeof( ALL[0] ),
-		       "every parse consumed its WHOLE lump (any wrong field width/order would misalign)" );
+		check( parsed == (unsigned)EXPECTED_INT_COUNT, "all 25 shipped .int files parse" );
+		check( mismatch == 0, "every file's a2/flag/root-count/root type/rect/name matches the bytes on disk" );
+		check( exact == (unsigned)EXPECTED_INT_COUNT,
+		       "every parse consumed its WHOLE lump (any wrong field width or order misaligns)" );
 	}
 
 	// Unknown resource must fail cleanly (the original's null-stream early return at 0x495ba5).
