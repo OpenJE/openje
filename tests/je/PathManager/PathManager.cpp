@@ -1,6 +1,8 @@
 #include "JE/PathManager.hpp"
 #include "JE/SpatialGrid.hpp"
 #include "JE/Gregorian.hpp"
+#include "F3/CombatManager.hpp"
+#include "F3/MapEntitySpawn.hpp"
 #include "JE/Map.hpp"
 #include "F3/GamePathManager.hpp"
 #include "JE/HostHooks.hpp"
@@ -209,6 +211,27 @@ int main() {
 		y.AddSeconds( 1 );
 		check( y.year == 2254 && y.month == 1 && y.day == 1 && y.hour == 0, "year roll" );
 		check( y.totalSeconds == 90061u, "year-roll boundary advance = day+hour+min+sec spans" );
+	}
+
+	// ---- CombatManager turn-protocol skeleton (0x5A94A0 maintenance) --------------------
+	{
+		F3::CombatManager cm;
+		F3::SpawnedEntity spawned;   // default state = kStateSpawned(5)
+		F3::SpawnedEntity active;
+		active.entityState = F3::kStateActive;
+		active.actedLatch0x319 = 1;
+
+		cm.AddToTurns( &spawned );
+		cm.AddToTurns( &active );
+		check( cm.TurnCount() == 2, "two nodes queued" );
+		cm.Tick( 16, 3 );            // maintenance: state-5 gets turn-prep; state-4 unlinks
+		check( spawned.frameDt0x300 == 16 && spawned.actedLatch0x319 == 0,
+		       "turn-prep writes dt(+0x300) and clears latch(+0x319) - 0x549090" );
+		check( cm.TurnCount() == 1, "non-SPAWNED entity unlinked from turn queue (session 14)" );
+		check( cm.AccMs() == 3000u, "accMs accumulates clock seconds x1000 (C-23 source)" );
+		cm.RemoveFromTurns( &spawned );
+		check( cm.TurnCount() == 0 && !cm.IsActive(), "queue drains" );
+		check( !cm.MidTurn(), "mid-turn gate released after Tick (0x5A9551)" );
 	}
 
 	if (g_fail == 0) {

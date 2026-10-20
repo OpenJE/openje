@@ -77,15 +77,22 @@ namespace JE {
 	void World::ServerUpdate_0x545d60( int ms ) {
 		tracing::instrument( tracing::LOCATION, "ms=%d", ms );
 
+		// step 3 (0x545E03-0x545E0D): world time getter feeds the combat manager tick -
+		// placed BEFORE ProcessJobs exactly as the original (0x545E0D precedes 0x545E18).
+		CombatTick( ms, ms );
+
 		// 0x545E18: JE::PathSteerer::ProcessJobs_0x563090(this->mbr_0xf0)
 		PathManager* pm = GetPathManager();
 		if ( pm ) {
 			pm->ProcessJobs();
 		}
 
-		// 0x545E71-0x545ECC: for each live entity (state != 5): entity vft[24](time) then
-		// ServerUpdate(entity, time). Entities/actions live in the game layer; seam call:
-		Host::TickWorldEntities( ms );
+		// 0x545E23 gate: map ambient + entity loop run ONLY while combat is not mid-turn
+		// (mbr_0x8c[+8]==0). 0x545E71-0x545ECC: for each live entity: turn-prep then
+		// ServerUpdate. Entities/actions live in the game layer; seam call:
+		if ( !CombatMidTurn() ) {
+			Host::TickWorldEntities( ms );
+		}
 
 		// step 6 (session-14): clock carry. Players-online branch awaits the player
 		// collection; the no-players branch scales the accumulated ms by the clock speed

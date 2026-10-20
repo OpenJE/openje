@@ -74,6 +74,12 @@ namespace JE {
 
 			// seam for F3::GameWorld (path manager lives at world+0xF0 there)
 			virtual PathManager* GetPathManager() { return 0; }
+
+			// Combat seams (world+0x8C manager): step-3 tick before ProcessJobs (0x545E03-
+			// 0x545E0D) and the mid-turn gate for the entity loop (0x545E23 checks
+			// mbr_0x8c[+8]); bases are inert (no combat manager = original pre-combat frame).
+			virtual void CombatTick( int dtMs, int ms ) { (void)dtMs; (void)ms; }
+			virtual bool CombatMidTurn() const { return false; }
 			// world clock (World+0x3C). Created via the vb idx4 factory equivalent
 			// (GameWorld::Initialize after ApplyWorldClockParams; original sub_544D90).
 			Gregorian* m_clock;      // +0x3C
