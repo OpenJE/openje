@@ -306,10 +306,12 @@ int main( int argc, char** argv ) {
 		for ( int s = 0; s < 4; ++s ) { if ( frail.actions[s].kind == 5 ) ++dieQueued; }
 		check( dieQueued == 1, "newly-dead victim gets GameActionDie queued (kind 5), not inline" );
 		check( frail.entityState == F3::kStateActive, "victim still ACTIVE before its pump" );
-		check( frail.queuedAnimEvent == 33 || frail.queuedAnimEvent == 34
-		       || frail.queuedAnimEvent == 37 || frail.queuedAnimEvent == 38
-		       || frail.queuedAnimEvent == 39,
-		       "hit-reaction anim id 33/34/37/38/39 stored on the QueueAnimEvent seam" );
+		// T-012: the reachable reaction set is {33,34,37,38,40,41}, NOT {33,34,37,38,39}.
+		// This victim is stationary, the batch has ONE unarmed record (marks<2 -> +0xAC
+		// clear -> base 0x25=37), and hx = 5.0-5.2 < 0 so the wrap byte is 1, which adds 3.
+		// Exact, not a membership range: 0x45C349/0x45C355 step by 3, so 39 is impossible.
+		check( frail.queuedAnimEvent == 40,
+		       "stationary single unarmed hit from behind-ish angle -> anim 37+3 = 40 (T-012)" );
 		check( frail.lastHitVeg != 0 && strstr( frail.lastHitVeg, "FX_Hit" ) == frail.lastHitVeg,
 		       ".veg selection resolved (session 7 §3 step 6 table)" );
 		// pump 1: kind-5 action executes -> Kill -> ChangeState(6) (session 8 §3)
@@ -335,6 +337,115 @@ int main( int argc, char** argv ) {
 		F3::GameActionAttack at4; at4.Start( &attacker, &frail, 0, &m );
 		check( at4.Update( 400 ) == 1, "attack on DEAD target self-finishes" );
 		F3::GameActionAttack::s_rand = 0;
+	}
+
+// ---- T-012: the from-behind test is a wrap/compare chain, not an arc threshold ------
+{
+	// (a) The compare chain, reproduced instruction for instruction from 0x45C29E..0x45C2E4.
+	// Boundary angles from the shipped constants: 0.0 (0x6CB56C), -180 (0x660828),
+	// +180 (0x660824), 360 (0x660820). `u` is the value the ORIGINAL would read when no
+	// branch wrote the byte - it has no zero initializer there (see header notes).
+	const unsigned char u = 0;
+	check( F3::HitAngleWrapFlag(  -180.0f, u ) == 1, "angle == -180 -> flag 1 (0x45C2B6 jz path)" );
+	check( F3::HitAngleWrapFlag( -180.1f, u ) == 0, "angle < -180 -> falls through, not written" );
+	check( F3::HitAngleWrapFlag(    -0.1f, u ) == 1, "small negative -> flag 1" );
+	check( F3::HitAngleWrapFlag(     0.0f, u ) == 0, "angle == 0 -> in-band, not written" );
+	check( F3::HitAngleWrapFlag(     0.1f, u ) == 0, "small positive -> in-band, not written" );
+	check( F3::HitAngleWrapFlag(   179.9f, u ) == 0, "angle just under +180 -> in-band" );
+	check( F3::HitAngleWrapFlag(   180.0f, u ) == 1, "angle == +180 -> flag 1 (0x45C2D2)" );
+	check( F3::HitAngleWrapFlag(   359.9f, u ) == 1, "angle just under 360 -> flag 1" );
+	check( F3::HitAngleWrapFlag(   360.0f, u ) == 0, "angle == 360 -> out of band again" );
+	check( F3::HitAngleWrapFlag( 10000.0f, u ) == 0, "huge angle -> in-band, not written" );
+
+	// (b) THE COLLAPSE, and why the rad-vs-deg question is closed. fpatan is the last fp
+	// op before the first compare, so the value entering the chain is RADIANS by x87
+	// architecture and is bounded by +-pi. Inside that range the +/-180 and 360 compares
+	// can never fire, so the chain degenerates to a pure sign test of the angle.
+	{
+		const float PI = 3.14159265f;
+		int bad = 0;
+		const float probe[] = { -PI, -3.0f, -1.0f, -0.5f, -0.001f, 0.0f, 0.001f, 0.5f, 1.0f, PI };
+		for ( unsigned i = 0; i < sizeof(probe)/sizeof(probe[0]); ++i ) {
+		    unsigned char got = F3::HitAngleWrapFlag( probe[i], 0 );
+		    unsigned char want = ( probe[i] < 0.0f ) ? 1 : 0;
+		    if ( got != want ) { ++bad; }
+		}
+		check( bad == 0, "over [-pi..pi] the chain collapses to sign(angle) - domain unobservable" );
+		// The +/-pi pair is the non-vacuity proof: a real radian input lands far inside the
+		// +/-180 constants, so if these two disagree the collapse claim is false.
+		check( F3::HitAngleWrapFlag( -PI, u ) == 1 && F3::HitAngleWrapFlag( PI, u ) == 0,
+		       "-pi -> 1 and +pi -> 0: pi < 180, so the degree-domain branches are unreachable" );
+		}
+
+	// (c) The uninitialised-slot behaviour is MODELLED, not hidden. Passing the previous
+	// hit's byte as `u` reproduces the shipped stickiness; passing 0 is our deterministic
+	// choice. They differ on exactly the in-band inputs - which is the evidence that the
+	// original has no zero initializer for Apply's var_B1.
+	check( F3::HitAngleWrapFlag( 0.0f, 1 ) == 1 && F3::HitAngleWrapFlag( 0.0f, 0 ) == 0,
+	       "in-band angle returns the passed-in residue: the shipped byte is never zeroed" );
+	check( F3::HitAngleWrapFlag( -1.0f, 1 ) == 1 && F3::HitAngleWrapFlag( -1.0f, 0 ) == 1,
+	       "out-of-band angle writes 1 regardless of the residue" );
+
+	// (d) The selector table, from 0x45C30C..0x45C35C. Non-first records queue NOTHING.
+	check( F3::ReactionAnimFor( false, true,  true,  1 ) == 0, "non-first record: no anim event" );
+	check( F3::ReactionAnimFor( false, false, true,  1 ) == 0, "non-first stationary: also silent" );
+	check( F3::ReactionAnimFor( true, true, false, 0 ) == 33, "moving, wrap 0 -> 0x21+0 = 33" );
+	check( F3::ReactionAnimFor( true, true, false, 1 ) == 34, "moving, wrap 1 -> 0x21+1 = 34" );
+	check( F3::ReactionAnimFor( true, true, true,  1 ) == 34, "moving path ignores +0xAC" );
+	check( F3::ReactionAnimFor( true, false, false, 0 ) == 37, "stationary +0xAC clear, wrap 0 -> 37" );
+	check( F3::ReactionAnimFor( true, false, false, 1 ) == 40, "stationary +0xAC clear, wrap 1 -> 37+3 = 40" );
+	check( F3::ReactionAnimFor( true, false, true,  0 ) == 38, "stationary +0xAC set, wrap 0 -> 38" );
+	check( F3::ReactionAnimFor( true, false, true,  1 ) == 41, "stationary +0xAC set, wrap 1 -> 38+3 = 41" );
+{
+		int seen[64]; for ( int i = 0; i < 64; ++i ) { seen[i] = 0; }
+		for ( int f = 0; f < 2; ++f ) for ( int mv = 0; mv < 2; ++mv ) for ( int ac = 0; ac < 2; ++ac )
+		    for ( int w = 0; w < 2; ++w ) { int a = F3::ReactionAnimFor( f!=0, mv!=0, ac!=0,
+		        (unsigned char)w ); if ( a ) { seen[a] = 1; } }
+		int ids = 0; for ( int i = 0; i < 64; ++i ) { if ( seen[i] ) { ++ids; } }
+		check( ids == 6 && seen[33] && seen[34] && seen[37] && seen[38] && seen[40] && seen[41],
+		       "reachable reaction ids are exactly {33,34,37,38,40,41}" );
+		check( !seen[39], "39 is UNREACHABLE - the pre-T-012 table shipped an id the code cannot make" );
+		check( seen[41], "41 was missing from the pre-T-012 tables entirely" );
+	}
+
+	// (e) THE DISCRIMINATOR (coordinator's acceptance case): same record COUNT, weapon vs
+	// unarmed, must give different ids. A count-based rule gives both the same answer, so
+	// this test is what separates 'count the records' from 'count the +0x19 snapshots'.
+{
+		F3::SpawnedEntity a2, v2;
+		a2.entityState = F3::kStateActive; v2.entityState = F3::kStateActive;
+		v2.statMax = 100; v2.statCur = 100;
+		a2.pos[0] = 5.2f; v2.pos[0] = 5.0f;   // hx < 0 -> wrap byte 1
+		
+		// three records, all carrying the unarmed snapshot -> marks 3 >= 2 -> +0xAC set
+		F3::GameActionAttack flurry; F3::GameActionAttack weapon;
+		for ( int k = 0; k < 3; ++k ) {
+		    F3::GameActionAttack::QueuedHit* slot = &flurry.queue[k];
+		    slot->dmg = 1; slot->damageType = 4; slot->material = 0;
+		    slot->unarmedSnapshot = true; slot->firstInBatch = ( k == 0 ); slot->flurryGe2 = false;
+		}
+		flurry.actor = &a2; flurry.target = &v2; flurry.queueCount = 3;
+		flurry.seriesRemaining = 0; flurry.volleyContinuing = false; flurry.finished = false;
+		flurry.firstStrikeDueMs = 0;
+		for ( int k = 0; k < 3; ++k ) {
+		    weapon.queue[k].dmg = 1; weapon.queue[k].damageType = 4; weapon.queue[k].material = 0;
+		    weapon.queue[k].unarmedSnapshot = false;   // the WEAPON twin never marks +0x19
+		    weapon.queue[k].firstInBatch = ( k == 0 );
+		    weapon.queue[k].flurryGe2 = false;
+		}
+		weapon.actor = &a2; weapon.target = &v2; weapon.queueCount = 3;
+		weapon.seriesRemaining = 0; weapon.volleyContinuing = false; weapon.finished = false;
+		weapon.firstStrikeDueMs = 0;
+		v2.queuedAnimEvent = 0;
+		flurry.Update( 10u );
+		check( v2.queuedAnimEvent == 41,
+		       "3 UNARMED records -> marks>=2 -> +0xAC set -> 38+3 = 41 (stationary, wrap 1)" );
+		v2.queuedAnimEvent = 0;
+		weapon.Update( 10u );
+		check( v2.queuedAnimEvent == 40,
+		       "3 WEAPON records, SAME count, no marks -> +0xAC clear -> 37+3 = 40" );
+		check( v2.queuedAnimEvent != 41, "count-based rule would have produced 41 here" );
+		}
 	}
 
 	if ( g_fail == 0 ) { printf("OK: spawn+move vertical slice passed\n"); return 0; }
