@@ -6,110 +6,46 @@
 #include "types.hpp"
 
 namespace JE {
+	// JE::Gregorian - world clock (0x38 bytes, vft 0x69166C; World+0x3C). Construction:
+	// GameWorld vb idx4 factory (0x46fda0 -> sub_544D90) seeds 24 bytes from the world's
+	// calendar block (sys.ini [World]: 2253-10-18 13:13:13 after ApplyWorldClockParams).
+	// Running fields (original offsets): +1C year, +20 month(1..12), +24 day(1..), +28 hour,
+	// +2C minute, +30 second, +34 TOTAL ELAPSED SECONDS (monotonic counter the round math
+	// reads). Carries: AddSeconds->AddMinutes (60), AddMinutes->AddHours (60),
+	// AddHours->AddDays (24), AddDays->month/year roll with DaysInMonth + leap Feb+1
+	// (0x5A3AB0 structure ported loop-faithfully).
 	struct Gregorian {
-		//: Members
-			dword mbr_0x10;
-			dword mbr_0x128;
-			dword mbr_0x14;
-			dword mbr_0x154;
-			dword mbr_0x18;
-			dword mbr_0x1c;
-			dword mbr_0x20;
-			dword mbr_0x24;
-			dword mbr_0x28;
-			dword mbr_0x2c;
-			dword mbr_0x30;
-			dword mbr_0x34;
-			dword mbr_0x38;
-			dword mbr_0x3c;
-			dword mbr_0x4;
-			dword mbr_0x40;
-			dword mbr_0x44;
-			dword mbr_0x6c;
-			dword mbr_0x70;
-			dword mbr_0x74;
-			dword mbr_0x78;
-			dword mbr_0x8;
-			dword mbr_0xa0;
-			dword mbr_0xc;
-		//: Methods
-			undefined4 virt_meth_0x41d1b0();
-			undefined4 virt_meth_0x41d1d0();
-			undefined4 virt_meth_0x424a10();
-			undefined4 meth_0x424d80();
-			undefined4 meth_0x424e50();
-			undefined4 meth_0x424ec0();
-			undefined4 meth_0x424fc0();
-			undefined4 meth_0x425200();
-			undefined4 meth_0x429b70();
-			undefined4 meth_0x42a320();
-			undefined4 meth_0x42a740();
-			undefined4 meth_0x42a770();
-			undefined4 meth_0x42ca00();
-			undefined4 meth_0x42cc60();
-			undefined4 meth_0x42ccf0();
-			undefined4 meth_0x4ab680();
-			undefined4 meth_0x4ab6c0();
-			undefined4 meth_0x4b1470();
-			undefined4 meth_0x4b1490();
-			undefined4 meth_0x4b14a0();
-			undefined4 meth_0x4b14c0();
-			undefined4 meth_0x4b1540();
-			undefined4 meth_0x4b1550();
-			undefined4 meth_0x4b1570();
-			undefined4 meth_0x4b15a0();
-			undefined4 meth_0x4b6d40();
-			undefined4 meth_0x4b6eb0();
-			undefined4 meth_0x52c350();
-			undefined4 meth_0x52c580();
-			undefined4 meth_0x52c5d0();
-			undefined4 meth_0x52c610();
-			undefined4 meth_0x52c660();
-			undefined4 meth_0x52c6c0();
-			undefined4 meth_0x52c710();
-			undefined4 meth_0x52c960();
-			undefined4 meth_0x52ca70();
-			undefined4 meth_0x52cc40();
-			undefined4 meth_0x52cca0();
-			undefined4 meth_0x52d100();
-			void ctor_0x544950();
-			undefined4 virt_meth_0x5449b0();
-			undefined4 virt_meth_0x5449d0();
-			undefined4 virt_meth_0x5449e0();
-			undefined4 virt_meth_0x544a00();
-			undefined4 virt_meth_0x544a10();
-			undefined4 virt_meth_0x544a20();
-			undefined4 virt_meth_0x544a30();
-			undefined4 virt_meth_0x544a40();
-			undefined4 virt_meth_0x544a50();
-			void dtor_0x5a3730();
-			undefined4 virt_meth_0x5a3740();
-			undefined4 virt_meth_0x5a3920();
-			undefined4 virt_meth_0x5a3960();
-			undefined4 virt_meth_0x5a39a0();
-			undefined4 virt_meth_0x5a3ab0();
-			undefined4 virt_meth_0x5a3b50();
-			undefined4 virt_meth_0x5a3be0();
-			undefined4 virt_meth_0x5a3c60();
-			undefined4 virt_meth_0x5a3ce0();
-			undefined4 virt_meth_0x5a3d60();
-			undefined4 virt_meth_0x5a3da0();
-			undefined4 virt_meth_0x5a3dd0();
-			undefined4 virt_meth_0x5a3df0();
-			undefined4 virt_meth_0x5a3e20();
-			undefined4 virt_meth_0x5a3eb0();
-			undefined4 virt_meth_0x5a3f10();
-			undefined4 virt_meth_0x5a3f60();
-			undefined4 virt_meth_0x5a3fa0();
-			undefined4 virt_meth_0x5a3fd0();
-			undefined4 virt_meth_0x5a4020();
-			undefined4 virt_meth_0x5a4070();
-			undefined4 virt_meth_0x5a40d0();
-			undefined4 virt_meth_0x5a4130();
-			undefined4 virt_meth_0x5a4190();
-			undefined4 virt_meth_0x5a41f0();
-			undefined4 virt_meth_0x5a4250();
-	}; // Gregorian
+		int      year;
+		int      month;      // 1-based
+		int      day;        // 1-based
+		int      hour;
+		int      minute;
+		int      second;
+		unsigned totalSeconds; // +0x34 (elapsed since construction)
+
+		Gregorian( int y = 1, int mo = 1, int d = 1, int h = 0, int mi = 0, int s = 0 )
+		    : year( y ), month( mo ), day( d ), hour( h ), minute( mi ), second( s ),
+		      totalSeconds( 0 ) {}
+
+		// vft idx22 (+88)
+		void AddSeconds( unsigned secs );
+		// vft idx21 (+84)
+		void AddMinutes( unsigned mins );
+		// vft idx20 (+80)
+		void AddHours( unsigned hours );
+		// vft idx19 (+76)
+		void AddDays( unsigned days );
+
+		static int   DaysInMonth( int month, int year );   // vft idx3 (+12) family
+		static bool  IsLeapYear( int year );               // vft idx4 (+16) family
+
+		unsigned TotalSeconds() const { return totalSeconds; }
+
+		// internal carry helpers mirroring the nested-call ordering (see cpp NOTE)
+		void AddHours_RollDay();
+		void AddMinutes_RollHour( unsigned room );
+		void AddSeconds_RollMinute( unsigned room );
+	};
 } // namespace JE
 
 #endif // JE_GREGORIAN_HPP_

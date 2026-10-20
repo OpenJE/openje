@@ -1,5 +1,6 @@
 #include "JE/PathManager.hpp"
 #include "JE/SpatialGrid.hpp"
+#include "JE/Gregorian.hpp"
 #include "JE/Map.hpp"
 #include "F3/GamePathManager.hpp"
 #include "JE/HostHooks.hpp"
@@ -185,6 +186,29 @@ int main() {
 		check( grid.QueryEntities( runs, 2, 9, 2, out, 8 ) == 2, "anchor cancels: col 1,2 hits regardless of cx" );
 		check( grid.Remove( 1, 2, &a ) == 1 && grid.QueryEntities( runs, 2, 1, 2, out, 8 ) == 1,
 		       "remove shrinks occupancy" );
+	}
+
+	// ---- Gregorian world clock (ladder + leap + total-seconds) --------------------------
+	{
+		JE::Gregorian g(2253, 10, 18, 23, 59, 50);
+		g.AddSeconds( 10 );
+		check( g.second == 0 && g.minute == 0 && g.hour == 0, "second rolls minute rolls hour" );
+		check( g.day == 19, "hour carry advanced the day" );
+		check( g.totalSeconds == 90070u,
+		       "shipped carry quirk: boundary tick advances 86400+3600+60+1 (0x5A3B50-..)" );
+		JE::Gregorian m(2253, 2, 27, 0, 0, 0);
+		m.AddDays( 1 );
+		check( m.month == 2 && m.day == 28, "non-leap Feb has 28 days (2253 %% 4 != 0)" );
+		JE::Gregorian l(2000, 2, 28, 0, 0, 0);
+		l.AddDays( 1 );
+		check( l.month == 2 && l.day == 29, "leap year Feb 29 (2000: %%400 rule)" );
+		JE::Gregorian c(1900, 2, 28, 0, 0, 0);
+		c.AddDays( 1 );
+		check( c.month == 3 && c.day == 1, "1900 NOT leap (%%100 without %%400)" );
+		JE::Gregorian y(2253, 12, 31, 23, 59, 59);
+		y.AddSeconds( 1 );
+		check( y.year == 2254 && y.month == 1 && y.day == 1 && y.hour == 0, "year roll" );
+		check( y.totalSeconds == 90061u, "year-roll boundary advance = day+hour+min+sec spans" );
 	}
 
 	if (g_fail == 0) {

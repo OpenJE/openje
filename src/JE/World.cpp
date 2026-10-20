@@ -3,6 +3,7 @@
 #include "tracing.hpp"
 #include "JE.hpp"
 #include "JE/World.hpp"
+#include "JE/Gregorian.hpp"
 #include "JE/PathManager.hpp"
 #include "JE/HostHooks.hpp"
 #include "JE/HostHooks.hpp"
@@ -85,6 +86,18 @@ namespace JE {
 		// 0x545E71-0x545ECC: for each live entity (state != 5): entity vft[24](time) then
 		// ServerUpdate(entity, time). Entities/actions live in the game layer; seam call:
 		Host::TickWorldEntities( ms );
+
+		// step 6 (session-14): clock carry. Players-online branch awaits the player
+		// collection; the no-players branch scales the accumulated ms by the clock speed
+		// into Gregorian::AddSeconds and folds the accumulator (mbr_0x44 %= 1000).
+		if ( m_clock ) {
+			const double speed = WorldClockSpeed();
+			const int carry = (int)( speed * (double)(int)mbr_0x44 / 1000.0 );
+			if ( carry > 0 ) {
+				m_clock->AddSeconds( (unsigned)carry );
+			}
+			mbr_0x44 %= 1000u;
+		}
 	} // ServerUpdate_0x545d60
 
 } // namespace JE

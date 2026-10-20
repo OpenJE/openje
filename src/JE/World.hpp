@@ -6,11 +6,11 @@
 #include "types.hpp"
 #include "JE/Subsystem.hpp"
 
-namespace JE { class VFX_Parameter; class PathManager; }
+namespace JE { class VFX_Parameter; class PathManager; struct Gregorian; }
 
 namespace JE {
 	struct World : public Subsystem {
-		World() : m_secondsPerRound(6), m_calendarYear(0), m_calendarMonth(0),
+		World() : m_clock(0), m_secondsPerRound(6), m_calendarYear(0), m_calendarMonth(0),
 		          m_calendarDay(0), m_calendarHour(0), m_calendarMinute(0), m_calendarSecond(0),
 		          m_state(0), m_pauseStampMS(0), m_pauseAccumMS(0), m_pauseLastMS(0),
 		          mbr_0x2c(0), mbr_0x34(0), mbr_0x44(0), mbr_0x48(0), mbr_0x54(0),
@@ -74,6 +74,10 @@ namespace JE {
 
 			// seam for F3::GameWorld (path manager lives at world+0xF0 there)
 			virtual PathManager* GetPathManager() { return 0; }
+			// world clock (World+0x3C). Created via the vb idx4 factory equivalent
+			// (GameWorld::Initialize after ApplyWorldClockParams; original sub_544D90).
+			Gregorian* m_clock;      // +0x3C
+			virtual double WorldClockSpeed() { return 1.0; }   // vft3[+4] getter analogue
 			int  m_state;            // +0x38
 			int  m_pauseStampMS;     // +0x58
 			int  m_pauseAccumMS;     // +0x5C
