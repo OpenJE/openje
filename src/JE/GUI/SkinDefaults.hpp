@@ -61,10 +61,11 @@ namespace JE {
 		// fully initialised either way, so callers can trust every field.
 		//
 		// Not included here (deliberately, so nothing is invented): the Gfx_Engine registration of
-		// `texture` (recon gap G1 is answered - +0xDC probe @0x52363b, Demand_0x49b750 @0x523665,
-		// +0xC4 index @0x5236b4, Release_0x498eb0 @0x5236ce - but the engine-side handle storage
-		// is A's lane), and enumerating *all* sections of an ini, which needs a VFX_Parameter
-		// section iterator that does not exist yet (asked for in chat/from-B.md).
+		// `texture` (+0xDC @0x52363b is ACQUIRE-by-name with ++node[44] and a quiet id-0 miss, see
+		// docs/f3/GUILoadingRecon.md sec 7 G1; Demand_0x49b750 @0x523665, +0xC4 index @0x5236b4,
+		// Release_0x498eb0 @0x5236ce) - the registry itself is task T-013. Enumerating *all* sections
+		// is now possible (the T-009 accessors C added, at my request in chat/from-B.md C-36) and is
+		// done by JE/GUI/SkinTable, not here.
 		char ReadSkinDefaults( const JE::VFX_Parameter& tree, const char* section,
 		                       SkinDefault* out, const SkinParent& parent );
 

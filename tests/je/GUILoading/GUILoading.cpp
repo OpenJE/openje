@@ -15,6 +15,7 @@
 #include "JE/GUI/InterfaceFile.hpp"
 #include "JE/GUI/SkinDefaults.hpp"
 #include "JE/GUI/SkinFragments.hpp"
+#include "JE/GUI/SkinTable.hpp"
 #include "JE/VFX_Parameter.hpp"
 #include "JE/PathManager.hpp"
 #include "JE/ResourceSystem.hpp"
@@ -496,6 +497,90 @@ int main( int argc, char** argv ) {
 		       "left/right edges are mode 2" );
 		check( JE::GUI::ExpectedMode( JE::GUI::SLOT_CENTER ) == JE::GUI::PIECE_MODE_ANY_CENTRE,
 		       "only the centre slot has a free mode" );
+	}
+
+	// ---- T-007: the skin .ini family (skinlist + every shipped skin table) -------------
+	// One skin == one ini resource (Skin::LoadByName_0x522c30 -> F3::LoadIniResource_0x4e0960 ->
+	// Skin::meth_0x522ac0 iterates sections and calls LoadDefault per section). The names come from
+	// resource `skinlist`; the expectations below were measured from Interface.grp (ftype 800), not
+	// from our parser.
+	{
+		static const char* const kSkinList[] = {
+			"DefaultInterface.ini", "zzmainmenu.ini", "quickslot.ini", "areamap.ini", "f3_green.ini"
+		};
+		char names[8][JE::GUI::SKIN_NAME_MAX];
+		const unsigned nList = JE::GUI::LoadSkinList( names, 8 );
+		check( nList == 5, "skinlist resource holds exactly five skin ini names" );
+		unsigned nameOk = 0;
+		for ( unsigned i = 0; i < nList && i < 5; ++i ) {
+			if ( strcmp( names[i], kSkinList[i] ) == 0 ) { ++nameOk; }
+			else { printf( "     skinlist[%u] = '%s' expected '%s'\n", i, names[i], kSkinList[i] ); }
+		}
+		check( nameOk == 5, "the five names match the shipped skinlist, in order" );
+
+		struct SkinExp { const char* skin; unsigned sections; unsigned misses; char disabled; };
+		static const SkinExp kSkinExp[] = {
+			{ "DefaultInterface.ini", 54,  0,  0 },
+			{ "zzmainmenu.ini",       63,  0,  1 },   // the only skin with a button.disabled group
+			{ "quickslot.ini",        54,  3,  0 },   // 3 records name quickslot-item0.bmp
+			{ "areamap.ini",          54, 54,  0 },   // every AreaMap texture is absent from the index
+			{ "f3_green.ini",         54,  0,  0 }
+		};
+		// window.* flags per slot, identical in all five shipped skins - and identical to the d28
+		// values measured over 14364 .int records (JE/GUI/SkinFragments), i.e. two unrelated file
+		// families agreeing on the nine-slice mode table.
+		static const int kWinFlags[9] = { 0, 1, 0, 2, 3, 2, 0, 1, 0 };
+
+		for ( unsigned e = 0; e < 5; ++e ) {
+			JE::GUI::SkinTable t;
+			check( t.Load( kSkinExp[e].skin ) == 1, kSkinExp[e].skin );
+			check( t.SectionCount() == kSkinExp[e].sections, "section count matches the shipped ini" );
+			check( t.TextureMisses() == kSkinExp[e].misses, "unresolvable texture records match (quiet id-0 miss path)" );
+
+			int winOk = 0, fallback = 0;
+			char hasDisabled = 0;
+			char grp[40];
+			for ( unsigned i = 0; i < t.SectionCount(); ++i ) {
+				const JE::GUI::SkinDefault* r = t.Record( i );
+				if ( !r ) { continue; }
+				if ( r->color == 0xFF808080u ) { ++fallback; }
+				if ( t.GroupOf( i, grp, sizeof( grp ) ) ) {
+					if ( strcmp( grp, "button.disabled" ) == 0 ) { hasDisabled = 1; }
+					if ( i < 9u && strcmp( grp, "window" ) == 0 && t.SlotOf( i ) == i
+					     && r->flags == kWinFlags[i] ) { ++winOk; }
+				}
+			}
+			check( winOk == 9, "first nine sections are window.* in slot order with the measured flags" );
+			check( (char)( hasDisabled != 0 ) == kSkinExp[e].disabled, "button.disabled group presence" );
+			// Every shipped `color` line has THREE components (8 of them, all "0,255,0"), and
+			// LoadDefault stores a colour only at exactly four (cmp esi,4 @0x5237d7), so no shipped
+			// record may carry anything but the 0xFF808080 fallback @0x523700. This is the rule doing
+			// real work, not a curiosity: it is why 10593 .int records hold 0xFF808080 too.
+			check( (unsigned)fallback == t.SectionCount(),
+			       "all 3-component color lines fall back to 0xFF808080 (the exactly-4 rule)" );
+		}
+
+		// Slot/group parsing on a nested group name (zzmainmenu section 9 = [button.up.upperleft]).
+		JE::GUI::SkinTable z;
+		check( z.Load( "zzmainmenu.ini" ) == 1, "zzmainmenu reloads for the parsing checks" );
+		char g[40];
+		check( z.GroupOf( 9, g, sizeof( g ) ) && strcmp( g, "button.up" ) == 0
+		       && z.SlotOf( 9 ) == JE::GUI::SLOT_UPPER_LEFT, "button.up.upperleft parses as group+slot" );
+		// Sections 9..17 are button.up.* in the same slot order, so 12 is its left edge and 13 its
+		// centre (an off-by-one here was my error, the code's was right).
+		check( z.SlotOf( 12 ) == JE::GUI::SLOT_MIDDLE_LEFT, "button.up.left is slot 3" );
+		check( z.SlotOf( 13 ) == JE::GUI::SLOT_CENTER, "button.up.middle is slot 4" );
+		check( z.Record( 4 ) && z.Record( 4 )->flags == JE::GUI::PIECE_FILL
+		       && z.Record( 5 ) && z.Record( 5 )->flags == JE::GUI::PIECE_VERTICAL,
+		       "centre is fill, right edge is vertical" );
+		check( z.Record( 99 ) == 0 && z.SectionName( 99 ) == 0, "out-of-range accessors return null" );
+		check( JE::GUI::SlotFromSectionSuffix( "upperright" ) == JE::GUI::SLOT_UPPER_RIGHT
+		       && JE::GUI::SlotFromSectionSuffix( "nonsense" ) == JE::GUI::SLOT_COUNT,
+		       "suffix maps the nine known slots and flags the rest as drift" );
+
+		JE::GUI::SkinTable none;
+		check( none.Load( "NoSuchSkin.ini" ) == 0, "a missing skin ini fails to load, cleanly" );
+		check( none.SectionCount() == 0, "a failed load leaves no records" );
 	}
 
 	if ( !g_fail ) { printf( "OK: GUI .int loading tests passed\n" ); return 0; }
