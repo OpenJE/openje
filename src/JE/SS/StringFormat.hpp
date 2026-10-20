@@ -9,10 +9,11 @@ namespace JE {
 	namespace SS {
 		class EngineStringSystem;
 
-		// Seam for the two lookups Format_0x56BE30 performs. Kept as injections because the
-		// game-variable resolver is not identified yet (chat/from-B.md C-29: it is a call on
-		// the JE::World virtual base at obj+0x168, slot +0x6C, and the candidate table is
-		// ruled out) - and that table is engine-core, implementer-A's lane.
+		// The two lookups Format_0x56BE30 performs are injected so the tests can drive both
+		// branches. The variable side now defaults to the real thing (VFX_Parameter "Globals"
+		// section, see StringFormat.cpp) - the seam stays in the signature because the shipped
+		// key-vs-section reading of the payload still needs one lockstep confirmation
+		// (docs/f3/GUIStringTags.md P1).
 		//   resolveVariable(name, out, cap, ctx) -> 1 and fills `out` when the variable exists.
 		//   lookupToken(name, ctx)               -> value string or NULL.
 		struct FormatEnv {
@@ -57,9 +58,8 @@ namespace JE {
 		// is engine core (implementer-A); see chat/from-B.md C-27/C-29.
 		char Format( const FormatEnv& env, char* text, unsigned capacity );
 
-		// Env whose token side is the real EngineStringSystem map and whose variable side
-		// reports "not found" until the resolver seam above is identified (so `<gv_X>` behaves
-		// exactly like the original's missing-variable case: log + "<Bad Token>").
+		// Env bound to the real subsystems: token map from `ess`, variables from the app's
+		// VFX_Parameter tree (Host::GetParameterTree).
 		FormatEnv MakeEnv( EngineStringSystem* ess );
 	} // namespace SS
 } // namespace JE

@@ -7,6 +7,8 @@
 
 #include "JE/SS/StringFormat.hpp"
 #include "JE/SS/EngineStringSystem.hpp"
+#include "JE/VFX_Parameter.hpp"
+#include "JE/HostHooks.hpp"
 #include "JE.hpp"
 
 namespace JE {
@@ -62,11 +64,31 @@ namespace JE {
 			}
 		} // anonymous namespace
 
-		// Default variable resolver: reports "not found" until the seam is identified, which is
-		// the original's own missing-variable behaviour (log + <Bad Token>, 0x56C084/0x56C08E).
-		static char ResolveVariableUnknown( const char* name, char* out, unsigned cap, void* ctx ) {
-			(void)name; (void)out; (void)cap; (void)ctx;
-			return 0;
+		// Default variable resolver. C-29's question is now answered by the disassembly: the
+		// World-side helper sub_5A9F80 (reached through GameWorld's IWorldServer slot +0x6C,
+		// installed at GameWorld+0x168 by F3::GameWorld::ctor_0x470340 @0x470388) resolves the
+		// name against the VFX_Parameter tree held at object+28 - it defaults the section to
+		// "Globals" when empty (@0x5a9fc5, literal "Globals") and copies the found string value
+		// (@0x5aa037), returning 1 only when the lookup produced a non-empty value. So <gv_X> is
+		// an ini variable read off the same parameter tree the app already parses from sys.ini /
+		// globals.ini (F3::g_vfxParameterTree via Host::GetParameterTree).
+		//
+		// ONE reading remains open: whether the payload is the KEY inside section "Globals" or
+		// the SECTION name (the helper's userpurge/ecx-return arg order is ambiguous at
+		// 0x5a9fd5 vs 0x5aa01e). Key-in-Globals is implemented here because that is how the
+		// shipped [Globals] variables are read everywhere else (cf. the ResourceSystem suite's
+		// "[Globals] Greeting == 0"). Settle it against the original in lockstep (one
+		// `<gv_...>` string in-game), then flip this if needed - docs/f3/GUIStringTags.md P1.
+		static char ResolveVariableFromParams( const char* name, char* out, unsigned cap,
+		                                       void* ctx ) {
+			(void)ctx;
+			void* tree = JE::Host::GetParameterTree();
+			if ( !tree || !name || !name[0] ) { return 0; }
+			const char* v = static_cast<JE::VFX_Parameter*>( tree )->GetString( "Globals", name, 0 );
+			if ( !v ) { return 0; }
+			strncpy( out, v, cap - 1 );
+			out[cap - 1] = 0;
+			return 1;
 		}
 		// The seam signature is fixed by FormatEnv::lookupToken (void* ctx), so the parameter
 		// cannot be const here - local, visible suppression rather than a file-level baseline.
@@ -79,7 +101,7 @@ namespace JE {
 		FormatEnv MakeEnv( EngineStringSystem* ess ) {
 			FormatEnv e;
 			e.ctx = ess;
-			e.resolveVariable = &ResolveVariableUnknown;
+			e.resolveVariable = &ResolveVariableFromParams;
 			e.lookupToken = &LookupTokenFromEss;
 			return e;
 		}
