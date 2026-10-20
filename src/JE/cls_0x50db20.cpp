@@ -2,36 +2,85 @@
 #include "types.hpp"
 #include "JE/cls_0x50db20.hpp"
 #include <string.h>
+#include <stdlib.h>
 
 namespace JE {
 
-    // 0x401BD0 — String copy/setter. Copies param_1 (length param_2) into this string buffer,
-    // using SSO inline storage for short strings or heap allocation for longer ones.
+    // Layout of the std::string sub-object inside cls_0x50db20 (MSVC4 basic_string):
+    //   +0x00  object word preceding the string (written as 0 by RegisterCommand at 0x59f60c)
+    //   +0x04  string: 16-byte inline buffer OR heap pointer (when capacity >= 0x10) — both at +0x04
+    //   +0x14  string size (_Mysize)
+    //   +0x18  string capacity (_Myres)
+    // Evidence: meth_0x401bd0 disassembly prologue reads capacity at [this+0x18] and buffer/pointer at
+    // [this+0x04]; meth_0x545710's query comparison uses the same offsets.
+
+    // 0x401BD0 — string assign (std::string::operator=(const char*) equivalent): reserves capacity for
+    // param_2 characters (meth_0x401940), copies param_1 into the (inline or heap) buffer, stores the
+    // size at +0x14 and NUL-terminates. The original also handles the overlapping-source case by
+    // copying forward; callers here pass distinct buffers.
     undefined4 cls_0x50db20::meth_0x401bd0(const char *param_1, int param_2) {
-        unsigned int capacity;
+        byte* self = reinterpret_cast<byte*>( this );
 
-        capacity = this->mbr_0x70;
-
-        if (capacity < 0x10u) {
-            // SSO mode: copy directly into inline buffer at offset 1 from object start.
-            char *inline_buf = reinterpret_cast<char *>(this) + 1;
-            memcpy(inline_buf, param_1, static_cast<size_t>(param_2));
-            inline_buf[param_2] = '\0';
-        } else {
-            // Heap mode: reallocate via meth_0x401940, then copy into heap buffer.
-            if (this->meth_0x401940(0xFFFFFFFF, 1)) {
-                char *heap_buf = reinterpret_cast<char *>(this->mbr_0x4);
-                memcpy(heap_buf, param_1, static_cast<size_t>(param_2));
-                heap_buf[param_2] = '\0';
-            }
+        if ( param_2 < 0 ) {
+            // original guard via the reserve path; not reachable from shipped callers
+            param_2 = 0;
         }
 
-        this->mbr_0x70 = static_cast<byte>(param_2);
-        return (undefined4)this;
-    }
+        dword capacity = *reinterpret_cast<dword*>( self + 0x18 );
+        if ( capacity < 0x10u ) {
+            // SSO inline mode
+            if ( param_2 >= 0x10 ) {
+                char* heap = reinterpret_cast<char*>( malloc( param_2 + 1 ) );
+                if ( !heap ) {
+                    return 0;
+                }
+                if ( self[4] ) {
+                    memcpy( heap, self + 4, strlen( reinterpret_cast<char*>( self + 4 ) ) );
+                }
+                *reinterpret_cast<char**>( self + 4 ) = heap;
+                capacity = static_cast<dword>( param_2 );
+                *reinterpret_cast<dword*>( self + 0x18 ) = capacity;
+            }
+        } else if ( capacity < static_cast<dword>( param_2 ) ) {
+            char* grown = reinterpret_cast<char*>( realloc( *reinterpret_cast<void**>( self + 4 ),
+                                                             param_2 + 1 ) );
+            if ( !grown ) {
+                return 0;
+            }
+            *reinterpret_cast<char**>( self + 4 ) = grown;
+            *reinterpret_cast<dword*>( self + 0x18 ) = static_cast<dword>( param_2 );
+        }
 
+        char* data;
+        if ( *reinterpret_cast<dword*>( self + 0x18 ) < 0x10u ) {
+            data = reinterpret_cast<char*>( self + 4 );
+        } else {
+            data = *reinterpret_cast<char**>( self + 4 );
+        }
+        memmove( data, param_1, param_2 );
+        data[param_2] = '\0';
+        *reinterpret_cast<dword*>( self + 0x14 ) = static_cast<dword>( param_2 );
+        return (undefined4)this;
+    } // meth_0x401bd0
+
+    // 0x401940 — the original reserve/realloc helper. The SSO transition and growth are folded into
+    // meth_0x401bd0 above; this stub is retained for entry-point parity with the database.
     undefined4 cls_0x50db20::meth_0x401940(int param_1, int param_2) {
         return 0;
+    }
+
+    // 0x401B20 — substring copy used by meth_0x59f540 to clone a key before insertion
+    // (assign(pos=0, count=-1) == full copy). Kept simple: delegates to the assign path.
+    undefined4 cls_0x50db20::meth_0x401b20(void* other, int pos, int count) {
+        const byte* src = reinterpret_cast<const byte*>( other );
+        const char* data;
+        if ( *reinterpret_cast<const dword*>( src + 0x18 ) < 0x10u ) {
+            data = reinterpret_cast<const char*>( src + 4 );
+        } else {
+            data = *reinterpret_cast<const char* const*>( src + 4 );
+        }
+        (void)pos; (void)count;
+        return this->meth_0x401bd0( data, static_cast<int>( strlen( data ) ) );
     }
 
 } // namespace JE

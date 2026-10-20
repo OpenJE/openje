@@ -129,7 +129,7 @@ namespace JE {
 			undefined4 meth_0x401510();
 			undefined4 meth_0x401940(int param_1, int param_2);
 			undefined4 meth_0x401a40();
-			undefined4 meth_0x401b20();
+			undefined4 meth_0x401b20(void* other, int pos, int count);  // substring/full copy (assign path)
 			undefined4 meth_0x401bd0(const char* param_1, int param_2);
 			void ctor_0x404bc0();
 			undefined4 meth_0x40acc0();
