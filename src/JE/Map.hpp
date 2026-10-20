@@ -124,7 +124,7 @@ namespace JE {
 				for ( unsigned i = 0; i < m_entryPointCount; ++i ) {
 					if ( m_entryPoints[i].flag == (unsigned char)id ) {
 						for ( int k = 0; k < 18; ++k ) {
-							xyz[k] = *(float*)&m_entryPoints[i].data[k];
+							xyz[k] = *reinterpret_cast<const float*>(&m_entryPoints[i].data[k]);
 						}
 						return 6;
 					}
