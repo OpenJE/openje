@@ -88,3 +88,53 @@ namespace JE {
 	} // ServerUpdate_0x545d60
 
 } // namespace JE
+	namespace JE {
+	// 0x544A90 (session-14 verified chain) - server world update frame.
+	void World::Update_0x544a90( int ms ) {
+		tracing::instrument( tracing::LOCATION, "ms=%d", ms );
+
+		if ( mbr_0x2c == 4 ) {
+			return;   // paused
+		}
+		int delta = ms - (int)mbr_0x48;      // last tick stamp
+		mbr_0x48 = (dword)ms;
+		mbr_0x44 = (dword)( (int)mbr_0x44 + delta - (int)mbr_0x54 );   // accumulate w/ pause credit
+		mbr_0x54 = 0;
+
+		if ( !WorldUpdateGate() ) {
+			return;   // vft3[+0x14] gate
+		}
+		switch ( mbr_0x34 ) {
+			case 0:
+				JE::LogDebugString( NULL, "Trying to update world when state is invalid\n" );
+				break;                      // original: FatalError (deviation)
+			case 1:
+				ServerUpdate_0x545d60( delta );   // per-entity pump (0x544a90→vb+56)
+				break;
+			case 2:
+				WorldUpdateStage2( delta );
+				break;
+			case 3:
+				WorldUpdateStage3( delta );
+				break;
+			default:
+				break;
+		}
+		mbr_0x64 = (dword)delta;                  // elapsed
+		mbr_0x68 = mbr_0x68 + 1u;                 // frame counter via Get_mbr_0x4()-analogue
+	} // Update_0x544a90
+
+	// 0x544B30 - client frame tick: same accumulator, then the hosted per-player pump.
+	void World::Tick_0x544b30( int ms ) {
+		tracing::instrument( tracing::LOCATION, "ms=%d", ms );
+
+		if ( mbr_0x2c == 4 ) {
+			return;
+		}
+		int delta = ms - (int)mbr_0x48;
+		mbr_0x48 = (dword)ms;
+		mbr_0x44 = (dword)( (int)mbr_0x44 + delta - (int)mbr_0x54 );
+		mbr_0x54 = 0;
+		PlayersPump_0x545ff0( delta );
+	} // Tick_0x544b30
+	} // namespace JE

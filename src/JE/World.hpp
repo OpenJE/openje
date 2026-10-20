@@ -10,6 +10,11 @@ namespace JE { class VFX_Parameter; class PathManager; }
 
 namespace JE {
 	struct World : public Subsystem {
+		World() : m_secondsPerRound(6), m_calendarYear(0), m_calendarMonth(0),
+		          m_calendarDay(0), m_calendarHour(0), m_calendarMinute(0), m_calendarSecond(0),
+		          m_state(0), m_pauseStampMS(0), m_pauseAccumMS(0), m_pauseLastMS(0),
+		          mbr_0x2c(0), mbr_0x34(0), mbr_0x44(0), mbr_0x48(0), mbr_0x54(0),
+		          mbr_0x64(0), mbr_0x68(0) {}
 		//: Methods (calendar params, JE::World vft[4] ApplyWorldClockParams_0x546b50)
 		public:
 			// sys.ini [World]: Seconds Per Round=6, Year=2253, Month=10, Day=18, 13:13:13
@@ -42,6 +47,30 @@ namespace JE {
 			// static caller exists in the original .text - the session layer (Server/GUI
 			// thread) invokes it; subsystem vft[3] Tick stays empty per 0x404B70 evidence.
 			void ServerUpdate_0x545d60( int ms );
+
+			// 0x544A90 - server world update frame (JE::Server::virt_meth_0x552b60 net pump
+			// invokes it via IWorldServer +0x18; session-14 chain): skip when the pause flag
+			// (mbr_0x2c==4) is set; accumulate ms delta into mbr_0x44 with the pause credit
+			// mbr_0x54 subtracted; dispatch on the update-state mbr_0x34:
+			//   0 => "Trying to update world when state is invalid" (original FatalError;
+			//      log+skip deviation); 1 => per-entity pump ServerUpdate_0x545d60(dtMs);
+			//   2/3 => vb +60/+64 stages (unmodeled virtuals below).
+			// Then mbr_0x64 = elapsed, mbr_0x68 += Get_mbr_0x4() frame counter.
+			void Update_0x544a90( int ms );
+
+			// 0x544B30 - client frame path (World::Tick): skip iff mbr_0x2c==4, same ms
+			// accumulate, then the hosted per-PLAYER pump (0x545FF0). Player collection is
+			// unmodeled -> virtual seam below; base = accumulate + pump players (none).
+			void Tick_0x544b30( int ms );
+
+			// vft3[+0x14] gate observed before state dispatch (0x544b00-family); base true.
+			virtual bool WorldUpdateGate() { return true; }
+			// stages 2/3 of the mbr_0x34 dispatch (GameWorld overrides pending RE)
+			virtual void WorldUpdateStage2( int dtMs ) { (void)dtMs; }
+			virtual void WorldUpdateStage3( int dtMs ) { (void)dtMs; }
+			// hosted per-player pump 0x545FF0 skeleton: fps meter/map ticks/player vft+8 all
+			// unmodeled; base advances nothing (documented), F3 may override.
+			virtual void PlayersPump_0x545ff0( int dtMs ) { (void)dtMs; }
 
 			// seam for F3::GameWorld (path manager lives at world+0xF0 there)
 			virtual PathManager* GetPathManager() { return 0; }

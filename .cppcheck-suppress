@@ -9,3 +9,5 @@ noOperatorEq:openje/src/JE/Map.cpp
 dangerousTypeCast:openje/src/JE/Map.cpp
 noCopyConstructor:openje/src/JE/SpatialGrid.cpp
 noOperatorEq:openje/src/JE/SpatialGrid.cpp
+uninitMemberVar:openje/src/JE/World.hpp
+constVariablePointer:openje/src/JE/World.cpp
