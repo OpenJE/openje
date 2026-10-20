@@ -123,6 +123,7 @@ int main( int argc, char** argv ) {
 		F3::SetActiveMap( jm );   // the OnServerUpdate body resolves the grid via the seam
 		JE::PathManager q2;
 		F3::SpawnedEntity walker2; walker2.mapId = 2; walker2.classIdTag = F3::kClassGameCreature;
+		walker2.entityState = F3::kStateActive;   // simulate add-to-world activation
 		walker2.pos[0] = 10.0f; walker2.pos[2] = 300.0f;
 		F3::SpawnedEntity blocker; blocker.mapId = 2; blocker.classIdTag = F3::kClassGameCreature;
 		blocker.movingFlag = 1;
@@ -205,8 +206,10 @@ int main( int argc, char** argv ) {
 		JE::Map* jm = F3::FindLoadedMap( 2 );
 		F3::SetActiveMap( jm );
 		F3::SpawnedEntity walker3; walker3.mapId = 2; walker3.classIdTag = F3::kClassGameCreature;
+		walker3.entityState = F3::kStateActive;
 		walker3.pos[0] = 30.0f; walker3.pos[2] = 300.0f;
 		F3::SpawnedEntity door;   door.mapId = 2;   door.classIdTag = F3::kClassGameDoor;
+		door.entityState = F3::kStateActive;
 		door.doorByte0xBC = 0;   // flag-clear
 		// the hook queries the mover's cell AFTER the tick's interpolation (1.6u at t=200)
 		float dprobe[3] = { 31.6f, 0.0f, 300.0f };
