@@ -298,7 +298,29 @@ int main( int argc, char** argv ) {
 		F3::GameActionAttack at2; at2.Start( &attacker, &frail, 0, &m );
 		at2.Update( 100 );
 		check( frail.statCur == 0, "HP floored at 0" );
-		check( frail.entityState == F3::kStateDead, "0 HP -> DYING -> DEAD (server flip)" );
+		// Session 7 §3 step 10: the Apply does NOT flip the state inline - it QUEUES
+		// GameActionDie on the victim and the victim's own pump runs it. So after the attack the
+		// victim is still ACTIVE with the die action pending, and the hit-reaction anim id is on
+		// the QueueAnimEvent seam.
+		int dieQueued = 0;
+		for ( int s = 0; s < 4; ++s ) { if ( frail.actions[s].kind == 5 ) ++dieQueued; }
+		check( dieQueued == 1, "newly-dead victim gets GameActionDie queued (kind 5), not inline" );
+		check( frail.entityState == F3::kStateActive, "victim still ACTIVE before its pump" );
+		check( frail.queuedAnimEvent == 33 || frail.queuedAnimEvent == 34
+		       || frail.queuedAnimEvent == 37 || frail.queuedAnimEvent == 38
+		       || frail.queuedAnimEvent == 39,
+		       "hit-reaction anim id 33/34/37/38/39 stored on the QueueAnimEvent seam" );
+		check( frail.lastHitVeg != 0 && strstr( frail.lastHitVeg, "FX_Hit" ) == frail.lastHitVeg,
+		       ".veg selection resolved (session 7 §3 step 6 table)" );
+		// pump 1: kind-5 action executes -> Kill -> ChangeState(6) (session 8 §3)
+		F3::TickWorldForEntity( &frail, 120 );
+		check( frail.entityState == F3::kStateDying, "die action queued -> DYING on the victim's pump" );
+		check( frail.queuedAnimEvent >= 43 && frail.queuedAnimEvent <= 52,
+		       "death anim id from the 43..52 death set (session 8 §3)" );
+		// pump 2: state-6 arm -> OnDeath script + server-only ChangeState(7) (session 12 §2)
+		F3::TickWorldForEntity( &frail, 140 );
+		check( frail.entityState == F3::kStateDead,
+		       "OnDeath on the DYING pump -> DEAD (server context)" );
 
 		F3::SpawnedEntity distant; distant.entityState = F3::kStateActive;
 		distant.statMax = 5; distant.statCur = 5; distant.pos[0] = 20.0f;

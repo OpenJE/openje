@@ -72,32 +72,50 @@ int main() {
 		       "HIT_POINTS = 6000/AP as shipped (runtime-verify flag open)" );
 	}
 
-	// ---- damage formula (0x413310, session 21 §3) ---------------------------------
+	// ---- damage formula (0x413310, raw re-read; chat C-33 §3 + session 29 §3) ---------
 	{
-		F3::AttackModeRecord m = { 0, 0, 0, 2, 0, 1, 3, 7, 0 };  // min3 max7 bonus2
+		// { style, damageType, primaryAmmoCost, flatBonus, toHitBonus, attackCount, min, max,
+		//   ammoExtra, ammoReqType } - min3 max7 flatBonus2, NO ammo cost (ammo block gated off)
+		F3::AttackModeRecord m = { 0, 0, 0, 2, 0, 1, 3, 7, 0, 0 };
 		F3::CombatStats t;
 		t.dt[0] = 6;                                             // DT vs damageType 0
 		F3::AmmoMods a;                                          // all zero
-		// rand fixed 0 -> raw = 3+0 + 2 = 5; dt=6 -> dmg = 5 - 3 - (0 + 0 % 4 = 0) = 2
+		// 0x41333d: the WEAPON twin rejects part 9 UNCONDITIONALLY (log + return 0). The
+		// conditional form (`part == 9 && !GameUsableObject`) is the UNARMED twin @0x409fec.
 		g_randSeq[0] = 0; g_randSeq[1] = 0; g_randN = 0;
-		check( F3::CalculateDamage( m, t, a, 9, TestRand ) == 2,
-		       "part 9 is a PREFLIGHT cancel, not a formula zero (0x409f90 && !usable)" );
+		check( F3::CalculateDamage( m, t, a, 9, TestRand ) == 0,
+		       "part 9 zeros in the weapon twin (0x41333d, unconditional)" );
 		g_randN = 0;
 		check( F3::CalculateDamage( m, t, a, 0, TestRand ) == 2, "raw - dt/2 - rand(0,dt/2)" );
-		// max roll: rand seq 4,4 -> raw = 3+4+2 = 9; dt 6 -> 9-3-(3+4%4=1)=2? compute:
-		// second dice is (0 + 4 % (3+1)) = 4%4=0 -> 9-3-0 = 6
+		// max roll: rand seq 4,4 -> raw = 3+4+2 = 9; dt 6 -> 9-3-Dice(0,3) with rand 4 ->
+		// 4 % (3+1) = 0 -> 9-3-0 = 6
 		g_randSeq[0] = 4; g_randSeq[1] = 4; g_randN = 0;
 		check( F3::CalculateDamage( m, t, a, 0, TestRand ) == 6, "high roll path" );
-		// ammo: +1/+3 dmg range, dt pen 4 -> dt = 2 -> dmg = raw - 1 - rand(0,1)
+		// THE AMMO BLOCK IS GATED (0x413373 `if (param_1[7])`). With primaryAmmoCost == 0 the
+		// min/max bonuses and the DT penetration must be ignored entirely.
+		a.damageMinBonus = 5; a.damageMaxBonus = 5; a.dtPenetration = 5;
+		g_randSeq[0] = 0; g_randSeq[1] = 0; g_randN = 0;
+		check( F3::CalculateDamage( m, t, a, 0, TestRand ) == 2,
+		       "ammo mods ignored when mode+0x1C is 0 (gate @0x413373)" );
+		m.primaryAmmoCost = 1;                                    // now the block runs
 		a.damageMinBonus = 1; a.damageMaxBonus = 3; a.dtPenetration = 4; a.toHitBonus = 5;
 		g_randSeq[0] = 0; g_randSeq[1] = 0; g_randN = 0;
-		// lo=4 hi=10 roll0 -> 4 + bonus2 = 6; dt=6-4=2 -> 6-1-0 = 5
+		// hi = 7+3 = 10; 3+1 = 4 < 10 -> lo = 4; Dice(4,10) roll0 -> 4 + bonus2 = 6;
+		// dt = 6-4 = 2 -> 6 - 1 - Dice(0,1) roll0 = 0 -> 5
 		check( F3::CalculateDamage( m, t, a, 0, TestRand ) == 5, "ammo bonus + penetration" );
+		// clamp DIRECTION (0x4133eb `if (v14 + v10 < v13) v10 += v14`): a min bonus that would
+		// overshoot the bonused max leaves min ALONE - it never clamps max upward.
+		a.damageMinBonus = 20; a.damageMaxBonus = 0; a.dtPenetration = 0;
+		g_randSeq[0] = 0; g_randSeq[1] = 0; g_randN = 0;
+		// hi stays 7; 3+20 = 23 !< 7 -> lo stays 3; Dice(3,7) roll0 = 3 + 2 = 5; dt 6 ->
+		// 5 - 3 - Dice(0,3) roll0 = 0 -> 2
+		check( F3::CalculateDamage( m, t, a, 0, TestRand ) == 2,
+		       "overshooting min bonus is dropped, max is not clamped up (0x4133eb)" );
 		// over-penetration floors at 0 (no negative DT healing)
-		a.dtPenetration = 10;
+		a.damageMinBonus = 1; a.damageMaxBonus = 3; a.dtPenetration = 10;
 		g_randN = 0;
 		check( F3::CalculateDamage( m, t, a, 0, TestRand ) == 6, "DT floors at 0" );
-		// (style-based row select was the doc's loose wording - verified PART-based, see hpp)
+		// style does NOT select the row; PART does (0x413413 switch on param_5)
 		m.style = 5; t.dt[0] = 6;
 		g_randN = 0;
 		check( F3::CalculateDamage( m, t, a, 0, TestRand ) == 6, "style 5 alone uses GENERIC row" );
@@ -105,8 +123,37 @@ int main() {
 		// second DT row when called-shot PART is 5/6
 		m.style = 0; t.dtParts56[0] = 100;
 		a.dtPenetration = 0;
-		g_randN = 0;   // roll0 -> raw 3+2=5; dt 100 -> 50 + rand(0,50)=... rand 0 -> 0 -> dmg 0 (floor)
+		g_randN = 0;   // lo=4 hi=10 roll0 -> 4+2 = 6; dt 100 -> 6-50-Dice(0,50) -> floor 0
 		check( F3::CalculateDamage( m, t, a, 5, TestRand ) == 0, "part 5/6 second DT row; damage floors at 0" );
+		// unknown PART (8) logs and FALLS BACK to the generic row, still computing (0x413442)
+		t.dt[0] = 6;
+		g_randN = 0;
+		check( F3::CalculateDamage( m, t, a, 8, TestRand ) == 6 - 3 - 0,
+		       "unknown PART falls back to generic row, does not return 0" );
+	}
+
+	// ---- unarmed twin (0x409f90) ----------------------------------------------------
+	{
+		F3::AttackModeRecord m = { 0, 4, 0, 0, 0, 1, 2, 4, 0, 0 };  // damageType 4 = hand-to-hand
+		F3::CombatStats atk, vic;
+		atk.special[0] = 10;                 // STR -> MELEE_DAMAGE derived = 10
+		g_randSeq[0] = 0; g_randSeq[1] = 0; g_randN = 0;
+		// damageType == 4 raises MAX by MELEE_DAMAGE: Dice(min 2, max 4+10) roll0 = 2
+		check( F3::CalculateUnarmedDamage( m, atk, vic, 0, false, TestRand ) == 2,
+		       "unarmed: +MELEE_DAMAGE rides on damageMax (0x409ffd-0x40a00a)" );
+		// part 9 zeros for a CREATURE but NOT for a usable object (0x409fec `&& !v8`)
+		check( F3::CalculateUnarmedDamage( m, atk, vic, 9, false, TestRand ) == 0,
+		       "unarmed part 9 -> 0 for non-usable target" );
+		vic.dtUsable[4] = 2;
+		g_randN = 0;
+		// usable path reads the target's own +0xA4 row: raw 2 - dt 1 - Dice(0,1) roll0 -> 1
+		check( F3::CalculateUnarmedDamage( m, atk, vic, 9, true, TestRand ) == 1,
+		       "unarmed usable target: part 9 passes AND uses the +0xA4 DT row (0x40a052)" );
+		// creature rows are used when the target is not usable (damageType indexes inside)
+		vic.dt[4] = 4;
+		g_randN = 0;
+		check( F3::CalculateUnarmedDamage( m, atk, vic, 1, false, TestRand ) == 0,
+		       "unarmed creature row by damage type: 2 - 2 - Dice(0,2) = 0" );
 	}
 
 	// ---- to-hit (0x413150 / 0x412fe0, session 23 §2-§4) ----------------------------
