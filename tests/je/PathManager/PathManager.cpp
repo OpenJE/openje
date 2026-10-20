@@ -1,4 +1,5 @@
 #include "JE/PathManager.hpp"
+#include "JE/Map.hpp"
 #include "F3/GamePathManager.hpp"
 #include "JE/HostHooks.hpp"
 #include <stdio.h>
@@ -20,6 +21,12 @@ static void check(int cond, const char* what) {
 	}
 }
 
+// host seam stubs (engine-under-test globals not present in unit harness)
+namespace JE { namespace Host {
+	char* GetCurrentWorkingDirectory() { static char d[]="."; return d; }
+	void* GetParameterTree() { return 0; }
+	void* GetEngineStringSystem() { return 0; }
+} }
 int main() {
 	// IntSqrt: must equal floor(sqrt(v)) for exact squares and stay within the same bounds the
 	// original produces. The original rounds up when the digit-by-digit remainder survives
@@ -121,6 +128,37 @@ int main() {
 	check(j3.state == 2, "OOB goal fails with state 2");
 	check(pm.PendingJobCount() == 0, "failed job dequeued");
 	JE::PathManager::FreeJob(&j3);
+
+	// ---- A* with real map context: cells -> world via CellToWorld -----------------------
+	{
+		JE::Map mapX;
+		// inject the REAL Default_StartMap geometry (proven in the ResourceSystem suite):
+		// root AABB {-1,-1,-1}..{71,1,51}, grid 144x104 (from the .rle header).
+		static JE::Octree oc; memset(&oc, 0, sizeof(oc));
+		oc.bounds[0]=-1; oc.bounds[1]=-1; oc.bounds[2]=-1;
+		oc.bounds[3]=71; oc.bounds[4]=1;  oc.bounds[5]=51;
+		mapX.mbr_0x48 = &oc;
+		mapX.mbr_0x84 = 144; mapX.mbr_0x88 = 104;
+
+		JE::PathJob j5; memset(&j5, 0, sizeof(j5));
+		j5.map = &mapX;
+		j5.gridCols = 144; j5.gridRows = 104;
+		j5.startCol = 0; j5.startRow = 0; j5.goalCol = 72; j5.goalRow = 52;
+		j5.start[0] = -1.0f; j5.start[1] = 0.0f; j5.start[2] = 1.0f;
+		j5.goal[0] = 35.0f;  j5.goal[1] = 0.0f;  j5.goal[2] = 25.0f;
+		pm.QueueJob(&j5);
+		pm.ProcessJobs();
+		check(j5.state == 1, "A* with map context completes");
+		check(j5.waypoints && j5.waypoints->count >= 2, "parent-chain reconstruction emitted waypoints");
+		if (j5.waypoints && j5.waypoints->count) {
+			float x0 = j5.waypoints->items[0].x, z0 = j5.waypoints->items[0].z;
+			check(x0 >= -1.0f && x0 <= 71.0f && z0 >= -1.0f && z0 <= 51.0f,
+			      "waypoints converted through CellToWorld (inside root AABB)");
+			printf("     j5 first waypoint world: %.2f, %.2f (count %u)\n",
+			       x0, z0, j5.waypoints->count);
+		}
+		JE::PathManager::FreeJob(&j5);
+	}
 
 	if (g_fail == 0) {
 		printf("OK: path manager tests passed\n");

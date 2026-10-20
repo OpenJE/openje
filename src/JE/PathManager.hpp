@@ -4,6 +4,8 @@
 #define JE_PATHMANAGER_HPP_
 
 #include "types.hpp"
+#include <string.h>
+#include "JE/Map.hpp"
 
 namespace JE {
 	// 0x5601F0 - integer square root (digit-by-digit restoring algorithm, straight-line unrolled in
@@ -36,14 +38,29 @@ namespace JE {
 	// Waypoint container. Original cls_0x56f440 is an intrusive deque of Vector3 blocks
 	// {+0 head, +4 buffer, +8 count}; consumers (ActionMoveTo) read count@+8 and walk nodes.
 	// Interim model: growable array of Vector3 - count/[] semantics preserved.
-	struct Vector3 { float x, y, z; };
+	// Vector3 defined in JE/Map.hpp (shared with CellToWorld).
 	struct WaypointList {
 		Vector3* items;
 		unsigned count;
 		unsigned capacity;
 	};
 
+	// Node context passed as DistanceDispatch param_3. The original candidate/job context
+	// carries the mover cell at +16/+20 and a spatial-grid pointer at +80 (F3 override gates
+	// its entity scan on that pointer). Model: zeroed context until the spatial grid exists -
+	// grid NULL reproduces the original's early-exit behavior exactly.
+	struct NodeContext {
+		int     header[4];      // +0..+15
+		int     cell[2];        // +16/+20 mover cell
+		byte    gap_0x18[64];   // +80 grid* below
+		void*   grid;           // +80 (spatial grid; unmodeled -> NULL)
+		NodeContext() { memset(this, 0, sizeof(*this)); }   // ctor: all-zero
+	};
+
 	struct PathJob {
+		// Original: job+0 map/mover context via mover->+12; consumers (GamePathManager) set
+		// this so the A* reconstruction can convert cells through CellToWorld_0x560710.
+		class Map* map;
 		int       state;
 		WaypointList* waypoints;
 		int       startMs;

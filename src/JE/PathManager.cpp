@@ -6,6 +6,7 @@
 #include <string.h>
 #include <stddef.h>
 #include "JE/PathManager.hpp"
+#include "JE/Map.hpp"
 #include "JE/HostHooks.hpp"
 
 namespace JE {
@@ -139,9 +140,14 @@ namespace JE {
 		int param_5, float param_6, float param_7) {
 		tracing::instrument( tracing::LOCATION, "" );
 
-		float dA = param_7 - param_4;
-		float dB = param_6 - param_3;
-		float dC = (float)param_5 - param_2;
+		// param_5 carries the goal X float BIT PATTERN (the original passes it through an
+		// int-typed register slot); decode before differencing - treating the bits as an int
+		// value overflows the distance and fakes a steps<=1 "clear" line.
+		float gx;
+		memcpy( &gx, &param_5, 4 );
+		float dA = param_7 - param_4;          // dz
+		float dB = param_6 - param_3;          // dy (unused by the sample loop, faithful)
+		float dC = gx - param_2;               // dx
 
 		int dist = IntSqrt((int)(dC * dC + dA * dA));
 		float steps = (float)dist * 1.666f;
@@ -400,6 +406,10 @@ namespace JE {
 			heap->Push(start);
 		}
 
+		// Per-job candidate context (DistanceDispatch param_3). Grid NULL => the F3 override
+		// behaves as the original does with no spatial grid (base cost only).
+		static NodeContext s_ctx;   // zero-init; mover cell refreshed below
+
 		// 0x5630E1: budget anchor is the job's start timestamp (set at lazy init above)
 		while ( !heap->Empty() ) {
 			PathNode* cur = heap->Pop();
@@ -409,16 +419,27 @@ namespace JE {
 			int dx = cur->col - job->goalCol;   if ( dx < 0 ) dx = -dx;
 			int dy = cur->row - job->goalRow;   if ( dy < 0 ) dy = -dy;
 			if ( dx <= 3 && dy <= 3 ) {
-				// Goal reached. Original rebuilds cell-by-cell via CellToWorld_0x560710 over the
-				// parent chain and SmoothPath_0x561FA0 when >3 points. Cell->world conversion
-				// needs the map cell geometry (mover->map->+492) which is unmodeled, so the
-				// interim path is coarse [goal, start]; full reconstruction queued with the map
-				// grid thread (docs/DEFERRED-NOTES.md).
-				(void)cur;
+				// Goal reached - rebuild cell-by-cell via CellToWorld_0x560710 over the parent
+				// chain when the job has map context (goal-first order, matching the direct-line
+				// fast path; ActionMoveTo consumes from the head). Without a map the coarse
+				// [goal, start] path is used.
 				job->waypoints = WaypointsCreate();
-				WaypointsPush(job->waypoints, job->goal);
-				WaypointsPush(job->waypoints, job->start);
+				int emitted = 0;
+				if ( job->map ) {
+					for ( PathNode* w = cur; w && emitted < 256; w = w->parent ) {
+						Vector3 p;
+						CellToWorld_0x560710( &p, w->col, w->row, job->map );
+						float xyz[3] = { p.x, p.y, p.z };
+						WaypointsPush( job->waypoints, xyz );
+						++emitted;
+					}
+				}
+				if ( !emitted ) {
+					WaypointsPush(job->waypoints, job->goal);
+					WaypointsPush(job->waypoints, job->start);
+				}
 				job->state = 1;
+				SmoothPath(job);
 				DequeueJob(job);
 				return;
 			}
@@ -432,7 +453,9 @@ namespace JE {
 				}
 				dword ptA[2] = { static_cast<dword>(cur->col), static_cast<dword>(cur->row) };
 			dword ptB[2] = { static_cast<dword>(ncol),     static_cast<dword>(nrow) };
-			int stepCost = this->DistanceDispatch(ptA, ptB, 0);
+			s_ctx.cell[0] = cur->col;
+			s_ctx.cell[1] = cur->row;
+			int stepCost = this->DistanceDispatch(ptA, ptB, (int)(size_t)&s_ctx);
 				int g = cur->g + stepCost;
 				int f = g + this->Distance(ncol, nrow, job->goalCol, job->goalRow);
 				PathNode* n = PoolGet(job, ncol, nrow);
