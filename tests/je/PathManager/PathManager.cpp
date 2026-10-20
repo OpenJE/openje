@@ -1,4 +1,5 @@
 #include "JE/PathManager.hpp"
+#include "JE/SpatialGrid.hpp"
 #include "JE/Map.hpp"
 #include "F3/GamePathManager.hpp"
 #include "JE/HostHooks.hpp"
@@ -160,6 +161,26 @@ int main() {
 			       x0, z0, j5.waypoints->count);
 		}
 		JE::PathManager::FreeJob(&j5);
+	}
+
+	// ---- SpatialGrid: occupancy insert/query semantics (0x405F80 port) -----------------
+	{
+		JE::SpatialGrid grid;
+		grid.Init( 4, 4 );
+		check( grid.Cols() == 4 && grid.Rows() == 4, "grid init dims" );
+		int a = 1, b = 2, c = 3;
+		check( grid.Insert( 1, 2, &a ) == 1 && grid.Insert( 1, 2, &b ) == 1, "two inserts same cell" );
+		check( grid.Insert( 3, 0, &c ) == 1, "insert corner" );
+		check( grid.Insert( 4, 0, &a ) == 0, "OOB col rejected" );
+		JE::SpatialGrid::Run runs[2] = { { 0, 1 }, { 1, 2 } };   // anchor-relative footprint rows
+		void* out[8];
+		unsigned n = grid.QueryEntities( runs, 2, 1, 2, out, 8 );
+		check( n == 2, "footprint query finds both same-cell entities, deduped" );
+		unsigned n2 = grid.QueryEntities( runs, 2, -1, 2, out, 8 );
+		check( n2 == 2, "negative anchor clamps window like 0x405FEF-0x406002" );
+		check( grid.QueryEntities( runs, 2, 1, 4, out, 8 ) == 0, "row OOB = no hits" );
+		check( grid.Remove( 1, 2, &a ) == 1 && grid.QueryEntities( runs, 2, 1, 2, out, 8 ) == 1,
+		       "remove shrinks occupancy" );
 	}
 
 	if (g_fail == 0) {
