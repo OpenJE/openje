@@ -7,3 +7,5 @@ noOperatorEq:openje/src/JE/cls_0x50db20.hpp
 noCopyConstructor:openje/src/JE/Map.cpp
 noOperatorEq:openje/src/JE/Map.cpp
 dangerousTypeCast:openje/src/JE/Map.cpp
+noCopyConstructor:openje/src/JE/SpatialGrid.cpp
+noOperatorEq:openje/src/JE/SpatialGrid.cpp
