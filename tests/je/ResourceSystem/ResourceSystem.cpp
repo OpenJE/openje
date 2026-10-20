@@ -170,6 +170,22 @@ int main(int argc, char** argv) {
 		check(jt.m_entryPointCount == 2, "2 EMEP entry-point sets in Tutorial_Junktown");
 	}
 
+	// EMEP entry-point rings: Default_StartMap has one id-1 ring; Junktown ids 1 and 2.
+	{
+		JE::Map em;
+		check(em.LoadFromFile("00_03_Tutorial_Junktown.map") == 1, "EMEP map load");
+		check(em.EntryPointCount() == 2, "Junktown has 2 entry points");
+		check(em.EntryPointIdAt(0) == 1 && em.EntryPointIdAt(1) == 2, "entry ids 1,2");
+		float ring[18];
+		check(em.GetEntryPoint(2, ring) == 6, "entry 2 returns 6 ring points");
+		check(ring[0] > 82.3f && ring[0] < 82.45f && ring[2] > 52.6f && ring[2] < 52.7f,
+		      "entry 2 point 0 = (82.39, 0, 52.66) (python ground truth)");
+		unsigned tail[6];
+		check(em.GetEntryPointTail(1, tail) == 1 && tail[0] != 0,
+		      "entry 1 carries non-zero tail dwords (orientation candidates)");
+		check(em.GetEntryPointTail(2, tail) == 1 && tail[0] == 0, "entry 2 tail is zero");
+	}
+
 	// Octree root bounds on the real ".8" resource + CellToWorld geometry.
 	{
 		JE::Map map3;

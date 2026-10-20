@@ -115,6 +115,38 @@ namespace JE {
 			struct EntryPoints { unsigned char flag; dword data[24]; };
 			EntryPoints  m_entryPoints[8];
 			unsigned     m_entryPointCount;
+		public:
+			// EMEP entry point query: id == stored flag (observed 1..2 in shipping maps;
+			// sys.ini "Start map entry point = 0" appears to index the list, so id-1 may be
+			// the semantic index - application site decides). Fills up to 6 xyz points and
+			// returns the count written (0 when the id is absent).
+			unsigned GetEntryPoint( unsigned id, float* xyz /*[18]*/ ) const {
+				for ( unsigned i = 0; i < m_entryPointCount; ++i ) {
+					if ( m_entryPoints[i].flag == (unsigned char)id ) {
+						for ( int k = 0; k < 18; ++k ) {
+							xyz[k] = *(float*)&m_entryPoints[i].data[k];
+						}
+						return 6;
+					}
+				}
+				return 0;
+			}
+			unsigned EntryPointIdAt( unsigned index ) const {
+				return index < m_entryPointCount ? m_entryPoints[index].flag : 0xFFFFFFFFu;
+			}
+			unsigned EntryPointCount() const { return m_entryPointCount; }
+			// tail 6 dwords (floats: per-point orientation-ish, Junktown set 1 non-zero)
+			unsigned GetEntryPointTail( unsigned id, unsigned* tail /*[6]*/ ) const {
+				for ( unsigned i = 0; i < m_entryPointCount; ++i ) {
+					if ( m_entryPoints[i].flag == (unsigned char)id ) {
+						for ( int k = 0; k < 6; ++k ) tail[k] = m_entryPoints[i].data[18 + k];
+						return 1;
+					}
+				}
+				return 0;
+			}
+		//: Methods (private storage above stays file-visible for the port tests)
+		public:
 			dword        m_ecam[4];
 			unsigned char m_hasEcam;
 			// Map-owned entity list (original: RbTree at map+0x134 {sentinel,head,count},
