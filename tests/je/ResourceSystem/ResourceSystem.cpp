@@ -31,6 +31,58 @@ static void check(int cond, const char* what) {
 	if (!cond) { printf("FAIL: %s\n", what); ++g_fail; }
 }
 
+// --- T-004 helpers: hand-built EMAP bodies for the version-gated byte stores.
+// String encoding = {u16 length, length bytes} with NO terminator in the stream
+// (StreamReadString_0x49c8d0; verified on Mainmenu.map where "Mainmenu.8" is u16 10 + 10 bytes).
+static int putEmapString( unsigned char* p, int n, const char* s ) {
+	unsigned short L = (unsigned short)strlen( s );
+	memcpy( p + n, &L, 2 ); n += 2;
+	memcpy( p + n, s, L );  n += L;
+	return n;
+}
+
+// Emits the ReadEMAP (0x56C9D0) body for `version`, with the byte values this test asserts on.
+// Fog/ambient values chosen so every store target is distinguishable (no aliasing 0s).
+static int putEmapBody( unsigned char* p, unsigned version ) {
+	int n = 0;
+	unsigned int zero = 0;
+	memcpy( p + n, &zero, 4 ); n += 4;                    // +0x28 dword (0 in all shipped maps)
+	n = putEmapString( p, n, "A.8" );                     // +0x2C octree name
+	n = putEmapString( p, n, "B.rle" );                   // +0x4C collision name
+	n = putEmapString( p, n, "C_AM.dds" );                // +0x68 texture name
+	n = putEmapString( p, n, "" );                        // +0x90 (empty in all shipped maps)
+	if ( version >= 1 ) {                                 // 0x56CA4F: 3 bytes read at +0x110..+0x112
+		p[n++] = 0x73; p[n++] = 0x6f; p[n++] = 0x62;       //   then shifted to +0x113..+0x115
+	}                                                     //   +0x116 = 0x80 (0x56CAC7)
+	if ( version >= 2 ) { p[n++] = 5; }                   // 0x56CAF3: +0x1D8 = (b != 0)
+	if ( version >= 3 ) {                                 // 0x56CB65: ambient quad overwrites +0x113..+0x116
+		p[n++] = 0x11; p[n++] = 0x22; p[n++] = 0x33; p[n++] = 0x44;
+	}
+	if ( version >= 4 ) { p[n++] = 0; }                   // 0x56CB9B: +0x1D9 = (b != 0)
+	if ( version >= 5 ) {
+		p[n++] = 1;                                        // 0x56CBD5: +0x1B1 = (k0 != 0)
+		p[n++] = 0xff; p[n++] = 0x00; p[n++] = 0x00;       // 0x56CC4D: +0x1B4 = k3|((k2|((k1|0xFFFFFF00)<<8))<<8)
+		float f1 = 250.0f, f2 = 500.0f, f3 = 1.0f;         // 0x56CC5A/0x56CC78/0x56CC90
+		memcpy( p + n, &f1, 4 ); n += 4;
+		memcpy( p + n, &f2, 4 ); n += 4;
+		memcpy( p + n, &f3, 4 ); n += 4;
+	}
+	return n;
+}
+
+// Runs Map::ReadEMAP over a synthetic body. MemStreamRead_0x498170 only touches
+// {start,end,cursor}, so a Res is not required for a memory stream.
+static char runReadEMAP( JE::Map* map, unsigned version, unsigned char* body, int len ) {
+	JE::Common::Chunk chunk;
+	chunk.mbr_0xc = version;                       // ReadEMAP reads the version at chunk+0x0C
+	JE::ResourceSystem::MemStream ms;
+	ms.res = NULL;
+	ms.start = (char*)body;
+	ms.end = (char*)body + len;
+	ms.cursor = (char*)body;
+	return map->ReadEMAP( &chunk, &ms );
+}
+
 int main(int argc, char** argv) {
 	if (argc < 2) { printf("usage: %s <data-root>\n", argv[0]); return 2; }
 
@@ -271,6 +323,105 @@ int main(int argc, char** argv) {
 		check(gp.GetInt("Globals", "SKILLDIFFVARIANCE", -1) == 0, "atol survives trailing '; comment' value");
 		check(gp.GetInt("Globals", "SKILLDIFFTRIVIAL", -1) == 10, "SKILLDIFFTRIVIAL == 10");
 		free(gbuf);
+	}
+
+
+	// ---- T-004: EMAP version-gated byte stores. Ground truth = the map FILES plus the
+	// original ctor_0x57b330 / ReadEMAP_0x56C9D0 (EAs re-verified in IDA, not from our code).
+	{
+		// (1) Real file, v5: Mainmenu.map carries fog 73,6f,62 and ambient 29,24,1f,60
+		// (Maps.grp lump 152); the v>=3 store at 0x56CB65 overwrites +0x113..+0x116, so the
+		// observable state is the AMBIENT quad, not the fog bytes and not the 0x80 sentinel.
+		JE::Map mapM;
+		check( mapM.LoadFromFile("Mainmenu.map") == 1, "Mainmenu.map consumed cleanly" );
+		unsigned char* b113M = (unsigned char*)&mapM.mbr_0x110 + 3;   // mbr_0x110 covers +0x110..+0x113
+		check( b113M[0] == 0x29 && mapM.gap_0x114[0] == 0x24 && mapM.gap_0x114[1] == 0x1f
+		       && mapM.gap_0x114[2] == 0x60,
+		       "EMAP v5 Mainmenu: +0x113..+0x116 == 29,24,1f,60 (ambient overwrites fog)" );
+		check( mapM.mbr_0x1D8 == 0 && mapM.mbr_0x1D9 == 0,
+		       "EMAP Mainmenu: raw +0x1D8/+0x1D9 = 0/0 normalize to 0/0" );
+		// Default_StartMap has raw +0x1D9 = 1 -> 1 (normalization is `!= 0`, 0x56CB9B).
+		JE::Map mapD2;
+		check( mapD2.LoadFromFile("Default_StartMap.map") == 1, "Default_StartMap consumed cleanly (byte-store pass)" );
+		check( mapD2.mbr_0x1D8 == 0 && mapD2.mbr_0x1D9 == 1,
+		       "EMAP v5 Default_StartMap: +0x1D9 raw 1 -> 1, +0x1D8 raw 0 -> 0" );
+		check( mapD2.mbr_0x1B8 == 250.0f && mapD2.mbr_0x1BC == 500.0f && mapD2.mbr_0x1C0 == 1.0f,
+		       "EMAP v5 Default_StartMap extras stay 250/500/1.0 (unchanged by the byte-store work)" );
+	}
+
+	{
+		// (2) Synthetic streams per version, so the version gating itself is covered.
+		unsigned char body[128];
+		int n;
+
+		// version 2: fog shift 0x56CAB5/0x56CABB/0x56CAC1 + sentinel 0x56CAC7, +0x1D8 from 0x56CAF3.
+		JE::Map m2;
+		n = putEmapBody( body, 2 );
+		check( runReadEMAP( &m2, 2, body, n ) == 1, "ReadEMAP v2 body accepted" );
+		check( m2.mbr_0x2C && strcmp( m2.mbr_0x2C, "A.8" ) == 0, "v2 string 1 parses" );
+		check( m2.mbr_0x68 && strcmp( m2.mbr_0x68, "C_AM.dds" ) == 0, "v2 string 3 parses" );
+		unsigned char* b113 = (unsigned char*)&m2.mbr_0x110 + 3;
+		check( b113[0] == 0x73 && m2.gap_0x114[0] == 0x6f && m2.gap_0x114[1] == 0x62
+		       && m2.gap_0x114[2] == 0x80,
+		       "v2 (no ambient): +0x113..+0x115 = fog, +0x116 = 0x80 sentinel (0x56CAC7)" );
+		check( m2.mbr_0x1D8 == 1, "v2: raw byte 5 normalizes to 1 at +0x1D8 (0x56CAF3)" );
+
+		// version 3: ambient quad overwrites all four bytes (0x56CB65).
+		JE::Map m3;
+		n = putEmapBody( body, 3 );
+		check( runReadEMAP( &m3, 3, body, n ) == 1, "ReadEMAP v3 body accepted" );
+		b113 = (unsigned char*)&m3.mbr_0x110 + 3;
+		check( b113[0] == 0x11 && m3.gap_0x114[0] == 0x22 && m3.gap_0x114[1] == 0x33
+		       && m3.gap_0x114[2] == 0x44,
+		       "v3: ambient 11,22,33,44 replaces the fog store incl. the 0x80 slot" );
+
+		// version 5: k0/k1k2k3 + three float extras + the mirror block (0x56CBD5..0x56CCE0).
+		JE::Map m5;
+		n = putEmapBody( body, 5 );
+		check( runReadEMAP( &m5, 5, body, n ) == 1, "ReadEMAP v5 body accepted" );
+		check( m5.mbr_0x1B1 == 1, "v5: k0 = 1 -> +0x1B1 = 1 (0x56CBD5)" );
+		// 32-bit semantics of 0x56CC4D: ((0xFF|0xFFFFFF00)<<8) = 0xFFFFFF00, |0, <<8 = 0xFFFF0000, |k3.
+		check( m5.mbr_0x1B4 == 0xFFFF0000u, "v5: k1k2k3 = ff,00,00 -> +0x1B4 = 0xFFFF0000 (0x56CC4D)" );
+		check( m5.mbr_0x1C4 == 1, "v5: +0x1C4 copies +0x1B1 (0x56CCB5)" );
+		check( memcmp( &m5.mbr_0x1C8, &m5.mbr_0x1B4, 4 ) == 0,
+		       "v5: +0x1C8 carries +0x1B4's raw bits (float reinterpretation, 0x56CCC9)" );
+		// KNOWN-ISSUE (port bug, not a file fact): the original mirrors the three extras with
+		// plain 4-byte moves - mov [esi+0x1cc],eax @0x56CCD4, [esi+0x1d0],ecx @0x56CCDA,
+		// [esi+0x1d4],edx @0x56CCE0 - i.e. it copies the RAW FLOAT BITS. Our ReadEMAP assigns
+		// `mbr_0x1CC = mbr_0x1B8` (dword = float), which CONVERTS 250.0f -> 250. This pin holds
+		// the current (deviating) behaviour so a ctor/reader fix shows up as a failing test:
+		check( m5.mbr_0x1CC == 250u && m5.mbr_0x1D0 == 500u && m5.mbr_0x1D4 == 1u,
+		       "KNOWN-ISSUE: +0x1CC/+0x1D0/+0x1D4 hold converted ints 250/500/1; original bit-copies"
+		       " the float bit patterns (0x56CCD4/DA/E0)" );
+
+		// version 0: nothing byte-store related is read, so these four pins document the
+		// ctor-default divergence from the original (see chat/from-B.md, KNOWN-ISSUE):
+		//   ctor_0x57b330 writes 0xC0 to +0x110..+0x115 (mov al,0xc0 @0x57B4CE, stores
+		//   @0x57B4DD..@0x57B4FB), 0x80 to +0x116 (@0x57B501), 250 to +0x11C (@0x57B50E),
+		//   0xFF808080 to +0x1B4 (@0x57B5F0), 250.0f/500.0f to +0x1B8/+0x1BC (@0x57B5FA/0x57B604)
+		//   and 1/1 to +0x1D8/+0x1D9 (@0x57B618/@0x57B61F). Map::Map() zeroes them instead
+		//   (and uses 16384.0f/524288.0f, which Map.hpp attributes to this ctor - wrong values).
+		JE::Map m0;
+		n = putEmapBody( body, 0 );
+		check( runReadEMAP( &m0, 0, body, n ) == 1, "ReadEMAP v0 body accepted (no version-gated fields)" );
+		check( m0.mbr_0x4C && strcmp( m0.mbr_0x4C, "B.rle" ) == 0, "v0 string 2 parses" );
+		unsigned char* z113 = (unsigned char*)&m0.mbr_0x110 + 3;
+		check( z113[0] == 0 && m0.gap_0x114[0] == 0 && m0.gap_0x114[1] == 0 && m0.gap_0x114[2] == 0,
+		       "KNOWN-ISSUE: v0 leaves +0x113..+0x116 at 0; original ctor_0x57b330 leaves c0,c0,c0,80 there" );
+		check( m0.mbr_0x1D8 == 0 && m0.mbr_0x1D9 == 0,
+		       "KNOWN-ISSUE: v0 leaves +0x1D8/+0x1D9 at 0; original ctor defaults are 1/1 (0x57B618/0x57B61F)" );
+		check( m0.mbr_0x118 == 0,
+		       "KNOWN-ISSUE: +0x118 stays 0; original ctor writes 0 (0x57B508) but +0x11C = 250 (0x57B50E)" );
+
+		// Also pinned: the original's v1 branch reads the three fog bytes INTO +0x110..+0x112
+		// (0x56CA4F..0x56CA9D) before shifting them up, so a real v1+ file leaves the raw fog
+		// bytes at +0x110..+0x112. Our port uses locals, so those three bytes stay at default.
+		JE::Map mF;
+		n = putEmapBody( body, 3 );
+		check( runReadEMAP( &mF, 3, body, n ) == 1, "ReadEMAP v3 (fog-echo probe) accepted" );
+		unsigned char* b110 = (unsigned char*)&mF.mbr_0x110;
+		check( b110[0] == 0 && b110[1] == 0 && b110[2] == 0,
+		       "KNOWN-ISSUE: +0x110..+0x112 stay 0; original leaves the raw fog bytes there (0x56CA4F)" );
 	}
 
 	if (!g_fail) { printf("OK: ResourceSystem RHT parse tests passed (%d entries)\n", ResourceSystem::RhtCount()); return 0; }
