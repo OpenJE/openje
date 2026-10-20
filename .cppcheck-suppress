@@ -11,3 +11,16 @@ noCopyConstructor:openje/src/JE/SpatialGrid.cpp
 noOperatorEq:openje/src/JE/SpatialGrid.cpp
 uninitMemberVar:openje/src/JE/World.hpp
 constVariablePointer:openje/src/JE/World.cpp
+# BASELINE(openje) T-002 cppcheck-openje 2026-10-20: 7 findings in src/JE/Map.cpp
+# (5 cstyleCast, 2 memsetClassFloat) scoped to that one file only. Owned by implementer-A to
+# fix in lane; delete these two lines as each class goes. Ground truth: 5 C-style pointer casts
+# (incl. the float type-pun at Map.cpp:167, see chat/from-B.md C-16 item 1/2) + memset on
+# structs holding floats (m_records @43, Octree @347).
+cstyleCast:openje/src/JE/Map.cpp
+memsetClassFloat:openje/src/JE/Map.cpp
+# BASELINE(openje) part 2, same T-002 scope: surfaced through the Map.cpp translation unit.
+# constVariablePointer Map.cpp:361/378 -> make the local `Octree* oc` a pointer-to-const;
+# invalidPointerCast Map.hpp:128 -> the u32<->float reinterpret of entry-point data, replace with
+# a memcpy (that is also chat/from-B.md C-16 item 1's type-pun family).
+constVariablePointer:openje/src/JE/Map.cpp
+invalidPointerCast:openje/src/JE/Map.hpp
