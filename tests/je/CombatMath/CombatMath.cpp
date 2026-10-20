@@ -120,8 +120,9 @@ int main() {
 		g_randN = 0;
 		check( F3::CalculateDamage( m, t, a, 0, TestRand ) == 6, "style 5 alone uses GENERIC row" );
 		m.style = 0;
-		// second DT row when called-shot PART is 5/6
-		m.style = 0; t.dtParts56[0] = 100;
+		// second DT row (row B) when the called-shot TARGET ID is 5/6 - the head-family
+		// equip-slot pair per 10c, not a body part
+		m.style = 0; t.dtRowB[0] = 100;
 		a.dtPenetration = 0;
 		g_randN = 0;   // lo=4 hi=10 roll0 -> 4+2 = 6; dt 100 -> 6-50-Dice(0,50) -> floor 0
 		check( F3::CalculateDamage( m, t, a, 5, TestRand ) == 0, "part 5/6 second DT row; damage floors at 0" );
