@@ -13,6 +13,7 @@
 #include "JE/HostHooks.hpp"
 #include "JE/VFX_Parameter.hpp"
 #include <stdio.h>
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -141,6 +142,32 @@ int main(int argc, char** argv) {
 		JE::Map map2;
 		check(map2.LoadFromFile("00_03_Tutorial_Junktown.map") == 1,
 		      "Tutorial_Junktown chunk stream consumed cleanly (103 chunks)");
+	}
+
+	// EME2/EMEP/ECAM content on the demo's Mainmenu.map (ground truth from the shipped
+	// lump: Default_PC.CRT @ (4,0,10.5) rot -143.4; Armstrong; Boxcar).
+	{
+		JE::Map mm;
+		check(mm.LoadFromFile("Mainmenu.map") == 1, "Mainmenu.map consumed cleanly");
+		check(mm.m_recordCount == 3, "3 EME2 entity records parsed");
+		check(mm.m_records[0].name && strcmp(mm.m_records[0].name, "Default_PC.CRT") == 0,
+		      "EME2 record 0 = Default_PC.CRT");
+		printf("     rec0 pos %.3f,%.3f,%.3f (expect 4,0,10.5) flag=%u\n",
+		       mm.m_records[0].pos[0], mm.m_records[0].pos[1], mm.m_records[0].pos[2], mm.m_records[0].flag);
+		check(fabsf(mm.m_records[0].pos[0] - 3.991112f) < 1e-5f
+		      && fabsf(mm.m_records[0].pos[2] - 10.545044f) < 1e-5f,
+		      "EME2 record 0 position bit-exact (3.991112, 0, 10.545044)");
+		check(mm.m_records[1].name && strcmp(mm.m_records[1].name, "Critters00_TMCpl_Armstrong.CRT") == 0,
+		      "EME2 record 1 = Armstrong");
+		check(mm.m_records[0].flag == 1, "EME2 record flag");
+		printf("     record2: %s rot %.1f,%.1f,%.1f\n", mm.m_records[2].name,
+		       mm.m_records[2].rotDeg[0], mm.m_records[2].rotDeg[1], mm.m_records[2].rotDeg[2]);
+		check(mm.m_hasEcam == 1, "ECAM parsed");
+		// Junktown: 35 EME2 records + 2 EMEP entry-point tables consume cleanly
+		JE::Map jt;
+		check(jt.LoadFromFile("00_03_Tutorial_Junktown.map") == 1, "Junktown with new readers");
+		check(jt.m_recordCount == 35, "35 entity records in Tutorial_Junktown");
+		check(jt.m_entryPointCount == 2, "2 EMEP entry-point sets in Tutorial_Junktown");
 	}
 
 	// Octree root bounds on the real ".8" resource + CellToWorld geometry.

@@ -26,6 +26,7 @@ namespace JE { namespace Host {
 	char* GetCurrentWorkingDirectory() { static char d[]="."; return d; }
 	void* GetParameterTree() { return 0; }
 	void* GetEngineStringSystem() { return 0; }
+	JE::PathManager* GetPathJobQueue() { return 0; }
 } }
 int main() {
 	// IntSqrt: must equal floor(sqrt(v)) for exact squares and stay within the same bounds the

@@ -38,6 +38,12 @@ namespace JE {
 		mbr_0x84 = mbr_0x88 = 0;
 		mbr_0x48 = NULL;
 		m_pCellMasks = NULL;
+		m_recordCount = 0;
+		memset( m_records, 0, sizeof( m_records ) );
+		m_entryPointCount = 0;
+		memset( m_entryPoints, 0, sizeof( m_entryPoints ) );
+		memset( m_ecam, 0, sizeof( m_ecam ) );
+		m_hasEcam = 0;
 		mbr_0x110 = 0;
 		memset( gap_0x30, 0, sizeof( gap_0x30 ) );
 		memset( gap_0x6C, 0, sizeof( gap_0x6C ) );
@@ -56,6 +62,9 @@ namespace JE {
 
 	Map::~Map() {
 		tracing::instrument( tracing::LOCATION, "" );
+		for ( unsigned i = 0; i < m_recordCount; ++i ) {
+			free( m_records[i].name );
+		}
 		free( m_pCellMasks );
 		if ( mbr_0x48 ) {
 			operator delete( mbr_0x48 );
@@ -166,10 +175,10 @@ namespace JE {
 		return 1;
 	} // ReadEMAP
 
-	// 0x573B00 - legacy numeric EMAP (u8 flag + 6x3 u32 + 6 u32 -> 96-byte payload, then
+	// 0x573B00 - EMEP entry points (u8 flag + 6x3 u32 + 6 u32 -> 96-byte payload, then
 	// sub_5731F0 applies into the +188 container). NOT routed by the shipping dispatcher;
 	// retained faithful (payload freed: container unmodeled).
-	char Map::ReadEMAPLegacy( Common::Chunk* chunk, ResourceSystem::MemStream* stream ) {
+	char Map::ReadEMEP( Common::Chunk* chunk, ResourceSystem::MemStream* stream ) {
 		tracing::instrument( tracing::LOCATION, "" );
 		(void)chunk;
 		unsigned char flag = 0;
@@ -192,10 +201,16 @@ namespace JE {
 				return 0;
 			}
 		}
-		// 0x573BC6: sub_5731F0(flag, payload) into map+188 container; apply unmodeled.
+		// 0x573BC6: sub_5731F0(flag, payload) into map+188 container. Port: keep raw payload
+		// (entry-point semantics behind the container apply RE).
+		if ( m_entryPointCount < 8 ) {
+			m_entryPoints[m_entryPointCount].flag = flag;
+			memcpy( m_entryPoints[m_entryPointCount].data, v4, 96 );
+			++m_entryPointCount;
+		}
 		free( v4 );
 		return 1;
-	} // ReadEMAPLegacy
+	} // ReadEMEP
 
 	// 0x57AA00 - RLE collision grid. Header {u32 cols, u32 rows}; then for each row y, runs of
 	// {u32 count, u8 mask} with x advancing by count until x >= cols (original loop condition
@@ -362,6 +377,72 @@ namespace JE {
 		out[1] = (int)( (-1.0f / (b[5] - b[2])) * (p[2] - b[5]) * (float)map->mbr_0x88 );
 	} // WorldToOctreeCell_0x560680
 
+	// 0x573F30 - EME2 entity record. Reads name/pos/rot/flag, then consumes ONE nested chunk
+	// (0x5741C5: Chunk::Read + property parse meth_0x552000 + SkipToEnd). The original's
+	// instantiation (world-server template lookup + entity create + RB push) is deferred with
+	// the entity layer; the record is stored for it.
+	char Map::ReadEME2( Common::Chunk* chunk, ResourceSystem::MemStream* stream ) {
+		tracing::instrument( tracing::LOCATION, "" );
+		(void)chunk;
+
+		if ( m_recordCount >= 128 ) {
+			return 1;   // storage cap reached; keep consuming framing without storing
+		}
+
+		char* name = NULL;
+		// 0x573F86 StreamReadString (u16-prefixed). Use the ResourceSystem helper.
+		if ( !ResourceSystem::StreamReadString_0x49c8d0( &name, stream ) ) {
+			return 0;
+		}
+
+		float vals[6];
+		unsigned char flag = 0;
+		if ( !ResourceSystem::MemStreamRead_0x498170( &vals[0], 4, stream )
+		     || !ResourceSystem::MemStreamRead_0x498170( &vals[1], 4, stream )
+		     || !ResourceSystem::MemStreamRead_0x498170( &vals[2], 4, stream )
+		     || !ResourceSystem::MemStreamRead_0x498170( &vals[3], 4, stream )
+		     || !ResourceSystem::MemStreamRead_0x498170( &vals[4], 4, stream )
+		     || !ResourceSystem::MemStreamRead_0x498170( &vals[5], 4, stream )
+		     || !ResourceSystem::MemStreamRead_0x498170( &flag, 1, stream ) ) {
+			free( name );
+			return 0;
+		}
+
+		// nested property chunk (0x574184-0x5741F2): read header, SkipToEnd consumes the body
+		Common::Chunk inner;
+		if ( !inner.Read( stream ) ) {
+			free( name );
+			return 0;
+		}
+		// meth_0x552000 property parse: deferred with entity instantiation (returns success in
+		// the shipping data path when the parse consumes; we accept and skip).
+		inner.SkipToEnd();
+
+		EntityRecord& r = m_records[m_recordCount];
+		r.name = name;
+		r.pos[0] = vals[0]; r.pos[1] = vals[1]; r.pos[2] = vals[2];
+		r.rotDeg[0] = vals[3] * 57.295776f;      // 0x5743DF-... rad->deg
+		r.rotDeg[1] = vals[4] * 57.295776f;
+		r.rotDeg[2] = vals[5] * 57.295776f;
+		r.flag = flag;
+		++m_recordCount;
+		return 1;
+	} // ReadEME2
+
+	// 0x56CCF0 - ECAM camera constraint: 4 u32 + flag (mbr_0x15C set).
+	char Map::ReadECAM( Common::Chunk* chunk, ResourceSystem::MemStream* stream ) {
+		tracing::instrument( tracing::LOCATION, "" );
+		(void)chunk;
+		if ( !ResourceSystem::MemStreamRead_0x498170( &m_ecam[0], 4, stream )
+		     || !ResourceSystem::MemStreamRead_0x498170( &m_ecam[1], 4, stream )
+		     || !ResourceSystem::MemStreamRead_0x498170( &m_ecam[2], 4, stream )
+		     || !ResourceSystem::MemStreamRead_0x498170( &m_ecam[3], 4, stream ) ) {
+			return 0;
+		}
+		m_hasEcam = 1;   // 0x56CD66 (original also stamps map state +0x15C = 1)
+		return 1;
+	} // ReadECAM
+
 	// 0x56C770 - tag router. Function EAs transcribed 1:1 from the dispatcher's switch;
 	// unhandled tags fall through (skip). Error strings below are verbatim from the binary.
 	char Map::ReadChunk( Common::Chunk* chunk, ResourceSystem::MemStream* stream ) {
@@ -372,18 +453,34 @@ namespace JE {
 					return 0;
 				}
 				return 1;
-			case TAG_EMEP: /* 0x573BF0 entry points */ break;
-			case TAG_EMTR: /* 0x575050 triggers     */ break;
-			case TAG_EMEN: /* 0x575A40 entities     */ break;
-			case TAG_EME2: /* 0x56CCF0 ext entities */ break;
-			case TAG_2MWT: /* 0x56CD70 water tiles  */ break;
-			case TAG_ECAM: /* 0x5742B0 camera       */ break;
-			case TAG_EMFG: /* 0x575180 fog          */ break;
-			case TAG_EMNO: /* 0x576940 notes        */ break;
-			case TAG_EMNP: /* 0x576C30 nav points   */ break;
-			case TAG_EPTH: /* 0x578FB0 paths        */ break;
-			case TAG_EMSD: /* 0x56CF30 sounds       */ break;
-			case TAG_EMEF: /* 0x56CF50 effects      */ break;
+			case TAG_EMEP:   // 0x573B00 entry points
+				if ( !ReadEMEP( chunk, stream ) ) {
+					JE::LogDebugString( NULL, "Error reading entry point from map file.\n" );
+					return 0;
+				}
+				return 1;
+			case TAG_EME2:   // 0x573F30 entity records
+				if ( !ReadEME2( chunk, stream ) ) {
+					JE::LogDebugString( NULL, "Error reading entity from map file.\n" );
+					return 0;
+				}
+				return 1;
+			case TAG_ECAM:   // 0x56CCF0 camera constraint
+				if ( !ReadECAM( chunk, stream ) ) {
+					JE::LogDebugString( NULL, "Error reading camera constraints from map file.\n" );
+					return 0;
+				}
+				return 1;
+			case TAG_EMTR: /* 0x575050 triggers */ break;
+			case TAG_EMEN: /* 0x573BF0 obsolete entity spawner (no demo map carries EMEN;
+			                  dispatcher routes it with the shared "entity" error string) */ break;
+			case TAG_2MWT: /* 0x575A40 water tiles */ break;
+			case TAG_EMFG: /* 0x56CD70 fog         */ break;
+			case TAG_EMNO: /* 0x5742B0 notes       */ break;
+			case TAG_EMNP: /* 0x575180 nav points  */ break;
+			case TAG_EPTH: /* 0x576940 way points  */ break;
+			case TAG_EMSD: /* 0x576C30 sounds      */ break;
+			case TAG_EMEF: /* 0x578FB0 effects     */ break;
 			default:
 				break;   // unknown tag: engine returns 1 (skip) - identical here
 		}

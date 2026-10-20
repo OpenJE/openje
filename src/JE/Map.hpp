@@ -24,26 +24,25 @@ namespace JE {
 	// A second legacy numeric 'EMAP' reader exists at 0x573B00 (u8 + 24 u32 + apply via
 	// sub_5731F0) but is NOT routed by the shipping dispatcher.
 	//
-	// STRING OBJECT ALIGNMENT (verified against ctor_0x57b330 + GetOctree_0x56d960):
-	// the four EMAP strings land in std::string objects at +0x2C (octree ".8" - GetOctree
-	// reads THIS one; its buffer alias +0x30 and cap +0x44 are the same object), +0x4C (rle
-	// collision), +0x68 (texture _AM.dds), +0x90 (empty 4th read in shipped maps). Map+0x10
-	// holds the map file name (assigned by Create). Map::Create_0x57B8A0 fallback: if the
-	// +0x4C object is empty it appends ".8" to the name and stores at +0x90 ("7892321" =
-	// literal .8 fourcc bytes idiom). Grid builder: mbr_0x84 <- sub_57B2A0(string), mbr_0x88
-	// <- sub_57A8A0(cols,rows) - both deferred; bounds live in the octree at +0x6C..0x80
-	// (root NODE INFO AABB, Default_StartMap = {-1,-1,-1}-{71,1,51}), lerped by
-	// CellToWorld_0x560710 against grid cols/rows at mbr_0x84[0]/[1].
+	// CHUNK DISPATCH TABLE (definitive; function EAs from ChunkDispatcher_0x56C770 switch,
+	// cross-checked against primary vft dump and each branch error string):
+	//   EMAP 0x56C9D0 header | EMEP 0x573B00 entry point (u8+24 u32) | EMTR 0x575050
+	//   EMEN 0x573BF0 obsolete entity spawner | EME2 0x573F30 entity record (see below)
+	//   2MWT 0x575A40 water | ECAM 0x56CCF0 camera (4 u32 + flag) | EMFG 0x56CD70 fog
+	//   EMNO 0x5742B0 note | EMNP 0x575180 nav | EPTH 0x576940 way point | EMSD 0x576C30 sound
+	//   EMEF 0x578FB0 effect
+	// (Earlier survey treated IDA index-style +N as byte offsets and mislabeled; corrected.)
 	//
-	// EMAP v5 body (VERIFIED on Mainmenu.map / Default_StartMap.map / tutorial maps):
-	//   u32 map+0x28; {u16 len,chars} x4 strings -> map+0x2C octree ("Name.8"), map+0x4C
-	//   collision ("Name.rle"), map+0x68 texture ("Name_AM.dds"), map+0x90; then gated on the
-	//   CHUNK VERSION field: >=1 3 fog bytes (stored shifted +0x113..+0x115, +0x116=0x80);
-	//   >=2 u8 bool -> +0x1D8; >=3 four bytes -> +0x113..+0x116 again; >=4 u8 bool -> +0x1D9;
-	//   >=5 u8 -> +0x1B1(!=0), 3 u8 packed per 0x56CC4D -> +0x1B4, 3 u32 -> +0x1B8/1BC/1C0,
-	//   copies +0x1C4=+0x1B1, +0x1C8=+0x1B4, +0x1CC/1D0/1D4 = the three u32s.
+	// EME2 entity record (VERIFIED on Mainmenu.map: Default_PC.CRT @ (4,0,10.5) rot -143.4,
+	// Armstrong.CRT, Boxcar.USE):
+	//   {u16 len,chars} resource name; float pos[3]; float rot[3] radians (stored *57.295776);
+	//   u8 flag; ONE nested chunk (Chunk::Read + property parse meth_0x552000 + SkipToEnd).
+	//   Original instantiates via world-server vft+52 (template by name) -> vft+24 (create) ->
+	//   Entity init (meth_0x551880) -> SetPosition_0x54A8A0 -> SetRotation_0x549FE0 -> flag ->
+	//   push into map entity RB-container at map+0x134 (count mbr_0x13c).
+	//   PORT: parse + store records; instantiation awaits the entity-layer thread.
 	//
-	// Chunk framing (verified against Maps/Engine grp lumps): header
+		// Chunk framing (verified against Maps/Engine grp lumps): header
 	// {tag:u32, version:u32, size:u32} where SIZE INCLUDES the 12-byte header; chunk stream
 	// advances by size (Chunk::SkipToEnd = absolute seek to consumedAtHeaderStart + size).
 	//
@@ -104,6 +103,20 @@ namespace JE {
 			// RLE grid storage (deviation: original = RB-tree of run nodes at map+0x84; we keep
 			// cols/rows at the same-named fields and a flattened mask array).
 			unsigned char* m_pCellMasks;
+			// Port-side storages (originals: RB containers at map+0x134/0x188; kept flat).
+			struct EntityRecord {
+				char*  name;          // entity resource ("Default_PC.CRT", "...USE", ...)
+				float  pos[3];
+				float  rotDeg[3];     // radians * 57.295776 per 0x57412D-...
+				unsigned char flag;   // u8 stored into entity byte + HIBYTE temp (invocation?)
+			};
+			EntityRecord m_records[128];
+			unsigned     m_recordCount;
+			struct EntryPoints { unsigned char flag; dword data[24]; };
+			EntryPoints  m_entryPoints[8];
+			unsigned     m_entryPointCount;
+			dword        m_ecam[4];
+			unsigned char m_hasEcam;
 		//: Methods
 		public:
 			Map();
@@ -141,9 +154,16 @@ namespace JE {
 				return GetCellMask( col, row ) == 0x02;
 			}
 
-			// 0x573B00 - legacy numeric EMAP (1+72+24 body via AllocateEmapStruct); present in
-			// the vft but NOT routed by ChunkDispatcher_0x56c770. Kept for reference.
-			char ReadEMAPLegacy( Common::Chunk* chunk, ResourceSystem::MemStream* stream );
+			// EMEP 0x573B00 - entry points: u8 flag + 6 triples + 6 dwords (exactly fills the
+			// 97-byte Default_StartMap body). Original inserts (flag, payload) into the +188
+			// container via sub_5731F0; port keeps raw payloads.
+			char ReadEMEP( Common::Chunk* chunk, ResourceSystem::MemStream* stream );
+
+			// EME2 0x573F30 - one entity record per chunk -> m_records (instantiation deferred).
+			char ReadEME2( Common::Chunk* chunk, ResourceSystem::MemStream* stream );
+
+			// ECAM 0x56CCF0 - four u32 + flag.
+			char ReadECAM( Common::Chunk* chunk, ResourceSystem::MemStream* stream );
 			// vft[6]-adjacent 0x46CB30 on GameMap side - allocate the legacy EMAP payload.
 			virtual void* AllocateEmapStruct();
 	}; // Map
