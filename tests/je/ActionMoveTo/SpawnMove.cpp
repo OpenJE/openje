@@ -234,6 +234,7 @@ int main( int argc, char** argv ) {
 		check( nOper == 1 && nWait == 1 && nMove == 1, "OperateDoor+Wait+MoveAll queued" );
 		for ( int t2 = 300; t2 < 40000; t2 += 100 ) {
 			for ( int pp=0; pp<2 && j3->state==0; ++pp ) q3.ProcessJobs();
+			F3::TickWorldForEntity( &door, t2 );      // door pumps its engine-anim countdown
 			F3::TickWorldForEntity( &walker3, t2 );
 			if ( walker3.actions[0].kind == 0 && walker3.actions[1].kind == 0
 			     && walker3.actions[2].kind == 0 && walker3.actions[3].kind == 0 && t2 > 2000 ) break;
