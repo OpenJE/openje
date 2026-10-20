@@ -10,6 +10,7 @@
 // Run: wine StringSystem.exe "C:\\f3data"
 #include "JE/SS/StringSystem.hpp"
 #include "JE/SS/EngineStringSystem.hpp"
+#include "JE/SS/StringFormat.hpp"
 #include "JE/ResourceSystem.hpp"
 #include "JE/VFX_Parameter.hpp"
 #include "JE/Resources.hpp"
@@ -43,6 +44,39 @@ class TestStringSystem : public JE::SS::StringSystem {
 public:
 	TestStringSystem() {}
 };
+
+// --- T-006: EngineStringSystem::Format_0x56BE30 (`<...>` substitution) tests --------------
+// Expected values come from the original's disassembly (each decision point is EAd in
+// docs/f3/GUIStringTags.md), not from our implementation.
+static char tv_resolved = 0;
+static const char* tv_name = 0;
+static char TestVarResolver( const char* name, char* out, unsigned cap, void* ctx ) {
+	(void)ctx;
+	++tv_resolved; tv_name = name;
+	if ( strcmp( name, "HEALTH" ) == 0 ) { strncpy( out, "30", cap - 1 ); out[cap-1] = 0; return 1; }
+	if ( strcmp( name, "Jake" ) == 0 )   { strncpy( out, "Jake said hi", cap - 1 ); out[cap-1] = 0; return 1; }
+	return 0;
+}
+static const char* TestTokenLookup( const char* name, void* ctx ) {
+	(void)ctx;
+	if ( strcmp( name, "CHARNAME" ) == 0 ) { return "Joe"; }
+	return 0;
+}
+static JE::SS::FormatEnv TestEnv() {
+	JE::SS::FormatEnv e;
+	e.ctx = 0;
+	e.resolveVariable = &TestVarResolver;
+	e.lookupToken = &TestTokenLookup;
+	return e;
+}
+static void checkFormat( const char* inOut, const char* expect, const char* what ) {
+	char buf[ 128 ];
+	strncpy( buf, inOut, sizeof( buf ) - 1 ); buf[sizeof( buf ) - 1] = 0;
+	JE::SS::FormatEnv e = TestEnv();
+	char ok = JE::SS::Format( e, buf, sizeof( buf ) );
+	check( ok == 1 && strcmp( buf, expect ) == 0, what );
+	if ( ok != 1 || strcmp( buf, expect ) != 0 ) { printf( "     got '%s' want '%s'\n", buf, expect ); }
+}
 
 int main(int argc, char** argv) {
 	if (argc < 2) { printf("usage: %s <data-dir-with-stf>\n", argv[0]); return 2; }
@@ -90,6 +124,37 @@ int main(int argc, char** argv) {
 		g_testParams = NULL;
 	} else {
 		check(0, "sys.ini readable for calendar test");
+	}
+
+	// ---- T-006: Format_0x56BE30 substitution pass (see helpers above) ----
+	{
+		checkFormat( "no tags here", "no tags here", "strings without '<' are untouched" );
+		checkFormat( "a<b", "ab", "unclosed '<' is dropped, following text kept (0x56BF27)" );
+		checkFormat( "<gv_HEALTH> hp left", "30 hp left", "<gv_NAME> appends the value (0x56C0CC)" );
+		checkFormat( "<GV_Jake> there", "Jake said hi there",
+		             "the gv_ prefix match is CASE-INSENSITIVE (strnicmp 0x56BFB2); this is a"
+		             " tag that actually ships in English.stf" );
+		checkFormat( "hp <gv_NOPE>!", "hp <Bad Token>!",
+		             "missing variable appends <Bad Token> (0x56C08E)" );
+		checkFormat( "hi <CHARNAME>", "hi Joe", "token hit appends the value (0x56C1AE)" );
+		checkFormat( "hi <NOSUCHTOKEN>.", "hi .",
+		             "missing token appends NOTHING (0x56C130 -> 0x56C13D) - asymmetry vs variables" );
+		checkFormat( "<CHARNAME> <gv_HEALTH> <CHARNAME>", "Joe 30 Joe",
+		             "multiple tags in one string, single pass (no re-scan of substituted text)" );
+		checkFormat( "<<>", "", "empty payload resolves to nothing on the token path" );
+
+		// fixed-capacity deviation: a result that does not fit reports failure and leaves the
+		// buffer untouched (the original's std::string would have grown).
+		char small[ 8 ];
+		strcpy( small, "<gv_Jake>" );
+		JE::SS::FormatEnv e2 = TestEnv();
+		check( JE::SS::Format( e2, small, sizeof( small ) ) == 0 && strcmp( small, "<gv_Jake>" ) == 0,
+		       "oversized substitution fails cleanly instead of truncating" );
+
+		// the resolver must receive the name with the gv_ prefix stripped
+		tv_resolved = 0;
+		checkFormat( "<gv_HEALTH>", "30", "resolver called (name checked next)" );
+		check( tv_name && strcmp( tv_name, "HEALTH" ) == 0, "gv_ prefix stripped before resolving" );
 	}
 
 	if (!g_fail) { printf("OK: StringSystem/ESS/World-clock tests passed (%u strings)\n", ss.m_maleCount); return 0; }
