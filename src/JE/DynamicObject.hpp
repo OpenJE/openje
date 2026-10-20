@@ -42,7 +42,7 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 			undefined4 meth_0x54b3f0();
-			meth_0x54bf30;
+undefined4 meth_0x54bf30();
 			undefined4 meth_0x54c180();
 			undefined4 meth_0x54c390();
 			undefined4 meth_0x5682c0();

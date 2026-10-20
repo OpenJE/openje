@@ -4,9 +4,10 @@
 #define JE_MEMORYSYSTEM_HPP_
 
 #include "types.hpp"
+#include "JE/Subsystem.hpp"
 
 namespace JE {
-	class MemorySystem {
+	class MemorySystem : public Subsystem {
 		//: Members
 		public:
 			dword mbr_0xc;

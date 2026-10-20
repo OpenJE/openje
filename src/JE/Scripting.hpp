@@ -4,9 +4,10 @@
 #define JE_SCRIPTING_HPP_
 
 #include "types.hpp"
+#include "JE/Subsystem.hpp"
 
 namespace JE {
-	struct Scripting {
+	struct Scripting : public Subsystem {
 		//: Methods
 			void dtor_0x59bfb0();
 			undefined4 virt_meth_0x59bfd0();

@@ -236,7 +236,7 @@ namespace JE {
 			undefined4 virt_meth_0x54de50();
 			undefined4 virt_meth_0x54dea0();
 			undefined4 meth_0x54e690();
-			meth_0x54eje0;
+			undefined4 meth_0x54e6e0();
 			undefined4 meth_0x54f150();
 			undefined4 meth_0x54f4d0();
 			undefined4 virt_meth_0x54f6a0();
