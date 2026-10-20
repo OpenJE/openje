@@ -29,6 +29,7 @@ namespace JE { namespace Host {
 	void* GetEngineStringSystem() { return 0; }
 	JE::PathManager* GetPathJobQueue() { return 0; }
 	void TickWorldEntities( int ) {}
+	bool IsServerContext() { return true; }
 } }
 int main() {
 	// IntSqrt: must equal floor(sqrt(v)) for exact squares and stay within the same bounds the

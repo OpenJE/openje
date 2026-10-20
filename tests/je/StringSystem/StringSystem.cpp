@@ -30,6 +30,7 @@ namespace JE { namespace Host {
 	void* GetEngineStringSystem() { return &g_testEss; }
 	int TickMilliseconds() { return 0; }
 	void TickWorldEntities( int ) {}
+	bool IsServerContext() { return true; }
 	JE::PathManager* GetPathJobQueue() { return 0; }
 } }
 

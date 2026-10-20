@@ -27,6 +27,7 @@ namespace JE { namespace Host {
 	void* GetEngineStringSystem() { return 0; }
 	int TickMilliseconds() { return 0; }
 	void TickWorldEntities( int ms ) { F3::TickWorldEntities( ms ); }
+	bool IsServerContext() { return true; }
 	JE::PathManager* GetPathJobQueue() { return g_queue; }
 } }
 // Resources host hooks duplicated guard: MapEntitySpawn.cpp references Host via LoadStartupMaps only.

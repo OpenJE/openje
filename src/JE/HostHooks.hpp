@@ -17,6 +17,10 @@ namespace JE {
 		// 0x56AF50 - F3::TickMilliseconds (timeGetTime wrapper used by the engine scheduler,
 		// the world frame pump and the A* 90 ms job budget).
 		int TickMilliseconds();
+		// True when a world server instance exists (original: AreaMapIcon guard bit
+		// byte_70BD98[0] & 1 gates the server-only paths, e.g. Entity::RunScript_0x54AFE0).
+		bool IsServerContext();
+
 		// Per-entity server tick driven by World::ServerUpdate_0x545D60 (original entity loop
 		// at 0x545E71: vft+96 sync + ServerUpdate per entity). Game layer iterates spawned
 		// entities and ticks their attached actions.

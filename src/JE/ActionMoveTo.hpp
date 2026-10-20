@@ -33,6 +33,12 @@ namespace JE {
 		byte gap_0x1F4[0x3A2-0x1F4];
 		unsigned char movingFlag;  // +0x3A2
 
+		// Script attachment (JE::Entity script region; name SSO around E+0x2A4, cache +
+		// failed-byte per 0x54AEF0 reads of gap289[43]/[51]/[55])
+		char scriptName[64];
+		void* scriptCache;         // loaded Script* (0 = not loaded)
+		unsigned char scriptFailed;// sticky "unable to load" latch
+
 		Mover() {
 			pos[0] = pos[1] = pos[2] = 0.0f;
 			for ( unsigned i = 0; i < sizeof(gap_0x8); ++i ) gap_0x8[i] = 0;
@@ -42,6 +48,7 @@ namespace JE {
 			yaw = 0.0f;
 			for ( unsigned i = 0; i < sizeof(gap_0x1F4); ++i ) gap_0x1F4[i] = 0;
 			movingFlag = 0;
+			scriptName[0] = 0; scriptCache = 0; scriptFailed = 0;
 		}
 		virtual ~Mover() {}
 		virtual void SyncMoveFailed_120( unsigned ms )   { (void)ms; }   // vft +120
