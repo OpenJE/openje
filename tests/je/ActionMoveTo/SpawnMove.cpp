@@ -67,6 +67,10 @@ int main( int argc, char** argv ) {
 	check( pc && pc->classId == F3::kClassGameCreature, "Default_PC -> creature (GCRE template chunk)" );
 	F3::SpawnedEntity* arm = F3::FindSpawnedEntity( "Critters00_TMCpl_Armstrong" );
 	check( arm && arm->classId == F3::kClassGameCreature, "Armstrong -> creature (template parse)" );
+	// EME2 u8 flag -> Entity+0x3A0 pump byte (session 22): player record pumps, NPCs idle.
+	check( pc && pc->pumpEnabled == 1, "Default_PC flag=1 -> pumpEnabled (map pumps it)" );
+		check( pc && arm && box && pc->pumpEnabled == 1 && arm->pumpEnabled == 1 &&
+	       box->pumpEnabled == 1, "mainmenu.map: ALL EME2 flags = 1 -> everyone pumps" );
 	F3::SpawnedEntity* box2 = F3::FindSpawnedEntity( "ItemsIT_MainMenuBoxcar" );
 	check( pc && box2 && pc->mapId == box2->mapId, "mover/target share mapId (cross-map guard field)" );
 	check( box2 && box2->classId == F3::kClassGameUsableObject, "Boxcar -> usable object (GOBJ)" );
