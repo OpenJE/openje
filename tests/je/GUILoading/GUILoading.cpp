@@ -313,6 +313,83 @@ enum { EXPECTED_INT_COUNT = 25 };
 		JE::GUI::FreeSkinDefaults( &d );
 	}
 
+	// ---- T-009: read-only section/entry iteration (chat/from-B.md C-36 accessors) ----
+	{
+		static char iniB[] =
+			"[First]\n"
+			"a = 1\n"
+			"b = 2\n"
+			"[empty]\n"
+			"[Third]\n"
+			"only = x\n";
+		JE::VFX_Parameter t;
+		t.ParseIniText( iniB, (int)sizeof( iniB ) - 1 );
+
+		// Valid indices: parse order, verbatim names as stored (trailing-space trim already tested).
+		check( t.SectionCount() == 3, "three sections parsed" );
+		check( strcmp( t.SectionNameAt( 0 ), "First" ) == 0, "SectionNameAt(0) = first parsed section" );
+		check( strcmp( t.SectionNameAt( 1 ), "empty" ) == 0, "SectionNameAt(1) = middle section" );
+		check( strcmp( t.SectionNameAt( 2 ), "Third" ) == 0, "SectionNameAt(2) = last section" );
+
+		// Boundary: last valid index, then index == count, then past it.
+		check( t.SectionNameAt( t.SectionCount() - 1 ) != NULL, "SectionNameAt(count-1) is valid" );
+		check( t.SectionNameAt( t.SectionCount() ) == NULL, "SectionNameAt(count) -> NULL (off-by-one boundary)" );
+		check( t.SectionNameAt( t.SectionCount() + 1 ) == NULL, "SectionNameAt(count+1) -> NULL" );
+		// Negative index.
+		check( t.SectionNameAt( -1 ) == NULL, "SectionNameAt(-1) -> NULL" );
+
+		// Entry counts, and lookup is _stricmp so case does not change which section you get.
+		check( t.EntryCount( "First" ) == 2, "EntryCount(First) = 2" );
+		check( t.EntryCount( "FIRST" ) == 2, "EntryCount is case-insensitive like the getters" );
+		check( t.EntryCount( "empty" ) == 0, "existing section with zero entries -> 0, not -1" );
+		check( t.EntryCount( "NOSUCH" ) == -1, "missing section -> EntryCount -1" );
+		check( t.EntryCount( NULL ) == -1, "NULL section name -> EntryCount -1 (never handed to _stricmp)" );
+
+		// Keys/values in parse order, values verbatim.
+		check( strcmp( t.EntryKeyAt( "First", 0 ), "a" ) == 0, "EntryKeyAt(First,0) = a" );
+		check( strcmp( t.EntryKeyAt( "First", 1 ), "b" ) == 0, "EntryKeyAt(First,1) = b" );
+		check( strcmp( t.EntryValueAt( "First", 0 ), "1" ) == 0, "EntryValueAt(First,0) = 1" );
+		check( strcmp( t.EntryValueAt( "First", 1 ), "2" ) == 0, "EntryValueAt(First,1) = 2" );
+		check( t.EntryKeyAt( "First", 2 ) == NULL, "EntryKeyAt(First,count) -> NULL (off-by-one boundary)" );
+		check( t.EntryValueAt( "First", 2 ) == NULL, "EntryValueAt(First,count) -> NULL" );
+		check( t.EntryKeyAt( "First", -1 ) == NULL, "EntryKeyAt(First,-1) -> NULL" );
+		check( t.EntryValueAt( "First", -1 ) == NULL, "EntryValueAt(First,-1) -> NULL" );
+		check( t.EntryKeyAt( "empty", 0 ) == NULL, "zero-entry section -> EntryKeyAt NULL" );
+		check( t.EntryValueAt( "empty", 0 ) == NULL, "zero-entry section -> EntryValueAt NULL" );
+		check( t.EntryKeyAt( "NOSUCH", 0 ) == NULL, "missing section -> EntryKeyAt NULL" );
+		check( t.EntryValueAt( "NOSUCH", 0 ) == NULL, "missing section -> EntryValueAt NULL" );
+		check( t.EntryKeyAt( NULL, 0 ) == NULL, "NULL section name -> EntryKeyAt NULL" );
+		check( t.EntryValueAt( NULL, 0 ) == NULL, "NULL section name -> EntryValueAt NULL" );
+
+		// The iteration must agree with the by-name getters it sits next to: enumerating First's
+		// entries and feeding them back must return the same values GetStringRaw reports.
+		{
+			int n = t.EntryCount( "Third" );
+			int seen = 0;
+			for ( int i = 0; i < n; ++i ) {
+				const char* k = t.EntryKeyAt( "Third", i );
+				const char* v = t.EntryValueAt( "Third", i );
+				if ( k && v && t.GetStringRaw_0x4df070( "Third", k ) == v ) { ++seen; }
+			}
+			check( seen == n && n == 1, "iterated key/value pair matches GetStringRaw_0x4df070 pointer-for-pointer" );
+		}
+
+		// An empty tree is a legal iterator input, not a crash.
+		{
+			JE::VFX_Parameter none;
+			check( none.SectionCount() == 0 && none.SectionNameAt( 0 ) == NULL
+			       && none.EntryCount( "x" ) == -1 && none.EntryKeyAt( "x", 0 ) == NULL
+			       && none.EntryValueAt( "x", 0 ) == NULL,
+			       "unparsed tree iterates to NULL/-1" );
+		}
+
+		// Callable on a const reference - the signature contract B's caller needs.
+		const JE::VFX_Parameter& ct = t;
+		check( ct.SectionNameAt( 0 ) != NULL && ct.EntryCount( "First" ) == 2
+		       && ct.EntryKeyAt( "First", 0 ) != NULL && ct.EntryValueAt( "First", 0 ) != NULL,
+		       "all four accessors work through a const VFX_Parameter&" );
+	}
+
 	if ( !g_fail ) { printf( "OK: GUI .int loading tests passed\n" ); return 0; }
 	printf( "%d failures\n", g_fail );
 	return 1;

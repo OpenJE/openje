@@ -209,4 +209,53 @@ namespace JE {
 		return GetInt( section, key, def );
 	} // GetBool
 
+	// ---- Read-only section/entry iteration (T-009, chat/from-B.md C-36) ----------------------
+	// Const twin of the file-local FindSection(create=false). Same _stricmp section matching as
+	// GetStringRaw_0x4df070, so iteration and by-name lookup cannot disagree about which section
+	// a name refers to. A NULL section name is treated as "no such section" rather than being
+	// handed to _stricmp (which dereferences both operands).
+	static const VFX_Parameter::IniSection* FindSectionConst( const VFX_Parameter* tree, const char* name ) {
+		if ( !name ) {
+			return NULL;
+		}
+		for ( int i = 0; i < tree->m_sectionCount; ++i ) {
+			if ( _stricmp( tree->m_sections[i].name, name ) == 0 ) {
+				return &tree->m_sections[i];
+			}
+		}
+		return NULL;
+	} // FindSectionConst
+
+	// Name of section i in parse order; NULL for i outside [0, SectionCount()).
+	const char* VFX_Parameter::SectionNameAt(int i) const {
+		if ( i < 0 || i >= m_sectionCount || !m_sections ) {
+			return NULL;
+		}
+		return m_sections[i].name;
+	} // SectionNameAt
+
+	// Number of key/value pairs in `section`; -1 when the section is absent.
+	int VFX_Parameter::EntryCount(const char* section) const {
+		const IniSection* sec = FindSectionConst( this, section );
+		return sec ? sec->count : -1;
+	} // EntryCount
+
+	// Key of entry i of `section`; NULL for a missing section or i outside [0, EntryCount()).
+	const char* VFX_Parameter::EntryKeyAt(const char* section, int i) const {
+		const IniSection* sec = FindSectionConst( this, section );
+		if ( !sec || i < 0 || i >= sec->count ) {
+			return NULL;
+		}
+		return sec->entries[i].key;
+	} // EntryKeyAt
+
+	// Value of entry i of `section`; NULL for a missing section or i outside [0, EntryCount()).
+	const char* VFX_Parameter::EntryValueAt(const char* section, int i) const {
+		const IniSection* sec = FindSectionConst( this, section );
+		if ( !sec || i < 0 || i >= sec->count ) {
+			return NULL;
+		}
+		return sec->entries[i].value;
+	} // EntryValueAt
+
 } // namespace JE

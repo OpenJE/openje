@@ -62,6 +62,23 @@ namespace JE {
 
 			int SectionCount() const { return m_sectionCount; }
 
+			// ---- Read-only section/entry iteration (T-009, chat/from-B.md C-36) -----------------
+			// Enumeration over the same flat IniSection storage GetStringRaw_0x4df070 reads, in
+			// parse order (sections are appended by ParseIniText, entries appended per section).
+			// Missing section, NULL name, or an index outside [0, count): the name/key/value
+			// accessors return NULL and EntryCount returns -1. That is a deliberate contract, not
+			// an oversight: no assert and no log-and-continue, because the skin loader probes
+			// absent sections and absent indices routinely (JE::GUI skin records, T-007) and a
+			// failed probe is normal control flow, not an error. Callers must therefore treat
+			// NULL/-1 as "no such entry" and must not log per call.
+			// Returned pointers alias internal storage: valid until this VFX_Parameter is destroyed
+			// or a later ParseIniText re-assigns the same key (last-write-wins overwrites the
+			// value pointer).
+			const char* SectionNameAt(int i) const;                 // i in [0, SectionCount())
+			int  EntryCount(const char* section) const;
+			const char* EntryKeyAt(const char* section, int i) const;
+			const char* EntryValueAt(const char* section, int i) const;
+
 		private:
 			// Non-copyable resource holder (the original map control blocks are likewise never
 			// value-copied; single static instance 0x70C2C0/0x70C2CC).
