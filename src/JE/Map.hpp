@@ -6,6 +6,7 @@
 #include "types.hpp"
 #include "JE/Common/Chunk.hpp"
 #include "JE/ResourceSystem.hpp"
+#include "JE/SpatialGrid.hpp"
 
 namespace JE {
 	// JE::Map - map file container reader. Primary vftable 0x699FA4 (30 slots). The chunk
@@ -149,6 +150,10 @@ namespace JE {
 		public:
 			dword        m_ecam[4];
 			unsigned char m_hasEcam;
+			// Occupancy grid (original: map+0x88 CreateGrid_0x57a8a0 object over the .rle
+			// dims; per-cell entity lists queried by JE::SpatialGrid::QueryEntities_0x405F80).
+			class SpatialGrid* m_grid;
+			class SpatialGrid* Grid() { return m_grid; }
 			// Map-owned entity list (original: RbTree at map+0x134 {sentinel,head,count},
 			// count mbr_0x13c logged by Create_0x57bc33; entities pushed per ReadEME2/EMEN).
 			// Flat storage deviation; count semantics preserved.

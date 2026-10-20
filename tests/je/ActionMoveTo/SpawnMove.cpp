@@ -4,6 +4,8 @@
 #define JE_TEST_ALLOW_PROTECTED_MEMBER_ACCESS 1
 #include "F3/MapEntitySpawn.hpp"
 #include "F3/GameActionMoveTo.hpp"
+#include "F3/GamePathManager.hpp"
+#include "JE/SpatialGrid.hpp"
 #include "JE/ActionMoveTo.hpp"
 #include "JE/PathManager.hpp"
 #include "JE/Map.hpp"
@@ -109,6 +111,65 @@ int main( int argc, char** argv ) {
 		check( jm && jm->GetEntryPoint( 1, ring ) == 6, "junktown entry ring present" );
 		check( F3::PlaceEntityAtEntryPoint( e0, jm, 1, 0 ) == 1, "placement at entry 1 slot 0" );
 		check( e0->pos[0] == ring[0] && e0->pos[2] == ring[2], "placed exactly at ring point" );
+	}
+
+	// F3 path manager with real occupancy: two entry-ring slots far apart, nothing between
+	// => direct-line fast path (2-point [goal,start]) with steps>1 - the grid-aware
+	// TraceSegmentClear returns CLEAR where the base stub conservatively returned blocked.
+	{
+		F3::GamePathManager fpm;
+		F3::SpawnedEntity walker; walker.mapId = 1;
+		F3::SpawnedEntity stand;   stand.mapId = 1;
+		float ringB[18];
+		// mainmenu.map has no EMEP; use junktown map (registered id 2) for ring geometry
+		JE::Map* jm = F3::FindLoadedMap( 2 );
+		check( jm != 0, "junktown map available" );
+		jm->GetEntryPoint( 1, ringB );
+		walker.pos[0] = ringB[0]; walker.pos[1] = ringB[1]; walker.pos[2] = ringB[2];
+		stand.pos[0]  = ringB[9]; stand.pos[1]  = ringB[10]; stand.pos[2]  = ringB[11];
+		F3::SetActiveMap( jm );
+		// no grid occupancy registered for these synthetic movers: register ONLY stand far away
+		JE::SpatialGrid::Run r1 = { 200, 1 }; (void)r1;
+		jm->Grid()->Insert( 200, 400, &stand );   // off the line
+		JE::PathJob jf; memset( &jf, 0, sizeof(jf) );
+		jf.mover = &walker; jf.map = jm;
+		jf.gridCols = 384; jf.gridRows = 624;
+		jf.start[0]=walker.pos[0]; jf.start[1]=0; jf.start[2]=walker.pos[2];
+		jf.goal[0]=stand.pos[0];  jf.goal[1]=0;  jf.goal[2]=stand.pos[2];
+		int sc[2]; JE::WorldToOctreeCell_0x560680(sc, jf.start, jm); jf.startCol=sc[0]; jf.startRow=sc[1];
+		JE::WorldToOctreeCell_0x560680(sc, jf.goal, jm);  jf.goalCol=sc[0];  jf.goalRow=sc[1];
+		fpm.QueueJob( &jf );
+		fpm.ProcessJobs();
+		check( jf.state == 1, "job completes" );
+		check( jf.waypoints && jf.waypoints->count == 2,
+		       "grid-aware clear-line took the 2-point FAST PATH (steps>1)" );
+		// now block the middle: register an occupant at the line's midpoint cell
+		if ( jf.waypoints ) { JE::PathManager::FreeJob( &jf ); }
+		jf.state=0; jf.inited=0; jf.pool=0; jf.openHeap=0; jf.waypoints=0;
+		// Block AT a sampled point (stride = len/(dist*1.666) cells; a 1-wide footprint can
+		// legitimately fall between samples - the original's LOS is approximate too).
+		const float bdx = stand.pos[0] - walker.pos[0];
+		const float bdz = stand.pos[2] - walker.pos[2];
+		const int bdist = JE::IntSqrt( (int)(bdx*bdx + bdz*bdz) );
+		const float bsteps = (float)bdist * 1.666f;
+		const int tmid = (int)(bsteps / 2.0f);
+		const float fb = (float)tmid / bsteps;
+		float midp[3] = { walker.pos[0] + bdx * fb, 0.0f, walker.pos[2] + bdz * fb };
+		int mc[2]; JE::WorldToOctreeCell_0x560680( mc, midp, jm );
+		int ins = jm->Grid()->Insert( mc[0], mc[1], &stand );   // blocker on the t=tmid sample
+		void* probe[4]; JE::SpatialGrid::Run r0 = { mc[0], 1 };
+		unsigned ph = jm->Grid()->QueryEntities( &r0, 1, mc[0], mc[1], probe, 4 );
+		printf("     blocker cell=%d,%d inserted=%d probe-hits=%u walkerCell-standDist ok\n",
+		       mc[0], mc[1], ins, ph); fflush(stdout);
+		fpm.QueueJob( &jf );
+		fpm.ProcessJobs();
+		check( jf.waypoints && jf.waypoints->count > 2,
+		       "occupant on a sample point blocks the fast path -> A* chain (count>2)" );
+		printf("     blocked-line waypoints=%u state=%d\n",
+		       jf.waypoints ? jf.waypoints->count : 0u, jf.state);
+		JE::PathManager::FreeJob( &jf );
+		F3::SetActiveMap( map );
+		jm->Grid()->Remove(200,400,&stand);
 	}
 
 	// synthetic clamp coverage: cur > max collapses to max (0x463910)

@@ -10,17 +10,18 @@ namespace JE {
 	// grid; map owns it at map+0x88 (created by CreateGrid_0x57a8a0 with the .rle dimensions;
 	// grid header fields mbr_0x0=cols, mbr_0x4=rows match QueryEntities' reads at 0x405F94/9F).
 	//
-	// Entity footprint: each entity registers a run list (per-row {xOff, len} entries; the
-	// query's param_2 vector nodes carry {+4 x, +8 len}) reachable at Entity+0x16C (+12 =
-	// run-vector base, observed in OnServerUpdate_0x4060b0 at 0x406170). Model/bbox-driven
-	// footprints are unmodeled => default single run {0,1} (1x1 cell) documented as deviation.
+	// Entity footprint: each entity registers a run list (per-row {x, len} entries with x =
+	// ABSOLUTE column - the original's window math is `p5 + run.x - p3` and OnServerUpdate
+	// passes identical anchors (v56 twice) making it identity; query nodes {+4 x, +8 len}).
+	// Reachable at Entity+0x16C (+12 = run-vector base, 0x406170). Model/bbox footprints are
+	// unmodeled => single-run {col,1} per query documented as deviation.
 	//
 	// Deviations: per-cell containers are flat growable arrays instead of the original's
 	// intrusive 0xC-node lists; removal is compaction, not relinking. Query semantics
 	// (window clamp, per-x column walk, dedupe insertion) are ported faithfully.
 	class SpatialGrid {
 	public:
-		struct Run { int x; int len; };          // footprint row-run (relative to anchor cell)
+		struct Run { int x; int len; };          // row-run: x = absolute column
 
 		SpatialGrid() : m_cols(0), m_rows(0), m_cells(0) {}
 		~SpatialGrid();

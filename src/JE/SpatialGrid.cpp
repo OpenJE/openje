@@ -62,7 +62,8 @@ namespace JE {
 	} // Remove
 
 	// 0x405F80 port. The window math mirrors the original exactly:
-	//   x0 = p5 + run.x - p3 (anchor-relative run placement), row = p6;
+	//   x0 = p5 + run.x - p3; shipped callers pass p5 == p3 (mover cell x) so x0 = run.x
+	//   (ABSOLUTE columns), row = p6;
 	//   skip unless 0<=row<rows, x0<cols, x0+len>0;
 	//   negative x0 folds into length (x0=0); far edge clamped to cols;
 	//   per covered column, append the cell's entities (deduped).
@@ -80,8 +81,8 @@ namespace JE {
 		for ( unsigned r = 0; r < runCount; ++r ) {
 			int x  = runs[r].x;
 			int len = runs[r].len;
-			int x0 = cx + x - cx;          // p5 + run.x - p3 with both anchors = run.x (as shipped)
-			// original passes identical anchor values from OnServerUpdate_0x4060b0 (v56 twice)
+			int x0 = cx + x - cx;          // = run.x, faithful to the original expression
+			(void)cx;
 			if ( cy < 0 || (unsigned)cy >= m_rows || x0 >= (int)m_cols || x0 + len <= 0 ) {
 				continue;
 			}

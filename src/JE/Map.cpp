@@ -37,6 +37,7 @@ namespace JE {
 		mbr_0x2C = mbr_0x4C = mbr_0x68 = mbr_0x90 = NULL;
 		mbr_0x84 = mbr_0x88 = 0;
 		mbr_0x48 = NULL;
+		m_grid = NULL;
 		m_pCellMasks = NULL;
 		m_recordCount = 0;
 		memset( m_records, 0, sizeof( m_records ) );
@@ -67,6 +68,7 @@ namespace JE {
 		for ( unsigned i = 0; i < m_recordCount; ++i ) {
 			free( m_records[i].name );
 		}
+		if ( m_grid ) { delete m_grid; m_grid = NULL; }
 		free( m_pCellMasks );
 		if ( mbr_0x48 ) {
 			operator delete( mbr_0x48 );
@@ -239,6 +241,11 @@ namespace JE {
 		memset( m_pCellMasks, 0, cols * rows );
 		mbr_0x84 = cols;
 		mbr_0x88 = rows;
+		// CreateGrid_0x57a8a0 equivalent: occupancy grid over the same dims.
+		if ( !m_grid ) {
+			m_grid = new SpatialGrid();
+		}
+		m_grid->Init( cols, rows );
 
 		unsigned pos = 8;
 		for ( unsigned y = 0; y < rows; ++y ) {

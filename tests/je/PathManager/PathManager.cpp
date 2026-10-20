@@ -172,13 +172,15 @@ int main() {
 		check( grid.Insert( 1, 2, &a ) == 1 && grid.Insert( 1, 2, &b ) == 1, "two inserts same cell" );
 		check( grid.Insert( 3, 0, &c ) == 1, "insert corner" );
 		check( grid.Insert( 4, 0, &a ) == 0, "OOB col rejected" );
-		JE::SpatialGrid::Run runs[2] = { { 0, 1 }, { 1, 2 } };   // anchor-relative footprint rows
+		JE::SpatialGrid::Run runs[2] = { { 1, 1 }, { 1, 2 } };   // absolute columns (a=1,b=2 at col 1)
 		void* out[8];
 		unsigned n = grid.QueryEntities( runs, 2, 1, 2, out, 8 );
 		check( n == 2, "footprint query finds both same-cell entities, deduped" );
-		unsigned n2 = grid.QueryEntities( runs, 2, -1, 2, out, 8 );
-		check( n2 == 2, "negative anchor clamps window like 0x405FEF-0x406002" );
+		JE::SpatialGrid::Run negRuns[1] = { { -3, 5 } };   // x0=-3, len 5 -> fold to [0,2)
+		unsigned n2 = grid.QueryEntities( negRuns, 1, 0, 2, out, 8 );
+		check( n2 == 2, "negative run.x folds window like 0x405FEF-0x406002" );
 		check( grid.QueryEntities( runs, 2, 1, 4, out, 8 ) == 0, "row OOB = no hits" );
+		check( grid.QueryEntities( runs, 2, 9, 2, out, 8 ) == 2, "anchor cancels: col 1,2 hits regardless of cx" );
 		check( grid.Remove( 1, 2, &a ) == 1 && grid.QueryEntities( runs, 2, 1, 2, out, 8 ) == 1,
 		       "remove shrinks occupancy" );
 	}
