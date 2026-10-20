@@ -20,7 +20,57 @@ namespace JE {
 			dword mbr_0x8;
 		//: Methods
 		public:
-			undefined4 meth_0x4339b0();
+			// ---- INI behavior layer (interim representation) ------------------------------------
+			// The original stores sections in a map<string, cls_0x4dff90> at this->mbr_0x4 (find
+			// meth_0x4339B0, section create meth_0x4E0470) and each 56-byte section is itself a
+			// map<string(std::string value)> (find sub_4DF070, insert-or-get meth_0x4DFEB0, all
+			// _stricmp-ordered). GetInt (sub_4DF770) resolves section+key then j__atol's the value
+			// string; GetBool lives at sub_4DF8B0. This interim model keeps identical OBSERVABLE
+			// behavior (case-insensitive section/key lookup, last-write-wins values, atol parsing)
+			// without the map template reconstruction; the binary layout (0x34 bytes of map handles)
+			// is tracked in docs/DEFERRED-NOTES.md.
+			struct IniEntry { char* key; char* value; };
+			struct IniSection { char* name; IniEntry* entries; int count; int capacity; };
+
+			IniSection* m_sections; // behavioral storage (NOT the original layout)
+			int m_sectionCount;
+			int m_sectionCapacity;
+
+			VFX_Parameter();
+			~VFX_Parameter();
+
+			// sub_4E0540 - ini parser. Destructive like the original (writes NULs into the buffer):
+			//   - skips whitespace; ';' comments run to the next '\n'
+			//   - '[Name]' selects/creates a section (trailing spaces before ']' trimmed at
+			//     0x4E05EB-0x4E0616; a missing ']' aborts the remainder, faithful to the original
+			//     `return 1` at 0x4E05DF/0x4E05E5)
+			//   - 'key = value' to end-of-line; whitespace trimmed both sides (0x4E06B2-0x4E0725);
+			//     keys case-insensitive; values stored verbatim; re-assigning a key overwrites
+			//   - lines before any section header are DROPPED (param_2-null guard at 0x4E0734)
+			void ParseIniText(char* text, int length);
+			// sub_4DF770 - atol of the value string, `def` when section/key missing.
+			int  GetInt(const char* section, const char* key, int def) const;
+			// sub_4DF8B0 reads it as boolean (0/1); value missing -> def.
+			int  GetBool(const char* section, const char* key, int def) const;
+			// direct string access (returns NULL when absent)
+			const char* GetStringRaw_0x4df070(const char* section, const char* key) const;
+			// sub_4DF640 - string getter with caller-provided fallback (used by StringSystem
+			// for "Strings"."Male"/"Female" and by the resource file manager). Returns def when
+			// section/key missing; the original copies into a std::string sink - we hand back the
+			// internal pointer (values are immutable after parse in this interim model).
+			const char* GetString(const char* section, const char* key, const char* def) const;
+
+			int SectionCount() const { return m_sectionCount; }
+
+		private:
+			// Non-copyable resource holder (the original map control blocks are likewise never
+			// value-copied; single static instance 0x70C2C0/0x70C2CC).
+			VFX_Parameter( const VFX_Parameter& );
+			VFX_Parameter& operator=( const VFX_Parameter& );
+
+		public:
+
+		undefined4 meth_0x4339b0();
 			undefined4 meth_0x45c700();
 			undefined4 meth_0x45ceb0();
 			undefined4 meth_0x45d190();

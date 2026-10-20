@@ -4,25 +4,46 @@
 #define JE_SS_ENGINESTRINGSYSTEM_HPP_
 
 #include "types.hpp"
+#include <stdio.h>
 #include "JE/SS/StringSystem.hpp"
 
 namespace JE {
-    namespace SS {
-        class EngineStringSystem : public StringSystem {
-            //: Members
-            public:
-                dword mbr_0x16c;
-                dword mbr_0x170;
-                dword mbr_0x174;
-            //: Methods
-            public:
-                undefined4 virt_meth_0x56bca0();
-                undefined4 meth_0x56be30();
-                undefined4 virt_meth_0x56c260();
-                void ctor_0x56c360();
-                void dtor_0x56c3e0();
-        }; // class EngineStringSystem
-    } // namespace SS
+	class VFX_Parameter;
+	namespace SS {
+		// SS::EngineStringSystem - the global string system at 0x70C2D8 (statically constructed
+		// by the GLOBAL__I stub at 0x643560 -> ctor_0x56C360, _atexit thunk 0x646910).
+		// sizeof == 0x178 (0x16C base + 3 dwords).
+		//
+		// vft[0] 0x56BCA0 Initialize(root, params):
+		//   1. StringSystem::Init_0x4C5E30 (male/female .stf from [Strings] Male/Female)
+		//   2. token map at +0x16C loads "tokens.tok" via meth_0x5AD530 -> ResourceSystem
+		//      Demand_0x49B750(name,1); per line sub_5ACE70 (name) + sub_5ACF10 (split) +
+		//      meth_0x5AD460 (insert name,value); log strings are faithful:
+		//        "Couldn't load tokens file\r\n"  (missing/failed demand)
+		//        "Incorrect token formatting on line %d\r\n"
+		// vft[1] 0x56C260 Get -> formats through Format_0x56BE30 (decompile pending - disasm pass).
+		class EngineStringSystem : public StringSystem {
+			//: Members
+			public:
+				// +0x16C token name->value map (interim storage; the original is a
+				// cls_0x4d8d70-family string->string map).
+				struct Token { char* name; char* value; };
+				Token*   m_tokens;         // +0x16C
+				unsigned m_tokenCount;
+				unsigned m_tokenCapacity;
+			//: Methods
+			public:
+				EngineStringSystem() : m_tokens(NULL), m_tokenCount(0), m_tokenCapacity(0) {}
+				~EngineStringSystem();
+				// vft[0] 0x56BCA0
+				void Initialize( char* rootDirectory, JE::VFX_Parameter* params );
+				// 0x5AD530 equivalent; returns 1 when the token file was loaded.
+				char LoadTokens( const char* resourceName );
+				// lookup (engine consumers call through Get_0x56c260 + Format_0x56be30)
+				const char* GetToken( const char* name ) const;
+				unsigned TokenCount() const { return m_tokenCount; }
+		}; // class EngineStringSystem
+	} // namespace SS
 } // namespace JE
 
 #endif // JE_SS_ENGINESTRINGSYSTEM_HPP_

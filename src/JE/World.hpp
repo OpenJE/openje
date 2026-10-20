@@ -4,9 +4,39 @@
 #define JE_WORLD_HPP_
 
 #include "types.hpp"
+#include "JE/Subsystem.hpp"
+
+namespace JE { class VFX_Parameter; }
 
 namespace JE {
-	struct World {
+	struct World : public Subsystem {
+		//: Methods (calendar params, JE::World vft[4] ApplyWorldClockParams_0x546b50)
+		public:
+			// sys.ini [World]: Seconds Per Round=6, Year=2253, Month=10, Day=18, 13:13:13
+			int m_secondsPerRound;   // +0x40 (default 6, overwritten when key present)
+			int m_calendarYear;      // +0x14
+			int m_calendarMonth;     // +0x18
+			int m_calendarDay;       // +0x1C
+			int m_calendarHour;      // +0x20
+			int m_calendarMinute;    // +0x24
+			int m_calendarSecond;    // +0x28
+			// vft[4] 0x546B50: read [World] keys from the engine ini parameter tree
+			// (GetIniParameterTree_0x56af40 == Host::GetParameterTree) via FindSection +
+			// SectionMap::FindValue + atol - semantics identical to VFX_Parameter::GetInt.
+			void ApplyWorldClockParams();
+
+			// 0x5454F0 ChangeState - strict world state machine on mbr_0x38:
+			//   states: 0 = pre-init; 1/2 = startup sub-states; 3 = running; 4 = paused.
+			//   Legal transitions: {1,2} -> 3 -> 4 -> 3; only 1/2 valid from state 0.
+			//   Entering 4 stamps JE::TickMilliseconds_0x56af50() into +0x58; leaving 4 computes
+			//   the pause duration into +0x5C and +0x60. Illegal transitions FatalError
+			//   "Invalid state change in World::ChangeState()." (the state-4 exit message in the
+			//   original says "Entity::ChangeState()." - kept verbatim at 0x54555D).
+			int  ChangeState_0x5454f0( int newState );
+			int  m_state;            // +0x38
+			int  m_pauseStampMS;     // +0x58
+			int  m_pauseAccumMS;     // +0x5C
+			int  m_pauseLastMS;      // +0x60
 		//: Members
 			dword mbr_0x10;
 			dword mbr_0x100;

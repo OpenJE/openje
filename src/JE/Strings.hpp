@@ -4,9 +4,10 @@
 #define JE_STRINGS_HPP_
 
 #include "types.hpp"
+#include "JE/Subsystem.hpp"
 
 namespace JE {
-	struct Strings {
+	struct Strings : public Subsystem {
 		//: Methods
 			void dtor_0x59c210();
 			void ctor_0x59c240();
