@@ -39,21 +39,22 @@ int main( int argc, char** argv ) {
 	rs.Init( root, NULL );
 	JE::g_resource_system = &rs;
 
-	printf("stage: load\n"); fflush(stdout);
-	JE::Map* map = F3::LoadCompleteMap( "mainmenu.map" );
+		JE::Map* map = F3::LoadCompleteMap( "mainmenu.map" );
 	check( map && map->m_recordCount == 3, "Mainmenu.map loaded with 3 EME2 records" );
 	check( map && map->GridCols() > 0, "collision grid dims loaded (.rle)" );
 	check( map && map->GetOctree() != 0, "octree loaded (.8)" );
-	printf("stage: spawn\n"); fflush(stdout);
-	int n = F3::SpawnMapEntities( map, "mainmenu.map" );
+		int n = F3::SpawnMapEntities( map, "mainmenu.map" );
 	check( n == 3, "3 entities spawned" );
 	F3::SpawnedEntity* pc = F3::FindSpawnedEntity( "Default_PC" );
 	F3::SpawnedEntity* box = F3::FindSpawnedEntity( "ItemsIT_MainMenuBoxcar" );
-	check( pc && pc->classId == F3::kClassGameCreature, "Default_PC spawned as creature class" );
+	check( pc && pc->classId == F3::kClassGameCreature, "Default_PC -> creature (GCRE template chunk)" );
+	F3::SpawnedEntity* arm = F3::FindSpawnedEntity( "Critters00_TMCpl_Armstrong" );
+	check( arm && arm->classId == F3::kClassGameCreature, "Armstrong -> creature (template parse)" );
+	F3::SpawnedEntity* box2 = F3::FindSpawnedEntity( "ItemsIT_MainMenuBoxcar" );
+	check( box2 && box2->classId == F3::kClassGameUsableObject, "Boxcar -> usable object (GOBJ)" );
 	check( box && fabsf(box->pos[2] - 27.5f) < 0.01f, "boxcar position from record" );
 
-	printf("stage: pm\n"); fflush(stdout);
-	JE::PathManager pm;
+		JE::PathManager pm;
 	g_queue = &pm;
 
 	PCAction act;
@@ -63,16 +64,13 @@ int main( int argc, char** argv ) {
 	act.job = 0; act.requestedFlag = 0; act.arrivalFlag = 0; act.lastTargetId = 0;
 	act.lastUpdateMs = act.lastRequestMs = 0; act.arriveDistance = 1;
 
-	printf("stage: onadd\n"); fflush(stdout);
-	act.JE::ActionMoveTo::OnAdd_0x55b4f0( 0 );
+		act.JE::ActionMoveTo::OnAdd_0x55b4f0( 0 );
 	check( act.job != 0 && pm.PendingJobCount() == 1, "move job issued for spawned PC" );
 
-	printf("stage: pump\n"); fflush(stdout);
-	for ( int t = 100; t < 15000; t += 100 ) {
+		for ( int t = 100; t < 15000; t += 100 ) {
 		pm.ProcessJobs();
 		act.Update_0x55b600( t, 0 );
-		printf(" post-up\n"); fflush(stdout);
-	}
+		}
 	float d = sqrtf( (pc->pos[0]-box->pos[0])*(pc->pos[0]-box->pos[0])
 	               + (pc->pos[2]-box->pos[2])*(pc->pos[2]-box->pos[2]) );
 	printf( "     PC walked to %.2f,%.2f (boxcar %.2f,%.2f) dist %.3f moving=%d\n",
