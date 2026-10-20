@@ -143,7 +143,7 @@ int main() {
 		JE::PathJob j5; memset(&j5, 0, sizeof(j5));
 		j5.map = &mapX;
 		j5.gridCols = 144; j5.gridRows = 104;
-		j5.startCol = 0; j5.startRow = 0; j5.goalCol = 72; j5.goalRow = 52;
+		// world-only inputs now; cells are seeded by WorldToOctreeCell in ProcessJobs
 		j5.start[0] = -1.0f; j5.start[1] = 0.0f; j5.start[2] = 1.0f;
 		j5.goal[0] = 35.0f;  j5.goal[1] = 0.0f;  j5.goal[2] = 25.0f;
 		pm.QueueJob(&j5);

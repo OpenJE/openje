@@ -372,6 +372,15 @@ namespace JE {
 
 		// Fresh job: prime with a straight-line answer or seed the start node.
 		if ( heap->Empty() && job->state == 0 ) {
+			// With map context, derive cells from the world start/goal (WorldToOctreeCell_0x560680)
+			// so callers only fill world coordinates - exactly what the mover-side seeding does.
+			if ( job->map ) {
+				int cr[2];
+				WorldToOctreeCell_0x560680( cr, job->start, job->map );
+				job->startCol = cr[0]; job->startRow = cr[1];
+				WorldToOctreeCell_0x560680( cr, job->goal, job->map );
+				job->goalCol = cr[0]; job->goalRow = cr[1];
+			}
 			if ( !TryStraightSlide(job) ) {
 				job->state = 2;
 				DequeueJob(job);

@@ -343,8 +343,24 @@ namespace JE {
 		oc->GetBounds( b );
 		out->x = (float)col / (float)map->mbr_0x84 * (b[3] - b[0]) + b[0];
 		out->y = 0.0f;
-		out->z = b[4] - (float)row / (float)map->mbr_0x88 * (b[4] - b[2]);
+		// maxZ (bounds[5]) anchors the row axis (the IDB listing aliases the spilled slot as
+		// local_18[4]; semantically it is the AABB maximum on the depth axis - verified by the
+		// round trip with WorldToOctreeCell over Default_StartMap bounds -1..51).
+		out->z = b[5] - (float)row / (float)map->mbr_0x88 * (b[5] - b[2]);
 	} // CellToWorld_0x560710
+
+	// 0x560680 - world -> cell (inverse of CellToWorld_0x560710).
+	void WorldToOctreeCell_0x560680( int* out, const float* p, Map* map ) {
+		Octree* oc = map ? map->GetOctree() : NULL;
+		if ( !oc || !map->mbr_0x84 || !map->mbr_0x88 ) {
+			out[0] = out[1] = -1;
+			return;
+		}
+		float b[6];
+		oc->GetBounds( b );
+		out[0] = (int)( (p[0] - b[0]) / (b[3] - b[0]) * (float)map->mbr_0x84 );
+		out[1] = (int)( (-1.0f / (b[5] - b[2])) * (p[2] - b[5]) * (float)map->mbr_0x88 );
+	} // WorldToOctreeCell_0x560680
 
 	// 0x56C770 - tag router. Function EAs transcribed 1:1 from the dispatcher's switch;
 	// unhandled tags fall through (skip). Error strings below are verbatim from the binary.

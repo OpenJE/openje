@@ -166,7 +166,7 @@ int main(int argc, char** argv) {
 			JE::CellToWorld_0x560710(&cE, (int)map3.GridCols(), 0, &map3);
 			check(c0.x == -1.0f, "CellToWorld col0 -> minX");
 			check(cE.x == 71.0f, "CellToWorld colCols -> maxX (lerp exact)");
-			check(c0.z == oc->bounds[4], "z(row0) = bounds maxY");
+			check(c0.z == oc->bounds[5], "z(row0) = bounds maxZ");
 		}
 	}
 

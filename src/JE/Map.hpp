@@ -153,7 +153,11 @@ namespace JE {
 	// z axis; faithful), y = 0. Needs GetOctree() (bounds) and the .rle grid dims at
 	// mbr_0x84/+0x88.
 	void CellToWorld_0x560710( struct Vector3* out, int col, int row, Map* map );
-	// 0x560680 - world -> cell (inverse; port when the last consumer needs it).
+	// 0x560680 - world -> cell: col = (x-minX)/(maxX-minX)*cols; row =
+	// (-1/(maxY-minZ))*(z-maxY)*rows (faithful to the decompiled expression; note it uses
+	// bounds maxY for the row axis exactly like CellToWorld's z). Out-of-range values are NOT
+	// clamped here - the caller's node lookup rejects them, matching the original.
+	void WorldToOctreeCell_0x560680( int* outColRow, const float* xyz, Map* map );
 } // namespace JE
 
 #endif // JE_MAP_HPP_
