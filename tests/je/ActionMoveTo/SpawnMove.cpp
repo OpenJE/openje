@@ -49,18 +49,22 @@ int main( int argc, char** argv ) {
 	rs.Init( root, NULL );
 	JE::g_resource_system = &rs;
 
-		JE::Map* map = F3::LoadCompleteMap( "mainmenu.map" );
+		int mapId = F3::MapCreate( "mainmenu.map" );
+	check( mapId == 1 && F3::LoadedMapCount() == 1, "MapCreate registers mainmenu.map as id 1" );
+	JE::Map* map = F3::FindLoadedMap( mapId );
 	check( map && map->m_recordCount == 3, "Mainmenu.map loaded with 3 EME2 records" );
 	check( map && map->GridCols() > 0, "collision grid dims loaded (.rle)" );
 	check( map && map->GetOctree() != 0, "octree loaded (.8)" );
 		int n = F3::SpawnMapEntities( map, "mainmenu.map" );
 	check( n == 3, "3 entities spawned" );
+	check( map->EntityCount() == 3, "map owns its 3 entities (map+0x134 list port)" );
 	F3::SpawnedEntity* pc = F3::FindSpawnedEntity( "Default_PC" );
 	F3::SpawnedEntity* box = F3::FindSpawnedEntity( "ItemsIT_MainMenuBoxcar" );
 	check( pc && pc->classId == F3::kClassGameCreature, "Default_PC -> creature (GCRE template chunk)" );
 	F3::SpawnedEntity* arm = F3::FindSpawnedEntity( "Critters00_TMCpl_Armstrong" );
 	check( arm && arm->classId == F3::kClassGameCreature, "Armstrong -> creature (template parse)" );
 	F3::SpawnedEntity* box2 = F3::FindSpawnedEntity( "ItemsIT_MainMenuBoxcar" );
+	check( pc && box2 && pc->mapId == box2->mapId, "mover/target share mapId (cross-map guard field)" );
 	check( box2 && box2->classId == F3::kClassGameUsableObject, "Boxcar -> usable object (GOBJ)" );
 	check( pc && pc->statMax == 100 && pc->statCur == 100,
 	       "GENT max/cur pair loaded (100/100) per discovery session 3" );
