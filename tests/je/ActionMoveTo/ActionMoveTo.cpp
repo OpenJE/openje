@@ -29,11 +29,7 @@ namespace JE { namespace Host {
 	JE::PathManager* GetPathJobQueue() { return g_queue; }
 } }
 
-struct TestMover : JE::Mover {
-	TestMover() {
-		memset( (char*)this + sizeof(void*), 0, sizeof(JE::Mover) - sizeof(void*) );
-	}
-};
+struct TestMover : JE::Mover {};
 
 struct TestAction : JE::ActionMoveTo {
 	float speed;

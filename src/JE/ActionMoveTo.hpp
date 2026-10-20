@@ -16,7 +16,8 @@ namespace JE {
 	// derives from the full JE::Entity stub; unit tests use this directly. Virtual slots mirror
 	// the entity vft indices seen in the decompilation.
 	struct Mover {
-		void**      vft;          // +0x0
+		// NB: no explicit vft member - the compiler vptr occupies +0x0 exactly as in the
+		// original Entity, keeping pos at +0x4 and every documented offset true.
 		float       pos[3];       // +0x4  world position (Entity::meth_0x54a8a0 setter)
 		// +0x178 bool: position-change notify flag (Entity::meth_0x54adc0)
 		// +0x1EC mapId: current map (compared between mover/target before pathing)
@@ -30,6 +31,16 @@ namespace JE {
 		byte gap_0x1F4[0x3A2-0x1F4];
 		unsigned char movingFlag;  // +0x3A2
 
+		Mover() {
+			pos[0] = pos[1] = pos[2] = 0.0f;
+			for ( unsigned i = 0; i < sizeof(gap_0x8); ++i ) gap_0x8[i] = 0;
+			bool0x178 = 0;
+			for ( unsigned i = 0; i < sizeof(gap_0x179); ++i ) gap_0x179[i] = 0;
+			mapId = 0;
+			yaw = 0.0f;
+			for ( unsigned i = 0; i < sizeof(gap_0x1F4); ++i ) gap_0x1F4[i] = 0;
+			movingFlag = 0;
+		}
 		virtual ~Mover() {}
 		virtual void SyncMoveFailed_120( unsigned ms )   { (void)ms; }   // vft +120
 		virtual void SyncMoveStopped_124( unsigned ms )  { (void)ms; }   // vft +124
