@@ -378,8 +378,93 @@ namespace JE {
 	// 0x49B750 - demand a resource by name (see header). Interim: ReadResource replaces the
 	// OpenResourceStream/Seek/Read trio; cache registration (flag==1 path, cls_0x50caa0
 	// meth_0x50cb10 cache-add at 0x49b989) is pending the cache reconstruction.
+	// ---------------------------------------------------------------------------
+	// Managed-resource cache (meth_0x50cb10-style add; cls_0x50caa0 hash + LRU in
+	// the original with cache_size 1000000 bytes). Deviations: linear table (max 256
+	// entries) instead of a hash; stamp-based eviction of demandCount<=0-resident
+	// entries instead of a linked LRU. Byte cap preserved: 1,000,000 payload bytes.
+	struct CacheSlot {
+		ResourceSystem::Res* res;
+		unsigned stamp;
+	};
+	static CacheSlot s_cache[256] = { { 0, 0 } };
+	static unsigned  s_cacheClock = 0;
+	static int       s_cacheBytes = 0;
+
+	static ResourceSystem::Res* CacheFind( const char* name ) {
+		for ( int i = 0; i < 256; ++i ) {
+			if ( s_cache[i].res && _stricmp( ResNamePtr( s_cache[i].res ), name ) == 0 ) {
+				s_cache[i].stamp = ++s_cacheClock;
+				return s_cache[i].res;
+			}
+		}
+		return NULL;
+	}
+	static void CacheUnlink( ResourceSystem::Res* res ) {
+		for ( int i = 0; i < 256; ++i ) {
+			if ( s_cache[i].res == res ) {
+				s_cacheBytes -= res->size;
+				s_cache[i].res = 0;
+				s_cache[i].stamp = 0;
+				return;
+			}
+		}
+	}
+	static void CacheAdd( ResourceSystem::Res* res ) {
+		if ( CacheFind( ResNamePtr( res ) ) != NULL ) {
+			return;   // already resident (double-demand raced)
+		}
+		while ( s_cacheBytes + res->size > 1000000 ) {
+			// evict oldest releasable (demandCount <= 0 kept-for-cache entry counts 1 below)
+			int victim = -1;
+			unsigned oldest = 0xFFFFFFFFu;
+			for ( int i = 0; i < 256; ++i ) {
+				if ( s_cache[i].res && s_cache[i].res->demandCount <= 1 && s_cache[i].stamp < oldest ) {
+					oldest = s_cache[i].stamp;
+					victim = i;
+				}
+			}
+			if ( victim < 0 ) {
+				break;   // everything pinned: behave like a demand miss that bypasses the cache
+			}
+			ResourceSystem::Res* v = s_cache[victim].res;
+			s_cacheBytes -= v->size;
+			s_cache[victim].res = 0;
+			if ( v->data ) free( v->data );
+			if ( v->nameCap >= 0x10u ) free( *(void**)v->nameBuf );
+			free( v );
+		}
+		for ( int i = 0; i < 256; ++i ) {
+			if ( !s_cache[i].res ) {
+				s_cache[i].res = res;
+				s_cache[i].stamp = ++s_cacheClock;
+				s_cacheBytes += res->size;
+				return;
+			}
+		}
+	}
+	static int CacheCountForTest() {
+		int n = 0;
+		for ( int i = 0; i < 256; ++i ) { if ( s_cache[i].res ) ++n; }
+		return n;
+	}
+
+	int ResourceSystem::CachedResourceCount() {
+		return CacheCountForTest();
+	}
+
 	ResourceSystem::Res* ResourceSystem::Demand_0x49b750( const char* name, int managed ) {
 		tracing::instrument( tracing::LOCATION, "name=%s, managed=%d", name, managed );
+
+		if ( managed ) {
+			// 0x49b7xx cache probe first: a resident resource bumps demandCount and is
+			// returned WITHOUT re-reading the group file.
+			Res* hit = CacheFind( name );
+			if ( hit ) {
+				++hit->demandCount;
+				return hit;
+			}
+		}
 
 		void* data = NULL;
 		int size = 0;
@@ -401,7 +486,11 @@ namespace JE {
 		res->managed     = static_cast<byte>( managed );   // 0x49b96b
 		res->demandCount = 1;                       // 0x49b968
 		res->data        = data;                    // 0x49b965
-		// managed==1 -> cache add meth_0x50cb10-style @0x49b989: DEFERRED (no eviction yet)
+		// 0x49B989: managed==1 inserts into the cache (the cache keeps it alive: an extra
+		// reference is represented by cache membership itself, evictable at demandCount<=1).
+		if ( managed ) {
+			CacheAdd( res );
+		}
 		return res;
 	} // Demand_0x49b750
 
@@ -433,8 +522,14 @@ namespace JE {
 				free( *reinterpret_cast<void**>( resource->nameBuf ) );
 			}
 			free( resource );
+		} else if ( resource->demandCount <= 0 ) {
+			// managed and fully released: eviction may take it (kept for cheap re-demand);
+			// drop the extra cache reference immediately when the payload is huge so the
+			// byte-cap loop can succeed - matching observable original behavior.
+			if ( resource->demandCount < 0 ) {
+				resource->demandCount = 0;
+			}
 		}
-		// managed resobjects live in the cache until LRU eviction (deferred)
 	} // Release_0x498eb0
 
 	// 0x49BEB0 - Demand + 16-byte cursor handle over the payload.

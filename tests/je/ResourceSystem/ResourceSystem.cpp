@@ -197,6 +197,27 @@ int main(int argc, char** argv) {
 		}
 	}
 
+	// Managed cache semantics: double-demand hits once; releases evict at demand<=0.
+	{
+		int before = ResourceSystem::CachedResourceCount();
+		void* b1 = NULL; int l1 = 0;
+		check(rs.ReadResource("Default_StartMap.8", &b1, &l1) == 1, "octree bytes readable");
+		free(b1);
+		JE::ResourceSystem::Res* r1 = rs.Demand_0x49b750("Default_StartMap.rle", 1);
+		JE::ResourceSystem::Res* r2 = rs.Demand_0x49b750("Default_StartMap.rle", 1);
+		check(r1 && r1 == r2, "second managed demand returns cached Res (no re-read)");
+		check(r1 && r1->demandCount == 2, "cache hit bumps demandCount");
+		check(ResourceSystem::CachedResourceCount() == before + 1, "exactly one new cache entry");
+		rs.Release_0x498eb0(r1);
+		rs.Release_0x498eb0(r2);
+		check(rs.Demand_0x49b750("Default_StartMap.rle", 1) == r2, "released-but-resident resource re-demands");
+		rs.Release_0x498eb0(r2);
+		// unmanaged demand must NOT enter the cache
+		JE::ResourceSystem::Res* u = rs.Demand_0x49b750("Default_StartMap", 0);
+		check(u && ResourceSystem::CachedResourceCount() == before + 1, "unmanaged demand bypasses cache");
+		rs.Release_0x498eb0(u);
+	}
+
 	// Demand / MemStream / chunk-header end-to-end on a real item:
 	// "KitsFirst_Aid_Kit" (_ITM.grp, 268 bytes, first tag "EEN2" per python ground truth).
 	JE::ResourceSystem::MemStream* ms = rs.MemStreamOpen_0x49beb0("KitsFirst_Aid_Kit", 0);

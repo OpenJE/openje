@@ -111,6 +111,9 @@ namespace JE {
 			// 0x49B1D0 - close/free a MemStream (frees its Res via Release when owned; body only
 			// observed at call sites so far).
 			// 0x49C8D0 - {u16 len, chars} stream string reader (owned char* out slot).
+			// Managed-resource cache occupancy (test seam; original = cls_0x50caa0 hash/LRU).
+			static int CachedResourceCount();
+
 			static char StreamReadString_0x49c8d0( char** out, MemStream* ms );
 
 			void MemStreamClose_0x49b1d0( MemStream* ms, int flag );
