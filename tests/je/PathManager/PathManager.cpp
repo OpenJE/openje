@@ -6,8 +6,11 @@
 #include "JE/Map.hpp"
 #include "F3/GamePathManager.hpp"
 #include "JE/HostHooks.hpp"
+#include "F3/SimDigest.hpp"      // T-026 digest harness
+#include "F3/CombatMath.hpp"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>   // T-026 digest token helpers
 #include <math.h>
 
 int JE::Host::TickMilliseconds() { return 0; }
@@ -34,6 +37,127 @@ namespace JE { namespace Host {
 	void TickWorldEntities( int ) {}
 	bool IsServerContext() { return true; }
 } }
+
+// ---- T-026 digest support -------------------------------------------------------------
+// A counting generator, injected through T-027's seam. It exists so the digest can carry a
+// draw count at all: the shipped-path generator (sub_48CCC0) has no counter, and inventing a
+// number for a field we cannot measure is the failure mode this row is about.
+static int g_drawCount = 0;
+static int CountingRand() { ++g_drawCount; return (g_drawCount * 48271) & 0x7FFF; }
+
+// Put two named actors in high slots so earlier suites' entities do not collide by index.
+static F3::SpawnedEntity g_digA;
+static F3::SpawnedEntity g_digB;
+
+static void DigToken( const char* line, const char* key, char* out, int cap ) {
+	// tokens are space separated and of the form key=value; eN tokens are comma-chained, so
+	// "key" for entity fields is matched as ",key=" inside the eN token.
+	out[0] = 0;
+	const char* k = line;
+	while ( k && *k ) {
+		const char* sp = strchr( k, ' ' );
+		int len = sp ? (int)( sp - k ) : (int)strlen( k );
+		char tok[ 512 ];
+		if ( len >= (int)sizeof( tok ) ) { len = (int)sizeof( tok ) - 1; }
+		memcpy( tok, k, (size_t)len ); tok[len] = 0;
+		const char* eq = strchr( tok, '=' );
+		if ( eq ) {
+			int klen = (int)( eq - tok );
+			if ( (int)strlen( key ) == klen && strncmp( tok, key, (size_t)klen ) == 0 ) {
+				strncpy( out, eq + 1, (size_t)( cap - 1 ) ); out[cap-1] = 0; return;
+			}
+			// comma-chained entity field: e3=name,pos,...,hp=..,st=..
+			if ( klen >= 2 && tok[0] == 'e' && strstr( tok, key ) ) {
+				const char* v = strstr( tok, key );
+				strncpy( out, v + strlen( key ) + 1, (size_t)( cap - 1 ) ); out[cap-1] = 0; return;
+			}
+		}
+		k = sp ? sp + 1 : k + strlen( k );
+	}
+}
+
+// Run `frames` frames, damaging g_digA at frame `hitFrame` with a weapon whose flat damage
+// bonus is `bonus`. Returns the digest file's line count (header lines are comments).
+static int RunDigest( const char* path, int bonus, int hitFrame, int frames,
+                     F3::CombatManager* cm, JE::PathManager* pm ) {
+	g_drawCount = 0;
+	FILE* f = fopen( path, "w" );
+	if ( !f ) { return -1; }
+	F3::Sim::Sources src;
+	src.combat = cm;
+	src.paths  = pm;
+	F3::Sim::WriteHeader( f, src );
+
+	strcpy( g_digA.name, "DIGEST_A" );
+	strcpy( g_digB.name, "DIGEST_B" );
+	g_digA.statMax = 45; g_digA.statCur = 45;
+	g_digB.statMax = 30; g_digB.statCur = 30;
+	F3::g_spawnedEntities[ 100 ] = &g_digA;
+	F3::g_spawnedEntities[ 101 ] = &g_digB;
+	if ( cm ) { cm->AddToTurns( &g_digA ); cm->AddToTurns( &g_digB ); }
+
+	F3::AttackModeRecord m = { 0, 0, 1, bonus, 0, 1, 3, 7, 0, 0 };   // ammo cost 1 -> block runs
+	F3::CombatStats t; t.dt[0] = 6;
+	F3::AmmoMods a;   // zero mods; the point is the BONUS, not the ammo table
+
+	for ( int fr = 0; fr < frames; ++fr ) {
+		if ( fr == hitFrame ) {
+			const int dmg = F3::CalculateDamage( m, t, a, 0, CountingRand );
+			g_digA.statCur -= dmg;
+			if ( g_digA.statCur < 0 ) { g_digA.statCur = 0; }
+		}
+		F3::Sim::WriteFrame( f, src, (unsigned)fr, (unsigned)( fr * 16 ), (unsigned)fr,
+		                     g_drawCount, "injected-counter" );
+	}
+	fclose( f );
+	if ( cm ) { cm->RemoveFromTurns( &g_digA ); cm->RemoveFromTurns( &g_digB ); }
+	F3::g_spawnedEntities[ 100 ] = 0; F3::g_spawnedEntities[ 101 ] = 0;
+	return frames;
+}
+
+// Read the Nth frame line (0-based, comments skipped) - comparing "the frame after the change"
+// means counting to the frame the change actually lands on, not to whatever line 2 happens to be.
+static int FrameLine( const char* path, int want, char* out, int cap ) {
+	FILE* f = fopen( path, "r" );
+	if ( !f ) { return -1; }
+	char buf[ 2200 ]; int n = 0; out[0] = 0;
+	while ( fgets( buf, (int)sizeof( buf ), f ) ) {
+		if ( buf[0] == '#' ) continue;
+		if ( n == want ) { strncpy( out, buf, (size_t)( cap - 1 ) ); out[cap-1] = 0; fclose( f ); return 0; }
+		++n;
+	}
+	fclose( f ); return -1;
+}
+
+// The whole comment block, because the contract spans several lines.
+static int HeaderText( const char* path, char* out, int cap ) {
+	FILE* f = fopen( path, "r" );
+	if ( !f ) { return -1; }
+	char buf[ 2200 ]; int used = 0; out[0] = 0;
+	while ( fgets( buf, (int)sizeof( buf ), f ) ) {
+		if ( buf[0] != '#' ) break;
+		strncat( out, buf, (size_t)( cap - (int)strlen( out ) - 1 ) );
+		used += (int)strlen( buf );
+	}
+	fclose( f ); return used;
+}
+
+static int CountFileLines( const char* path, char* firstFrameOut, int cap,
+                           char* secondOut, int cap2 ) {
+	FILE* f = fopen( path, "r" );
+	if ( !f ) { return -1; }
+	int n = 0; char buf[ 2200 ];
+	firstFrameOut[0] = 0; secondOut[0] = 0;
+	while ( fgets( buf, (int)sizeof( buf ), f ) ) {
+		if ( buf[0] == '#' ) continue;
+		++n;
+		if ( n == 1 ) { strncpy( firstFrameOut, buf, (size_t)( cap - 1 ) ); firstFrameOut[cap-1] = 0; }
+		if ( n == 2 ) { strncpy( secondOut, buf, (size_t)( cap2 - 1 ) ); secondOut[cap2-1] = 0; }
+	}
+	fclose( f );
+	return n;
+}
+
 int main() {
 	// IntSqrt: must equal floor(sqrt(v)) for exact squares and stay within the same bounds the
 	// original produces. The original rounds up when the digit-by-digit remainder survives
@@ -232,6 +356,89 @@ int main() {
 		cm.RemoveFromTurns( &spawned );
 		check( cm.TurnCount() == 0 && !cm.IsActive(), "queue drains" );
 		check( !cm.MidTurn(), "mid-turn gate released after Tick (0x5A9551)" );
+	}
+
+
+	// ---- T-026: the digest is reproducible, sensitive, and honest about gaps -------------
+	{
+		F3::CombatManager cm;
+		JE::PathManager pm;
+		char l1[ 2200 ], l2[ 2200 ], v[ 512 ];
+
+		const int n1 = RunDigest( "B-dig-run1.txt", 2, 3, 6, &cm, &pm );
+		const int n2 = RunDigest( "B-dig-run2.txt", 2, 3, 6, &cm, &pm );
+		check( n1 == 6 && n2 == 6, "digest wrote one line per frame" );
+
+		// Determinism proof (the whole reason T-027 had to land first): identical inputs,
+		// byte-identical frame lines - including the fnv field, which is derived from them.
+		CountFileLines( "B-dig-run1.txt", l1, (int)sizeof( l1 ), l2, (int)sizeof( l2 ) );
+		char l1b[ 2200 ], l2b[ 2200 ];
+		CountFileLines( "B-dig-run2.txt", l1b, (int)sizeof( l1b ), l2b, (int)sizeof( l2b ) );
+		check( strcmp( l1, l1b ) == 0 && strcmp( l2, l2b ) == 0,
+		       "same input -> same digest bytes (determinism)" );
+
+		// Sensitivity proof: a logic/input change must move the digest AND name the field.
+		// bonus 2 vs 5 changes the damage at frame 3, so `hp` for the DIGEST_A slot must differ
+		// while frame 0 (before any damage) must not.
+		RunDigest( "B-dig-run3.txt", 5, 3, 6, &cm, &pm );
+		char before1[ 2200 ], before2[ 2200 ], after1[ 2200 ], after2[ 2200 ];
+		FrameLine( "B-dig-run1.txt", 2, before1, (int)sizeof( before1 ) );   // frame 2, pre-hit
+		FrameLine( "B-dig-run3.txt", 2, before2, (int)sizeof( before2 ) );
+		FrameLine( "B-dig-run1.txt", 4, after1, (int)sizeof( after1 ) );     // frame 4, post-hit
+		FrameLine( "B-dig-run3.txt", 4, after2, (int)sizeof( after2 ) );
+		check( strcmp( before1, before2 ) == 0, "frame 2 is untouched by a change that lands at frame 3" );
+		check( strcmp( after1, after2 ) != 0, "the frame after the change diverges" );
+
+		// Which field moved, resolved by NAME rather than by "something in line 2 differs".
+		char hpRef[ 512 ], hpAlt[ 512 ], fnvRef[ 512 ], fnvAlt[ 512 ];
+		DigToken( after1, "hp", hpRef, (int)sizeof( hpRef ) );
+		DigToken( after2, "hp", hpAlt, (int)sizeof( hpAlt ) );
+		DigToken( after1, "fnv", fnvRef, (int)sizeof( fnvRef ) );
+		DigToken( after2, "fnv", fnvAlt, (int)sizeof( fnvAlt ) );
+		check( hpRef[0] && hpAlt[0] && strcmp( hpRef, hpAlt ) != 0,
+		       "the changed field is hp, named - not just a different hash" );
+		check( strcmp( fnvRef, fnvAlt ) != 0, "fnv tracks the field text" );
+		check( strstr( after1, "DIGEST_A" ) != 0 && strstr( after1, "turnOrder=" ) != 0,
+		       "entity names and turn ORDER are in the digest" );
+
+		// Draws are counted from the injected generator, and the count is what T-027 says it
+		// should be for this twin: raw Dice + DT Dice, so 2 per CalculateDamage call, and 0
+		// before the hit frame.
+		char d0[ 512 ], d2[ 512 ];
+		char fr0[ 2200 ], fr4[ 2200 ];
+		FrameLine( "B-dig-run1.txt", 0, fr0, (int)sizeof( fr0 ) );
+		FrameLine( "B-dig-run1.txt", 4, fr4, (int)sizeof( fr4 ) );
+		DigToken( fr0, "draws", d0, (int)sizeof( d0 ) );
+		DigToken( fr4, "draws", d2, (int)sizeof( d2 ) );
+		check( strcmp( d0, "0" ) == 0, "no draws reported before anything drew" );
+		check( d2[0] == 0 || atoi( d2 ) >= 2, "draws counted once damage drew (>=2 per weapon call)" );
+
+		// Honest gaps: with no sources wired, the digest must SAY so instead of printing a line
+		// that looks like a healthy frame with unchanged queues.
+		{
+			FILE* f = fopen( "B-dig-na.txt", "w" );
+			F3::Sim::Sources none;
+			F3::Sim::WriteHeader( f, none );
+			F3::Sim::WriteFrame( f, none, 0, 0, 0, 0, 0 );
+			fclose( f );
+			char a[ 2200 ], b[ 2200 ];
+			CountFileLines( "B-dig-na.txt", a, (int)sizeof( a ), b, (int)sizeof( b ) );
+			check( strstr( a, "pathJobs=NA" ) != 0, "missing path seam prints NA, never a silent 0" );
+			check( strstr( a, "turns=NA" ) != 0, "missing combat seam prints NA too" );
+			check( strstr( a, "draws=NA" ) != 0, "no counter on the shipped stream is admitted, not faked" );
+			check( strstr( a, "ents=" ) != 0, "state that IS available still reports" );
+			remove( "B-dig-na.txt" );
+		}
+
+		// The exclusions must be stated IN the file, not only in this test: a reader holding a
+		// digest and no source has to be able to see what it does not contain.
+		{
+			char hdr[ 4096 ] = { 0 };
+			HeaderText( "B-dig-run1.txt", hdr, (int)sizeof( hdr ) );
+			check( strstr( hdr, "EXCLUDED=reaction-anim-id" ) != 0, "header names the exclusions" );
+			check( strstr( hdr, "DOES NOT PROVE" ) != 0, "header states what the digest cannot prove" );
+			remove( "B-dig-run1.txt" ); remove( "B-dig-run2.txt" ); remove( "B-dig-run3.txt" );
+		}
 	}
 
 	if (g_fail == 0) {

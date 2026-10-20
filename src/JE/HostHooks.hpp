@@ -31,6 +31,15 @@ namespace JE {
 		// world+0xF0; the getter returns it (queue = its job list at +8/+0xC).
 		class PathManager* GetPathJobQueue();
 
+		// T-026 - per-frame simulation digest (allowlist, exclusions and the honest limits are
+		// printed in the file itself; implementation lives in the game layer, src/F3.cpp, because
+		// it reads game state - the same arrangement as every other hook in this header).
+		// DumpSimState() is a NO-OP until EnableSimDigest() has opened a file, so the shipped loop
+		// keeps its behaviour when nobody asked for a digest.
+		int  EnableSimDigest( const char* path );   // 1 = digest live
+		void DumpSimState();
+		void CloseSimDigest();
+
 		// 0x70C2D8 - the static JE::SS::EngineStringSystem global (GLOBAL__I ctor 0x643560).
 		// JE::Strings::ctor_0x59C240 drives EngineStringSystem::Initialize(cwd, tree) @0x59C28B.
 		void* GetEngineStringSystem();
