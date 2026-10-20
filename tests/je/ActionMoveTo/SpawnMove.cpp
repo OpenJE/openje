@@ -100,6 +100,7 @@ int main( int argc, char** argv ) {
 	// multi-map registry + EMEP placement (Junktown: 35 EME2 records, entry ids 1/2)
 	{
 		int jId = F3::MapCreate( "00_03_Tutorial_Junktown.map" );
+		printf("     MapCreate junktown -> id=%d count=%d\n", jId, F3::LoadedMapCount());
 		check( jId == 2 && F3::LoadedMapCount() == 2, "second map registered with id 2" );
 		JE::Map* jm = F3::FindLoadedMap( jId );
 		int jn = jm ? F3::SpawnMapEntities( jm, "00_03_Tutorial_Junktown.map" ) : 0;
@@ -113,63 +114,87 @@ int main( int argc, char** argv ) {
 		check( e0->pos[0] == ring[0] && e0->pos[2] == ring[2], "placed exactly at ring point" );
 	}
 
-	// F3 path manager with real occupancy: two entry-ring slots far apart, nothing between
-	// => direct-line fast path (2-point [goal,start]) with steps>1 - the grid-aware
-	// TraceSegmentClear returns CLEAR where the base stub conservatively returned blocked.
+	// step-aside dance (OnServerUpdate_0x4060b0 body): mover shares a cell with a MOVING
+	// creature -> old action finishes, job transfers to a fresh GameActionMoveTo, a
+	// Wait(1000) lands on the mover's list, and the walk still completes.
 	{
-		F3::GamePathManager fpm;
-		F3::SpawnedEntity walker; walker.mapId = 1;
-		F3::SpawnedEntity stand;   stand.mapId = 1;
-		float ringB[18];
-		// mainmenu.map has no EMEP; use junktown map (registered id 2) for ring geometry
 		JE::Map* jm = F3::FindLoadedMap( 2 );
-		check( jm != 0, "junktown map available" );
-		jm->GetEntryPoint( 1, ringB );
-		walker.pos[0] = ringB[0]; walker.pos[1] = ringB[1]; walker.pos[2] = ringB[2];
-		stand.pos[0]  = ringB[9]; stand.pos[1]  = ringB[10]; stand.pos[2]  = ringB[11];
-		F3::SetActiveMap( jm );
-		// no grid occupancy registered for these synthetic movers: register ONLY stand far away
-		JE::SpatialGrid::Run r1 = { 200, 1 }; (void)r1;
-		jm->Grid()->Insert( 200, 400, &stand );   // off the line
-		JE::PathJob jf; memset( &jf, 0, sizeof(jf) );
-		jf.mover = &walker; jf.map = jm;
-		jf.gridCols = 384; jf.gridRows = 624;
-		jf.start[0]=walker.pos[0]; jf.start[1]=0; jf.start[2]=walker.pos[2];
-		jf.goal[0]=stand.pos[0];  jf.goal[1]=0;  jf.goal[2]=stand.pos[2];
-		int sc[2]; JE::WorldToOctreeCell_0x560680(sc, jf.start, jm); jf.startCol=sc[0]; jf.startRow=sc[1];
-		JE::WorldToOctreeCell_0x560680(sc, jf.goal, jm);  jf.goalCol=sc[0];  jf.goalRow=sc[1];
-		fpm.QueueJob( &jf );
-		fpm.ProcessJobs();
-		check( jf.state == 1, "job completes" );
-		check( jf.waypoints && jf.waypoints->count == 2,
-		       "grid-aware clear-line took the 2-point FAST PATH (steps>1)" );
-		// now block the middle: register an occupant at the line's midpoint cell
-		if ( jf.waypoints ) { JE::PathManager::FreeJob( &jf ); }
-		jf.state=0; jf.inited=0; jf.pool=0; jf.openHeap=0; jf.waypoints=0;
-		// Block AT a sampled point (stride = len/(dist*1.666) cells; a 1-wide footprint can
-		// legitimately fall between samples - the original's LOS is approximate too).
-		const float bdx = stand.pos[0] - walker.pos[0];
-		const float bdz = stand.pos[2] - walker.pos[2];
-		const int bdist = JE::IntSqrt( (int)(bdx*bdx + bdz*bdz) );
-		const float bsteps = (float)bdist * 1.666f;
-		const int tmid = (int)(bsteps / 2.0f);
-		const float fb = (float)tmid / bsteps;
-		float midp[3] = { walker.pos[0] + bdx * fb, 0.0f, walker.pos[2] + bdz * fb };
-		int mc[2]; JE::WorldToOctreeCell_0x560680( mc, midp, jm );
-		int ins = jm->Grid()->Insert( mc[0], mc[1], &stand );   // blocker on the t=tmid sample
-		void* probe[4]; JE::SpatialGrid::Run r0 = { mc[0], 1 };
-		unsigned ph = jm->Grid()->QueryEntities( &r0, 1, mc[0], mc[1], probe, 4 );
-		printf("     blocker cell=%d,%d inserted=%d probe-hits=%u walkerCell-standDist ok\n",
-		       mc[0], mc[1], ins, ph); fflush(stdout);
-		fpm.QueueJob( &jf );
-		fpm.ProcessJobs();
-		check( jf.waypoints && jf.waypoints->count > 2,
-		       "occupant on a sample point blocks the fast path -> A* chain (count>2)" );
-		printf("     blocked-line waypoints=%u state=%d\n",
-		       jf.waypoints ? jf.waypoints->count : 0u, jf.state);
-		JE::PathManager::FreeJob( &jf );
+		F3::SetActiveMap( jm );   // the OnServerUpdate body resolves the grid via the seam
+		JE::PathManager q2;
+		F3::SpawnedEntity walker2; walker2.mapId = 2; walker2.classIdTag = F3::kClassGameCreature;
+		walker2.pos[0] = 10.0f; walker2.pos[2] = 300.0f;
+		F3::SpawnedEntity blocker; blocker.mapId = 2; blocker.classIdTag = F3::kClassGameCreature;
+		blocker.movingFlag = 1;
+		int wc[2];
+		// body queries the mover's cell AFTER the tick's interpolation (hook fires late in
+		// Update): budget = 8 * 0.2s = 1.6 units -> park the blocker at the post-move cell.
+		float probePos[3] = { 10.0f + 1.6f, 0.0f, 300.0f };
+		JE::WorldToOctreeCell_0x560680( wc, probePos, jm );
+		jm->Grid()->Insert( wc[0], wc[1], &blocker );
+
+		F3::GameActionMoveTo mv;
+		mv.speed = 8.0f;
+		mv.mover = &walker2; mv.map = jm; mv.finished = 0; mv.requestedFlag = 1;
+		mv.lastUpdateMs = 0; mv.lastRequestMs = 0; mv.arriveDistance = 2;
+		mv.target = 0; mv.targetPos[0]=120.0f; mv.targetPos[1]=0; mv.targetPos[2]=300.0f;
+		JE::PathJob* j = new JE::PathJob(); memset( j, 0, sizeof(*j) );
+		j->mover = &walker2; j->map = jm;
+		j->start[0]=10.0f; j->start[1]=0; j->start[2]=300.0f;
+		j->goal[0]=120.0f; j->goal[1]=0;  j->goal[2]=300.0f;
+		j->gridCols = (int)jm->Grid()->Cols(); j->gridRows = (int)jm->Grid()->Rows();
+		mv.job = j; q2.QueueJob( j );
+		q2.ProcessJobs();
+		check( j->waypoints && j->waypoints->count >= 2, "collision-case job produced waypoints" );
+
+		jm->GetOctree();   // ensure bounds for cell math used inside the body
+		mv.Update_0x55b600( 200, 0 );   // moves a step, then OnMoveServerUpdate -> body
+		check( mv.finished == 1, "colliding mover finished its action via step-aside" );
+		check( mv.job == 0, "job ownership released" );
+		int moved = 0, waited = 0;
+		for ( int s = 0; s < 4; ++s ) {
+			if ( walker2.actions[s].kind == 1 ) ++moved;
+			if ( walker2.actions[s].kind == 2 ) ++waited;
+		}
+		check( waited == 1, "Wait action pushed onto mover" );
+		check( moved == 1, "fresh GameActionMoveTo pushed onto mover" );
+		// drive the successor to completion
+		F3::GameActionMoveTo* next = 0;
+		for ( int s = 0; s < 4; ++s )
+			if ( walker2.actions[s].kind == 1 ) next = (F3::GameActionMoveTo*)walker2.actions[s].action;
+		check( next != 0 && next->job == j, "successor carries the transferred job" );
+		walker2.pos[0] = 10.0f;   // rewind so arrival is meaningful
+		// blocker walks away (its swap-side only fires while it MOVES in our cell)
+		blocker.movingFlag = 0;
+		jm->Grid()->Remove( wc[0], wc[1], &blocker );
+		if ( next ) {
+			printf("     chain count=%u first=(%.1f,%.1f) last=(%.1f,%.1f) speed=%.1f\n",
+			       j->waypoints ? j->waypoints->count : 0u,
+			       j->waypoints && j->waypoints->count ? j->waypoints->items[0].x : -999.f,
+			       j->waypoints && j->waypoints->count ? j->waypoints->items[0].z : -999.f,
+			       j->waypoints && j->waypoints->count ? j->waypoints->items[j->waypoints->count-1].x : -999.f,
+			       j->waypoints && j->waypoints->count ? j->waypoints->items[j->waypoints->count-1].z : -999.f,
+			       next->speed);
+			int ticks = 0;
+			for ( int t2 = 300; t2 < 20000 && !next->finished; t2 += 100 ) {
+				q2.ProcessJobs();
+				float before = walker2.pos[0];
+				next->Update_0x55b600( (unsigned)t2, 0 );
+				if ( ticks < 4 ) {
+					printf("     tick t=%d moved=%.3f lastUpd=%d state=%d\n",
+					       t2, walker2.pos[0]-before, next->lastUpdateMs, j->state);
+				}
+				++ticks;
+			}
+			printf("     successor ticks=%d finished=%d count=%u\n", ticks, next->finished,
+			       j->waypoints ? j->waypoints->count : 0u);
+		}
+		float dg2 = (walker2.pos[0]-120.0f)*(walker2.pos[0]-120.0f)
+		          + (walker2.pos[2]-300.0f)*(walker2.pos[2]-300.0f);
+		printf("     after step-aside: pos %.1f,%.1f dist2goal %.2f\n", walker2.pos[0], walker2.pos[2], sqrtf(dg2));
+		check( dg2 < 25.0f, "mover still reached goal after step-aside" );
+		jm->Grid()->Remove( wc[0], wc[1], &walker2 );
+		jm->Grid()->Remove( wc[0], wc[1], &blocker );
 		F3::SetActiveMap( map );
-		jm->Grid()->Remove(200,400,&stand);
 	}
 
 	// synthetic clamp coverage: cur > max collapses to max (0x463910)

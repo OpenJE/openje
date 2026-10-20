@@ -7,6 +7,7 @@
 
 namespace JE {
 	struct Action {
+		Action() : mbr_0x4(0) {}   // original ctor not yet RE'd; zero-init (documented)
 		//: Members
 			byte mbr_0x4;
 		//: Methods

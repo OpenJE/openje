@@ -104,7 +104,8 @@ int main() {
 	check(j1.state == 1, "short job completes via direct-line fast path (state 1)");
 	check(pm.PendingJobCount() == 0, "dequeued on completion");
 	check(j1.waypoints && j1.waypoints->count == 2, "fast-path waypoints [goal, start]");
-	check(j1.waypoints->items[0].x == 1.0f && j1.waypoints->items[1].x == 0.0f, "waypoint order goal-first");
+	check(j1.waypoints->items[0].x == 0.0f && j1.waypoints->items[1].x == 1.0f,
+	      "waypoint list start-first / goal-LAST (front-insert pushes, head-pop consumption)");
 	JE::PathManager::FreeJob(&j1);
 	check(j1.waypoints == 0 && j1.pool == 0, "FreeJob releases resources");
 

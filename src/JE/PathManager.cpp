@@ -393,10 +393,12 @@ namespace JE {
 			                             job->start[0], job->start[1], job->start[2],
 			                             *reinterpret_cast<int*>(&job->goal[0]),
 			                             job->goal[1], job->goal[2]) ) {
-				// 0x5631F7-0x56323A: two-point path [goal, start]
+				// 0x5631F7-0x56323A pushes are FRONT-inserts (sub_560900): goal then start
+				// yields LIST [start, goal] - consumption pops head and completes at the
+				// LAST entry, so the goal must be last. Emission mirrors that.
 				job->waypoints = WaypointsCreate();
-				WaypointsPush(job->waypoints, job->goal);
 				WaypointsPush(job->waypoints, job->start);
+				WaypointsPush(job->waypoints, job->goal);
 				job->state = 1;
 				SmoothPath(job);          // original calls it only when count>3 (guard inside)
 				DequeueJob(job);
@@ -435,17 +437,22 @@ namespace JE {
 				job->waypoints = WaypointsCreate();
 				int emitted = 0;
 				if ( job->map ) {
+					// parent chain walks goal->start; the original front-inserts each, so
+					// the list ends up start..goal (goal LAST = arrival). Collect then emit
+					// reversed.
+					Vector3 tmp[256];
 					for ( PathNode* w = cur; w && emitted < 256; w = w->parent ) {
-						Vector3 p;
-						CellToWorld_0x560710( &p, w->col, w->row, job->map );
-						float xyz[3] = { p.x, p.y, p.z };
-						WaypointsPush( job->waypoints, xyz );
+						CellToWorld_0x560710( &tmp[emitted], w->col, w->row, job->map );
 						++emitted;
+					}
+					for ( int k = emitted - 1; k >= 0; --k ) {
+						float xyz[3] = { tmp[k].x, tmp[k].y, tmp[k].z };
+						WaypointsPush( job->waypoints, xyz );
 					}
 				}
 				if ( !emitted ) {
-					WaypointsPush(job->waypoints, job->goal);
 					WaypointsPush(job->waypoints, job->start);
+					WaypointsPush(job->waypoints, job->goal);
 				}
 				job->state = 1;
 				SmoothPath(job);

@@ -205,7 +205,7 @@ namespace JE {
 				MoverNotifyMoved( mover );   // Entity::meth_0x54adc0
 			}
 		}
-		OnMoveServerUpdate();
+		OnMoveServerUpdate( (unsigned)ms );
 		lastUpdateMs = (int)ms;
 		return 0;
 	}

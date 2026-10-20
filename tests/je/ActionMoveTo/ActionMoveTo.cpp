@@ -39,7 +39,7 @@ struct TestAction : JE::ActionMoveTo {
 	virtual float GetMoveSpeed() { return speed; }
 	virtual void  OnMoveComplete() { ++completes; }
 	virtual void  OnMoveBegin() { ++begins; }
-	virtual void  OnMoveServerUpdate() { ++serverUpdates; }
+	virtual void  OnMoveServerUpdate( unsigned ) { ++serverUpdates; }
 	JE::Entity* targetEnt;
 	virtual JE::Entity* ResolveTarget() { return targetEnt; }
 };

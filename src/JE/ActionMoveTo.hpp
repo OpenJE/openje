@@ -8,8 +8,10 @@
 #include "JE/Map.hpp"   // Vector3
 
 namespace JE {
-	class Entity;
-	class PathJob;
+	// NB: MSVC 2002 embeds the struct/class kind (U/V) in decorated names - forward
+	// declarations MUST match the definitions' keyword or link fails with LNK2019.
+	struct Entity;
+	struct PathJob;
 	class PathManager;
 
 	// JE::Entity layout EXCERPT used by the movement pipeline (original offsets). F3::GameEntity
@@ -72,6 +74,12 @@ namespace JE {
 	//   +0x44  last job-request timestamp ms (re-request requires >= 0x7D0 = 2000 ms)
 	//   +0x48  map pointer for job context (port-side field; original derives via mover)
 	struct ActionMoveTo : public Action {
+		ActionMoveTo()
+		    : finished(0), mover(0), job(0), target(0), requestedFlag(0),
+		      arriveDistance(0), lastTargetId(0), arrivalFlag(0), lastUpdateMs(0),
+		      lastRequestMs(0), map(0) {
+			targetPos[0] = targetPos[1] = targetPos[2] = 0.0f;
+		}
 		//: Members
 		public:
 			Mover*         mover;            // +0x11 (*this->gap11 in the original)
@@ -95,7 +103,7 @@ namespace JE {
 			virtual float GetMoveSpeed() { return 0.0f; }              // +0x00 used at 0x55b8b8
 			virtual void  OnMoveBegin() {}                              // +0x0C at 0x55b6be
 			virtual void  OnMoveComplete() {}                           // +0x10 completion paths
-			virtual void  OnMoveServerUpdate() {}                       // +0x14 at 0x55b9b3
+			virtual void  OnMoveServerUpdate( unsigned ms ) {}          // +0x14 at 0x55b9b3
 
 			// secondary hook: the target entity lookup (F3::GameActionEquip::meth_0x54BE10
 			// resolves the destination entity by id; NULL for fixed-point moves).
