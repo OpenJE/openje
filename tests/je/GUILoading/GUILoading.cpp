@@ -13,6 +13,8 @@
 // Every expected value here is file-derived (see docs/f3/GUILoadingRecon.md sec 2, which lists
 // the header/root/rect/name of all 25 shipped .int lumps as walked out of Interface.grp).
 #include "JE/GUI/InterfaceFile.hpp"
+#include "JE/GUI/SkinDefaults.hpp"
+#include "JE/VFX_Parameter.hpp"
 #include "JE/PathManager.hpp"
 #include "JE/ResourceSystem.hpp"
 #include "JE/Resources.hpp"
@@ -222,6 +224,68 @@ enum { EXPECTED_INT_COUNT = 25 };
 	{
 		JE::GUI::InterfaceFile bad;
 		check( bad.Load( "NoSuchInterface.INT" ) == 0, "missing resource returns 0, no crash" );
+	}
+
+
+	// ---- T-007: Skin::LoadDefault_0x523490 key/value semantics (EAs in SkinDefaults.hpp) ----
+	{
+		static char iniA[] =
+			"[Globals]\n"
+			"ignored = 1\n"
+			"[s1]\n"
+			"flags = 3\n"
+			"texture = quickslot-left.bmp\n"
+			"color = 255,128,64,32\n"
+			"width = 40\n"
+			"height = 20\n"
+			"rate = 7\n"
+			"[short]\n"
+			"color = 1,2,3\n"
+			"[five]\n"
+			"color = 1,2,3,4,5\n"
+			"[bleed]\n"
+			"color = 256,1,2,3\n"
+			"[bare]\n"
+			"flags = 9\n"
+			"[withtex]\n"
+			"texture = a.tga\n";
+		JE::VFX_Parameter tree;
+		tree.ParseIniText( iniA, (int)sizeof( iniA ) - 1 );
+
+		JE::GUI::SkinParent none; none.width = 0; none.height = 0; none.hasParent = 0;
+		JE::GUI::SkinDefault d;
+
+		check( JE::GUI::ReadSkinDefaults( tree, "s1", &d, none ) == 1, "known section parses" );
+		check( d.flags == 3 && d.texture && strcmp( d.texture, "quickslot-left.bmp" ) == 0
+		       && d.color == 0xFF804020u && d.width == 40 && d.height == 20 && d.rate == 7,
+		       "all six keys (color 255,128,64,32 packs to 0xFF804020, 0x523806..0x523832)" );
+		JE::GUI::FreeSkinDefaults( &d );
+
+		check( JE::GUI::ReadSkinDefaults( tree, "NOSUCHSECTION", &d, none ) == 0,
+		       "section without any of the six keys -> 0" );
+
+		JE::GUI::ReadSkinDefaults( tree, "short", &d, none );
+		check( d.color == 0xFF808080u, "3 components is not exactly 4 -> default 0xFF808080 (0x5237fc)" );
+		JE::GUI::ReadSkinDefaults( tree, "five", &d, none );
+		check( d.color == 0xFF808080u, "5 components also rejected (counting continues past 4)" );
+
+		JE::GUI::ReadSkinDefaults( tree, "bleed", &d, none );
+		check( d.color == 0x00010203u,
+		       "component 0 is not masked by the original, so 256 bleeds out of its byte lane" );
+
+		JE::GUI::ReadSkinDefaults( tree, "bare", &d, none );
+		check( d.flags == 9 && d.texture == 0 && d.width == 8 && d.height == 8 && d.rate == 0,
+		       "no texture + no width/height keys -> 8/8 (0x523926); rate defaults to 0" );
+
+		JE::GUI::ReadSkinDefaults( tree, "withtex", &d, none );
+		check( d.texture != 0 && d.width == 0 && d.height == 0,
+		       "texture present without a parent -> width/height 0 (0x523912)" );
+		JE::GUI::FreeSkinDefaults( &d );
+
+		JE::GUI::SkinParent par; par.width = 50; par.height = 25; par.hasParent = 1;
+		JE::GUI::ReadSkinDefaults( tree, "withtex", &d, par );
+		check( d.width == 50 && d.height == 25, "texture present with parent -> inherit 50/25 (0x523917)" );
+		JE::GUI::FreeSkinDefaults( &d );
 	}
 
 	if ( !g_fail ) { printf( "OK: GUI .int loading tests passed\n" ); return 0; }
