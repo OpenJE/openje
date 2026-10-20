@@ -191,6 +191,69 @@ int main() {
 		       "melee in reach: 70 - evasion 10 = 60" );
 	}
 
+	// ---- the shipped global draw (sub_48CCC0) and the seam contract (T-027) --------
+	// Golden values are computed from the DISASSEMBLY (state = 1664525*state + 1013904223,
+	// emit (state >> 8) & 0x7FFF), not from this port, so a wrong constant in the port cannot
+	// make its own test pass.
+	{
+		static const int kSeed0[6] = { 28403, 20521, 19702, 31059, 21221, 11974 };
+		static const int kSeed1[6] = { 2137, 2181, 5633, 29498, 28781, 6337 };
+		F3::SeedShippedRand( 0u );
+		for ( int i = 0; i < 6; ++i ) {
+			check( F3::ShippedRand() == kSeed0[i], "LCG golden stream, seed 0" );
+		}
+		F3::SeedShippedRand( 1u );
+		for ( int i = 0; i < 6; ++i ) {
+			check( F3::ShippedRand() == kSeed1[i], "LCG golden stream, seed 1" );
+		}
+
+		// The shipped emit masks to 0x7FFF: no draw may leave 0..32767 (std rand() happened to
+		// share that range, which is why the old fallback looked plausible and was still wrong).
+		F3::SeedShippedRand( 0x56CACAFEu );
+		bool inRange = true;
+		for ( int i = 0; i < 500; ++i ) {
+			const int d = F3::ShippedRand();
+			if ( d < 0 || d > 0x7FFF ) { inRange = false; }
+		}
+		check( inRange, "draw stays inside the shipped 0..32767 window" );
+
+		// CombatDice with NO injected fn consumes that stream, in order, one draw per call:
+		// seed 12345 -> 14620, 15482 -> Dice(3,9) = 3 + 14620 % 7 = 7, Dice(0,3) = 15482 % 4 = 2.
+		F3::SeedShippedRand( 12345u );
+		check( F3::CombatDice( 3, 9, 0 ) == 7, "un-injected dice draws from the global stream" );
+		check( F3::CombatDice( 0, 3, 0 ) == 2, "and advances it, one draw per dice call" );
+
+		// THE POINT OF THE ROW: a damage assertion must be a real number that repeats. Seed
+		// 0x56CACAFE -> draws 27254, 13170: raw = (3 + 27254 % 5) + 2 = 9, dt 6 -> 9 - 3 -
+		// (13170 % 4) = 9 - 3 - 2 = 4. Same 4 whether the draws come from the reseeded global
+		// stream or from an injected fn handed the identical values - the seam changes the
+		// source of numbers, never the arithmetic.
+		F3::AttackModeRecord rm = { 0, 0, 0, 2, 0, 1, 3, 7, 0, 0 };
+		F3::CombatStats rt;
+		F3::AmmoMods ra;
+		rt.dt[0] = 6;
+		F3::SeedShippedRand( 0x56CACAFEu );
+		const int globalDamage = F3::CalculateDamage( rm, rt, ra, 0, 0 );
+		check( globalDamage == 4, "pinned damage from the shipped stream (not a range, not a floor)" );
+		for ( int i = 0; i < 8; ++i ) { g_randSeq[i] = ( i == 0 ? 27254 : ( i == 1 ? 13170 : 0 ) ); }
+		g_randN = 0;
+		check( F3::CalculateDamage( rm, rt, ra, 0, TestRand ) == globalDamage,
+		       "injected stream == global stream for the same draws" );
+		bool stable = true;
+		for ( int i = 0; i < 100; ++i ) {
+			F3::SeedShippedRand( 0x56CACAFEu );
+			if ( F3::CalculateDamage( rm, rt, ra, 0, 0 ) != globalDamage ) { stable = false; }
+		}
+		check( stable, "100 runs, one seed, one answer" );
+
+		// And the negative control, so the seam is not silently accepted: an unseeded-by-choice
+		// stream (different seed) must give a DIFFERENT number, otherwise the assertion above
+		// would be proving that damage ignores the draw - the failure mode this row exists to kill.
+		F3::SeedShippedRand( 999u );
+		check( F3::CalculateDamage( rm, rt, ra, 0, 0 ) != globalDamage,
+		       "a different stream gives a different number (assert is sensitive, not vacuous)" );
+	}
+
 	if ( g_fail == 0 ) {
 		printf( "OK: combat math tests passed\n" );
 		return 0;
