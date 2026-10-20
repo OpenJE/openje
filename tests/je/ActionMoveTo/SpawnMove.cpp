@@ -197,6 +197,56 @@ int main( int argc, char** argv ) {
 		F3::SetActiveMap( map );
 	}
 
+	// Door dance: flag-clear door in mover cell -> OperateDoor+Wait+fresh MoveTo; pump runs
+	// FIFO: OperateDoor toggles flag, Wait expires, successor walks on (flag-set door cell is
+	// LABEL_33-skipped). Mechanics assertion only - open/closed polarity unresolved (C-14).
+	{
+		JE::Map* jm = F3::FindLoadedMap( 2 );
+		F3::SetActiveMap( jm );
+		F3::SpawnedEntity walker3; walker3.mapId = 2; walker3.classIdTag = F3::kClassGameCreature;
+		walker3.pos[0] = 30.0f; walker3.pos[2] = 300.0f;
+		F3::SpawnedEntity door;   door.mapId = 2;   door.classIdTag = F3::kClassGameDoor;
+		door.doorByte0xBC = 0;   // flag-clear
+		// the hook queries the mover's cell AFTER the tick's interpolation (1.6u at t=200)
+		float dprobe[3] = { 31.6f, 0.0f, 300.0f };
+		door.pos[0] = 31.6f; door.pos[2] = 300.0f;
+		int dc[2]; JE::WorldToOctreeCell_0x560680( dc, dprobe, jm );
+		jm->Grid()->Insert( dc[0], dc[1], &door );
+
+		F3::GameActionMoveTo mv3;
+		mv3.speed = 8.0f; mv3.mover = &walker3; mv3.map = jm;
+		mv3.requestedFlag = 1; mv3.lastUpdateMs = 0; mv3.lastRequestMs = 0; mv3.arriveDistance = 2;
+		JE::PathJob* j3 = new JE::PathJob(); memset( j3, 0, sizeof(*j3) );
+		j3->mover = &walker3; j3->map = jm;
+		j3->start[0]=30.0f; j3->start[2]=300.0f; j3->goal[0]=120.0f; j3->goal[2]=300.0f;
+		j3->gridCols=(int)jm->Grid()->Cols(); j3->gridRows=(int)jm->Grid()->Rows();
+		mv3.job = j3;
+		JE::PathManager q3; q3.QueueJob( j3 );
+		for ( int pp=0; pp<4 && j3->state==0; ++pp ) q3.ProcessJobs();
+		mv3.Update_0x55b600( 200, 0 );
+		check( mv3.finished == 1, "door dance fired" );
+		int nOper=0,nWait=0,nMove=0;
+		for ( int s = 0; s < 4; ++s ) {
+			if ( walker3.actions[s].kind == 3 ) ++nOper;
+			if ( walker3.actions[s].kind == 2 ) ++nWait;
+			if ( walker3.actions[s].kind == 1 ) ++nMove;
+		}
+		check( nOper == 1 && nWait == 1 && nMove == 1, "OperateDoor+Wait+MoveAll queued" );
+		for ( int t2 = 300; t2 < 40000; t2 += 100 ) {
+			for ( int pp=0; pp<2 && j3->state==0; ++pp ) q3.ProcessJobs();
+			F3::TickWorldForEntity( &walker3, t2 );
+			if ( walker3.actions[0].kind == 0 && walker3.actions[1].kind == 0
+			     && walker3.actions[2].kind == 0 && walker3.actions[3].kind == 0 && t2 > 2000 ) break;
+		}
+		float dd = fabsf( walker3.pos[0] - 120.0f ) + fabsf( walker3.pos[2] - 300.0f );
+		printf("     door-test final %.1f,%.1f dist %.2f doorbyte=%d\n",
+		       walker3.pos[0], walker3.pos[2], dd, door.doorByte0xBC);
+		check( door.doorByte0xBC == 1, "OperateDoor toggled the flag" );
+		check( dd < 6.0f, "mover reached goal through the door dance" );
+		jm->Grid()->Remove( dc[0], dc[1], &door );
+		F3::SetActiveMap( map );
+	}
+
 	// synthetic clamp coverage: cur > max collapses to max (0x463910)
 	{
 		unsigned char fake[12 + 32];
