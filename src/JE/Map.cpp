@@ -42,6 +42,8 @@ namespace JE {
 		memset( m_records, 0, sizeof( m_records ) );
 		m_entryPointCount = 0;
 		memset( m_entryPoints, 0, sizeof( m_entryPoints ) );
+		m_entityCount = 0;
+		memset( m_entities, 0, sizeof( m_entities ) );
 		memset( m_ecam, 0, sizeof( m_ecam ) );
 		m_hasEcam = 0;
 		mbr_0x110 = 0;

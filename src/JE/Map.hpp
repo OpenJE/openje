@@ -117,6 +117,12 @@ namespace JE {
 			unsigned     m_entryPointCount;
 			dword        m_ecam[4];
 			unsigned char m_hasEcam;
+			// Map-owned entity list (original: RbTree at map+0x134 {sentinel,head,count},
+			// count mbr_0x13c logged by Create_0x57bc33; entities pushed per ReadEME2/EMEN).
+			// Flat storage deviation; count semantics preserved.
+			void*  m_entities[128];
+			unsigned m_entityCount;
+			unsigned EntityCount() const { return m_entityCount; }
 		//: Methods
 		public:
 			Map();
