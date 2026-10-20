@@ -49,6 +49,24 @@ namespace JE {
 	//
 	// DEVIATION: original string members are MSVC std::string (0x1C each, SSO). We store
 	// owned char* at the same offsets (no SSO needed; free() in dtor).
+	// Shared math struct (defined here; PathManager uses it too).
+	struct Vector3 { float x, y, z; };
+
+	// OCTREE_ - the 0x100-byte 8TRE object (primary vft 0x6A86F4; full class is
+	// multiple-inheritance with render/light/material subsystems - unmodeled). Minimal port
+	// keeps only the fields the movement pipeline needs: HEAD header + root NODE INFO bounds.
+	struct Octree {
+		dword  head[4];       // octree+4..+19: {version=2, flags, a, b} (HEAD 16B payload)
+		float  bounds[6];     // +0x6C..+0x83: root NODE INFO {minX,minY,minZ,maxX,maxY,maxZ}
+
+		// 0x5ADB10 - GetBounds.
+		void GetBounds( float* out ) const { for ( int i = 0; i < 6; ++i ) out[i] = bounds[i]; }
+
+		// 0x5B0AD0 minimal port: {fourcc,size} section walk; consumes HEAD and the first
+		// TREE>NODE>INFO; everything else skipped by size (documented deviation).
+		static char ParseFromBytes( const unsigned char* data, unsigned len, Octree* out );
+	}; // Octree
+
 	class Map {
 		//: Members
 		public:
@@ -56,7 +74,8 @@ namespace JE {
 			byte   gap_0x8[0x20];
 			dword  mbr_0x28;     // EMAP 4-byte field (flags/count)
 			char*  mbr_0x2C;     // octree resource name ("<map>.8")     @map+0x2C
-			byte   gap_0x30[0x1C];
+			byte   gap_0x30[0x18];   // +0x30 buffer/+0x40 size/+0x44 cap of the same string
+			class Octree* mbr_0x48;  // lazily loaded octree (GetOctree_0x56D960 from ".8")
 			char*  mbr_0x4C;     // collision resource name ("<map>.rle") @map+0x4C
 			char*  mbr_0x68;     // texture resource name                 @map+0x68
 			byte   gap_0x6C[0x18];
@@ -93,6 +112,11 @@ namespace JE {
 			// invokes 4 reset virtuals (0x571320/0x574430/0x5724F0/0x572560 - per-map state
 			// clears, unmodeled); kept as no-ops with the call sites documented.
 			char LoadFromFile( const char* resourceName );
+			// 0x56D960 - lazy octree load from the mbr_0x2C ".8" resource. Original returns the
+			// cached pointer or FatallyErrors ("Map::GetOctree() - Unable to load octree %s.")
+			// on missing data; our port returns 0 when absent and logs (deviation: no
+			// hard-kill on missing octrees yet - matches how maps-without-.8 behaved pre-crash).
+			Octree* GetOctree();
 			// vft 0x56C770 - tag -> reader routing with faithful per-kind error strings.
 			virtual char ReadChunk( Common::Chunk* chunk, ResourceSystem::MemStream* stream );
 			// vft[15] 0x56C9D0 - EMAP v5 (layout table above).
@@ -123,6 +147,13 @@ namespace JE {
 			// vft[6]-adjacent 0x46CB30 on GameMap side - allocate the legacy EMAP payload.
 			virtual void* AllocateEmapStruct();
 	}; // Map
+
+	// 0x560710 - cell -> world position: x lerps minX..maxX by col/cols, z = maxY -
+	// (row/rows)*(maxY-minZ) per the decompiled expression (uses bounds[4]/bounds[2] on the
+	// z axis; faithful), y = 0. Needs GetOctree() (bounds) and the .rle grid dims at
+	// mbr_0x84/+0x88.
+	void CellToWorld_0x560710( struct Vector3* out, int col, int row, Map* map );
+	// 0x560680 - world -> cell (inverse; port when the last consumer needs it).
 } // namespace JE
 
 #endif // JE_MAP_HPP_

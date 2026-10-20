@@ -143,6 +143,33 @@ int main(int argc, char** argv) {
 		      "Tutorial_Junktown chunk stream consumed cleanly (103 chunks)");
 	}
 
+	// Octree root bounds on the real ".8" resource + CellToWorld geometry.
+	{
+		JE::Map map3;
+		check(map3.LoadFromFile("Default_StartMap.map") == 1, "map3 load for octree chain");
+		JE::Octree* oc = map3.GetOctree();
+		check(oc != NULL, "GetOctree parses Default_StartMap.8 (247KB, Engine.grp)");
+		if ( oc ) {
+			printf("     bounds: %.1f,%.1f,%.1f - %.1f,%.1f,%.1f\n",
+			       oc->bounds[0], oc->bounds[1], oc->bounds[2],
+			       oc->bounds[3], oc->bounds[4], oc->bounds[5]);
+			check(oc->bounds[0] == -1.0f && oc->bounds[3] == 71.0f,
+			      "root AABB minX=-1 maxX=71 (python ground truth from TREE>NODE>INFO)");
+			// rle grid dims + CellToWorld corners
+			void* rb = NULL; int rl = 0;
+			if ( rs.ReadResource("Default_StartMap.rle", &rb, &rl) ) {
+				map3.LoadRleGrid((const unsigned char*)rb, (unsigned)rl);
+				free(rb);
+			}
+			JE::Vector3 c0, cE;
+			JE::CellToWorld_0x560710(&c0, 0, 0, &map3);
+			JE::CellToWorld_0x560710(&cE, (int)map3.GridCols(), 0, &map3);
+			check(c0.x == -1.0f, "CellToWorld col0 -> minX");
+			check(cE.x == 71.0f, "CellToWorld colCols -> maxX (lerp exact)");
+			check(c0.z == oc->bounds[4], "z(row0) = bounds maxY");
+		}
+	}
+
 	// Demand / MemStream / chunk-header end-to-end on a real item:
 	// "KitsFirst_Aid_Kit" (_ITM.grp, 268 bytes, first tag "EEN2" per python ground truth).
 	JE::ResourceSystem::MemStream* ms = rs.MemStreamOpen_0x49beb0("KitsFirst_Aid_Kit", 0);

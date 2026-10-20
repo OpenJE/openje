@@ -7,6 +7,7 @@
 #include "JE/Common/Chunk.hpp"
 #include "JE/ResourceSystem.hpp"
 #include "JE/Resources.hpp"
+#include <new>
 #include "JE.hpp"
 
 namespace JE {
@@ -35,6 +36,7 @@ namespace JE {
 		mbr_0x28 = 0;
 		mbr_0x2C = mbr_0x4C = mbr_0x68 = mbr_0x90 = NULL;
 		mbr_0x84 = mbr_0x88 = 0;
+		mbr_0x48 = NULL;
 		m_pCellMasks = NULL;
 		mbr_0x110 = 0;
 		memset( gap_0x30, 0, sizeof( gap_0x30 ) );
@@ -55,6 +57,10 @@ namespace JE {
 	Map::~Map() {
 		tracing::instrument( tracing::LOCATION, "" );
 		free( m_pCellMasks );
+		if ( mbr_0x48 ) {
+			operator delete( mbr_0x48 );
+			mbr_0x48 = NULL;
+		}
 		m_pCellMasks = NULL;
 		free( mbr_0x2C );
 		free( mbr_0x4C );
@@ -235,6 +241,110 @@ namespace JE {
 		}
 		return 1;
 	} // LoadRleGrid
+
+	// ---- OCTREE_ ------------------------------------------------------------------------
+	// 0x5B0AD0 minimal port: {fourcc,size} section walk. Consumes HEAD (16B) and the first
+	// TREE>NODE>INFO (64B, first 24 bytes = root AABB). All other sections skipped by size.
+	char Octree::ParseFromBytes( const unsigned char* data, unsigned len, Octree* out ) {
+		tracing::instrument( tracing::LOCATION, "" );
+		unsigned pos = 0;
+		dword tag = 0, size = 0;
+		if ( pos + 8 > len ) {
+			return 2;
+		}
+		memcpy( &tag, data + pos, 4 );
+		memcpy( &size, data + pos + 4, 4 );
+		if ( tag != 0x45525438u ) {   // "8TRE"
+			return 1;
+		}
+		pos = 8;
+		while ( pos + 8 <= len ) {
+			dword fourcc, sz;
+			memcpy( &fourcc, data + pos, 4 );
+			memcpy( &sz, data + pos + 4, 4 );
+			pos += 8;
+			if ( pos + sz > len ) {
+				return 1;
+			}
+			const unsigned char* body = data + pos;
+			if ( fourcc == 0x44414548u ) {        // "HEAD"
+				if ( sz >= 16 ) {
+					memcpy( out->head, body, 16 );
+				}
+			} else if ( fourcc == 0x45455254u ) { // "TREE"
+				// inside: sections; the root record is the first "NODE" > "INFO"
+				unsigned q = 0;
+				while ( q + 8 <= sz ) {
+					dword f2, s2;
+					memcpy( &f2, body + q, 4 );
+					memcpy( &s2, body + q + 4, 4 );
+					q += 8;
+					if ( f2 == 0x45444F4Eu /*NODE*/ ) {
+						unsigned r = 0;
+						while ( r + 8 <= s2 ) {
+							dword f3, s3;
+							memcpy( &f3, body + q + r, 4 );
+							memcpy( &s3, body + q + r + 4, 4 );
+							r += 8;
+							if ( f3 == 0x4F464E49 /*INFO*/ && s3 >= 24 ) {
+								memcpy( out->bounds, body + q + r, 24 );
+								return 0;
+							}
+							r += s3;
+						}
+					}
+					q += s2;
+				}
+				return 1;   // TREE without INFO
+			}
+			pos += sz;
+		}
+		return 1;
+	} // ParseFromBytes
+
+	Octree* Map::GetOctree() {
+		tracing::instrument( tracing::LOCATION, "" );
+		if ( mbr_0x48 ) {
+			return mbr_0x48;
+		}
+		if ( !mbr_0x2C || !JE::g_resource_system ) {
+			JE::LogDebugString( NULL, "Map::GetOctree() - Unable to load octree %s.\n",
+			                    mbr_0x2C ? mbr_0x2C : "" );
+			return NULL;
+		}
+		void* buf = NULL;
+		int blen = 0;
+		if ( !JE::g_resource_system->ReadResource( mbr_0x2C, &buf, &blen ) ) {
+			// 0x56D9CD faithful text (FatalError hard-kill deferred, see header)
+			JE::LogDebugString( NULL, "Map::GetOctree() - Unable to load octree %s.\n", mbr_0x2C );
+			return NULL;
+		}
+		Octree* oc = (Octree*)operator new( sizeof(Octree) );
+		memset( oc, 0, sizeof(Octree) );
+		if ( Octree::ParseFromBytes( (const unsigned char*)buf, (unsigned)blen, oc ) != 0 ) {
+			JE::LogDebugString( NULL, "Map::GetOctree() - Unable to initialize octree %s.\n", mbr_0x2C );
+			operator delete( oc );
+			free( buf );
+			return NULL;
+		}
+		free( buf );
+		mbr_0x48 = oc;
+		return oc;
+	} // GetOctree
+
+	// 0x560710 - cell -> world (lerp against root bounds; grid dims from mbr_0x84 pair).
+	void CellToWorld_0x560710( Vector3* out, int col, int row, Map* map ) {
+		Octree* oc = map ? map->GetOctree() : NULL;
+		if ( !oc || !map->mbr_0x84 || !map->mbr_0x88 ) {
+			out->x = out->y = out->z = 0.0f;
+			return;
+		}
+		float b[6];
+		oc->GetBounds( b );
+		out->x = (float)col / (float)map->mbr_0x84 * (b[3] - b[0]) + b[0];
+		out->y = 0.0f;
+		out->z = b[4] - (float)row / (float)map->mbr_0x88 * (b[4] - b[2]);
+	} // CellToWorld_0x560710
 
 	// 0x56C770 - tag router. Function EAs transcribed 1:1 from the dispatcher's switch;
 	// unhandled tags fall through (skip). Error strings below are verbatim from the binary.
