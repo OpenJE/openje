@@ -227,6 +227,31 @@ enum { EXPECTED_INT_COUNT = 25 };
 	}
 
 
+	// ---- child-widget lookup, grounded in the ORIGINAL's own FindWidget arguments ----------
+	// The names below are the string literals the shipped interface refresh code passes to
+	// JE::CLoadMapInterface::FindWidget_0x495740 (@0x4505fb lblAddNote, @0x4506c8 lblEditNote,
+	// @0x450795 lblDeleteNote, @0x450863 lblZoomIn, @0x450925 lblZoomOut) and they occur in the
+	// PipBoy.INT lump bytes (verified against Interface.grp, not against our parser). PipBoy has
+	// ONE root, so resolving them can only come from walking nested children.
+	{
+		static const char* const kPipBoyLabels[] = {
+			"lblAddNote", "lblEditNote", "lblDeleteNote", "lblZoomIn", "lblZoomOut"
+		};
+		JE::GUI::InterfaceFile pip;
+		check( pip.Load( "PipBoy.INT" ) == 1, "PipBoy.INT loads for the child-lookup probe" );
+		check( pip.RootCount() == 1, "PipBoy.INT has a single root (so these lookups are nested)" );
+		unsigned resolved = 0;
+		for ( unsigned i = 0; i < sizeof( kPipBoyLabels ) / sizeof( kPipBoyLabels[0] ); ++i ) {
+			if ( pip.FindWidget( kPipBoyLabels[i] ) ) { ++resolved; }
+			else { printf( "     child widget not found: %s\n", kPipBoyLabels[i] ); }
+		}
+		check( resolved == 5,
+		       "all five child widgets the original looks up resolve in our tree" );
+
+		// Negative control from the same evidence style: a name the binary never asks for.
+		check( pip.FindWidget( "lblNoSuchWidget" ) == 0, "unknown names still miss inside a real tree" );
+	}
+
 	// ---- T-007: Skin::LoadDefault_0x523490 key/value semantics (EAs in SkinDefaults.hpp) ----
 	{
 		static char iniA[] =
