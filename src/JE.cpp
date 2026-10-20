@@ -13,7 +13,7 @@
 namespace JE {
 	// 0x48CC40
 	void FatalError( const char *format, ... ) {
-		tracing::instrument( tracing::LOCATION, "format=\"%s\"", &format );
+		tracing::instrument( tracing::LOCATION, "format=\"%s\"", format );
 		char *v1 = 0;
 		char buffer [ 1024 ];
 		va_list arg_list;

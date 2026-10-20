@@ -1,1 +1,5 @@
 obj/*
+
+# test binaries (host builds, throwaway)
+tests/**/*.exe
+*.exe
