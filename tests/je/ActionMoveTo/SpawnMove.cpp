@@ -448,6 +448,69 @@ int main( int argc, char** argv ) {
 		}
 	}
 
+
+	// ---- T-030: an ORDER reaches the attack through the insert seam, and the PUMP runs it ----
+	// The point is the PAIR, not the function: the shipped insert (JE::Entity::meth_0x550720)
+	// pushes onto the deque at Entity+0x304 AND writes the owner into the action at +0x14
+	// (0x550737), unconditionally. Our drain calls GameActionAttack::Update(ms) with NO entity
+	// argument - the action reaches its attacker through exactly that back-link (lines 103/130/157
+	// of GameActionAttack.cpp). So this test starts the order with a DELIBERATELY WRONG owner: if
+	// the seam is real, the pump must tick the true attacker and leave the stranger alone.
+	{
+		static int seqCtr3 = 0;
+		struct R3 { static int Fn() { ++seqCtr3; return seqCtr3; } };
+		F3::GameActionAttack::s_rand = &R3::Fn;
+
+		static F3::SpawnedEntity t30Atk, t30Vic, t30Stranger;
+		t30Atk.entityState = F3::kStateActive;
+		t30Vic.entityState = F3::kStateActive;
+		t30Stranger.entityState = F3::kStateActive;
+		t30Atk.combat.skills[F3::kSkillMelee] = 100;
+		t30Stranger.combat.skills[F3::kSkillMelee] = 100;
+		t30Vic.statMax = 10; t30Vic.statCur = 10;
+		t30Atk.name[0] = 0; t30Stranger.name[0] = 0;
+		t30Atk.pos[0] = 20.0f;      // 0.4 from the victim: in reach 1
+		t30Vic.pos[0] = 20.4f;
+		t30Stranger.pos[0] = 900.0f; // nowhere near - the tell-tale
+
+		F3::AttackModeRecord m30 = F3::GameActionAttack::MakeUnarmedMode( 2, 2, 1, 0 );
+		F3::GameActionAttack order;
+		order.Start( &t30Stranger, &t30Vic, 0, &m30 );     // WRONG owner on purpose
+		check( order.actor == &t30Stranger, "the order arrives mis-attributed (setup, not behaviour)" );
+
+		// The seam. This is the only call that may fix the owner.
+		check( F3::EnqueueEntityAction( &t30Atk, &order, 4 ) == 1, "insert seam queues the order" );
+		check( order.actor == &t30Atk,
+		       "0x550737: the seam wrote the owner at +0x14, overwriting the wrong one" );
+
+		// Register ONLY the attacker and drive the ROUND PUMP - no direct Update() call anywhere
+		// in this block. If the drain is the same container the insert wrote, this is what runs it.
+		const int savedCount = F3::g_spawnedEntityCount;
+		F3::g_spawnedEntities[ F3::g_spawnedEntityCount++ ] = &t30Atk;
+		for ( int i = 0; i < 12 && !order.finished; ++i ) {
+			F3::TickWorldEntities( 100 * ( i + 1 ) );
+		}
+		check( t30Vic.statCur < 10, "the pump executed the queued order (damage landed through the drain)" );
+		check( order.finished, "the order completed inside the pump, not by direct call" );
+		check( t30Stranger.pos[0] == 900.0f,
+		       "the stranger never moved: the action acted as the SEAM's owner, not its constructor's" );
+		check( t30Atk.actions[0].kind == 0, "the drain removed the finished action from the same container" );
+
+		// The cap is a block boundary, and it must report refusal rather than dropping the order:
+		// actions[4] is the shipped deque's FIRST BLOCK (0x54ea31 uses count & 3 / count >> 2, so
+		// the original appends new 4-pointer blocks). See deviation D-2.
+		static F3::GameActionAttack filler[ 5 ];
+		int accepted = 0;
+		for ( int i = 0; i < 5; ++i ) {
+			accepted += F3::EnqueueEntityAction( &t30Vic, &filler[ i ], 2 ) ? 1 : 0;
+		}
+		check( accepted == 4, "insert refuses a fifth slot instead of silently dropping an order" );
+
+		F3::g_spawnedEntityCount = savedCount;
+		for ( int i = 0; i < 4; ++i ) { t30Vic.actions[i].kind = 0; t30Vic.actions[i].action = 0; }
+		F3::GameActionAttack::s_rand = 0;
+	}
+
 	if ( g_fail == 0 ) { printf("OK: spawn+move vertical slice passed\n"); return 0; }
 	printf("%d failures\n", g_fail); return 1;
 }
