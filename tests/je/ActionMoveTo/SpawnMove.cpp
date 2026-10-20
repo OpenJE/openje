@@ -62,6 +62,9 @@ int main( int argc, char** argv ) {
 	check( arm && arm->classId == F3::kClassGameCreature, "Armstrong -> creature (template parse)" );
 	F3::SpawnedEntity* box2 = F3::FindSpawnedEntity( "ItemsIT_MainMenuBoxcar" );
 	check( box2 && box2->classId == F3::kClassGameUsableObject, "Boxcar -> usable object (GOBJ)" );
+	check( pc && pc->statMax == 100 && pc->statCur == 100,
+	       "GENT max/cur pair loaded (100/100) per discovery session 3" );
+	check( box2 && box2->gentF[4] == 0, "GENT f5 overrode the ctor default 4 (file writes 0)" );
 	check( box && fabsf(box->pos[2] - 27.5f) < 0.01f, "boxcar position from record" );
 
 		JE::PathManager pm;
@@ -86,6 +89,21 @@ int main( int argc, char** argv ) {
 	printf( "     PC walked to %.2f,%.2f (boxcar %.2f,%.2f) dist %.3f moving=%d\n",
 	        pc->pos[0], pc->pos[2], box->pos[0], box->pos[2], d, pc->movingFlag );
 	check( d < 3.0f, "spawned Default_PC walked to the boxcar" );
+
+	// synthetic clamp coverage: cur > max collapses to max (0x463910)
+	{
+		unsigned char fake[12 + 32];
+		memset(fake, 0, sizeof(fake));
+		memcpy(fake, "GENT", 4);
+		unsigned ver = 1, sz = 12 + 32;
+		memcpy(fake + 4, &ver, 4); memcpy(fake + 8, &sz, 4);
+		int vals[8] = { 0,0,0,0,4,7, 50, 999 };
+		memcpy(fake + 12, vals, 32);
+		int out[8];
+		check( F3::ParseGentBlock( fake, sizeof(fake), out ) == 1, "ParseGentBlock finds GENT" );
+		check( out[6] == 50 && out[7] == 50, "cur>max clamped to max" );
+		check( out[5] == 7, "f6 preserved" );
+	}
 
 	if ( g_fail == 0 ) { printf("OK: spawn+move vertical slice passed\n"); return 0; }
 	printf("%d failures\n", g_fail); return 1;
