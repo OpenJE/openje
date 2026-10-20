@@ -22,6 +22,7 @@ namespace JE {
 	// the action. F3::GameActionMoveTo::meth_0x55B420(1) = finish(true).
 	void ActionMoveTo::completeMove( Entity* , unsigned ms, bool stopped ) {
 		tracing::instrument( tracing::LOCATION, "" );
+		finished = 1;   // entity action list drops the slot after this (0x550720 family)
 		OnMoveComplete();
 		if ( mover ) {
 			if ( stopped ) mover->SyncMoveStopped_124( ms );

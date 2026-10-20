@@ -3,6 +3,7 @@
 // from the repo root with the staged data dir arg.
 #define JE_TEST_ALLOW_PROTECTED_MEMBER_ACCESS 1
 #include "F3/MapEntitySpawn.hpp"
+#include "F3/GameActionMoveTo.hpp"
 #include "JE/ActionMoveTo.hpp"
 #include "JE/PathManager.hpp"
 #include "JE/Map.hpp"

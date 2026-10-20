@@ -75,6 +75,9 @@ namespace JE {
 		//: Members
 		public:
 			Mover*         mover;            // +0x11 (*this->gap11 in the original)
+			int            finished;         // completion latch: the entity action list drops
+		                               // the slot after the pump sees it set (original
+		                               // deletes the action from the entity's list)
 			PathJob*       job;              // +0x1C
 			Entity*        target;           // +0x20
 			float          targetPos[3];     // +0x24..2C
