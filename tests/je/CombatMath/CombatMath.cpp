@@ -254,6 +254,26 @@ int main() {
 		       "a different stream gives a different number (assert is sensitive, not vacuous)" );
 	}
 
+	// T-068 REAL-PAIR PIN: the first shipped-vs-port value pair measured, not synthetic.
+	// Evidence: T-056 run H, read at bp 0x48ccf6 (first return of sub_48CCC0) - the returned
+	// draw was 0x2D81 and the state dword [0x707C60] read 0x65AD8170 at that same instant
+	// (tools/scripts/orig-capture-t056-runH.txt record=read r1/r1draw). Two facts to pin:
+	//  (a) the captured PAIR obeys OUR emit rule draw=(state>>8)&0x7FFF - checked in-test,
+	//  (b) starting from the shipped recurrence's pre-advance state S0 (the unique
+	//      1664525*S+1013904223 preimage of 0x65AD8170 mod 2^32 = 0x6AD92B15, derived from
+	//      the T-045-verified advance constants), OUR stream reproduces the shipped draw,
+	//      then the arithmetic continuation of the SAME captured state.
+	{
+		check( ( ( 0x65AD8170u >> 8 ) & 0x7FFFu ) == 0x2D81u,
+		       "shipped (state,draw) pair at 0x48ccf6 obeys the port's emit rule - real-pair consistency" );
+		F3::SeedShippedRand( 0x6AD92B15u );
+		check( F3::ShippedRand() == 0x2D81,
+		       "seeded at the shipped pre-advance state, OUR first draw equals the SHIPPED captured draw 0x2D81" );
+		const unsigned st2 = ( 1664525u * 0x65AD8170u + 1013904223u );
+		check( F3::ShippedRand() == (int)( ( st2 >> 8 ) & 0x7FFFu ),
+		       "and the second draw continues from the CAPTURED state, not from a reseed" );
+	}
+
 	if ( g_fail == 0 ) {
 		printf( "OK: combat math tests passed\n" );
 		return 0;
