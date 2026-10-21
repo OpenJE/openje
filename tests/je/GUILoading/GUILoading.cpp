@@ -40,6 +40,39 @@ namespace JE { namespace Host {
 static int g_fail = 0;
 static void check( bool c, const char* m ) { if ( !c ) { printf( "FAIL: %s\n", m ); ++g_fail; } }
 
+// ---- T-007 step 4 test seams: the injected texture acquire ------------------------------------
+// The shipped binding asks Gfx_Engine for the texture before computing a tile count (0x4b0785).
+// The real registry is T-013, so these three stand in for it. The dims below are OUR numbers, used
+// to exercise the shipped arithmetic; they are NOT measurements of any shipped texture.
+static JE::GUI::SkinTextureInfo nhAcquireResolved( const char* name, void* ctx ) {
+	JE::GUI::SkinTextureInfo ti;
+	ti.resolved = 1;
+	ti.index    = 4242;
+	ti.gate     = 1;
+	ti.dimW     = 60;
+	ti.dimH     = 100;
+	(void)name; (void)ctx;
+	return ti;
+}
+
+static JE::GUI::SkinTextureInfo nhAcquireMiss( const char* name, void* ctx ) {
+	JE::GUI::SkinTextureInfo ti;
+	ti.resolved = 0;
+	ti.index    = 0;
+	ti.gate     = 0;
+	ti.dimW     = 0;
+	ti.dimH     = 0;
+	(void)name; (void)ctx;
+	return ti;
+}
+
+// [obj+0x28] not > 0: the shipped code zeroes the NUMERATOR and still divides (0x4b079b/0x4b07b3).
+static JE::GUI::SkinTextureInfo nhAcquireGateZero( const char* name, void* ctx ) {
+	JE::GUI::SkinTextureInfo ti = nhAcquireResolved( name, ctx );
+	ti.gate = 0;
+	return ti;
+}
+
 static int lowerEq( const char* a, const char* b ) { return tolower( (unsigned char)*a ) == tolower( (unsigned char)*b ); }
 static int endsWithImage( const char* s ) {
 	size_t n = strlen( s );
@@ -70,6 +103,29 @@ static unsigned walkSkins( JE::GUI::Widget* w, unsigned* named, unsigned* plausi
 	}
 	for ( unsigned c = 0; c < w->nChildren; ++c ) { count += walkSkins( w->children[c], named, plausible ); }
 	return count;
+}
+
+// T-007 (f): does the string the .int stores at +0x40 for each window NAME a shipped skin? The
+// shipped binding uses exactly that field as its registry key - 0x4b06cf..0x4b06d9 assigns arg1
+// into this+0x40 and then asks cls_0x4b5c30 (the singleton at 0x707E48) for it @0x4b06df. So
+// comparing it against the `skinlist` resource is a cross-check between two unrelated shipped
+// files: if our reader put the wrong string at +0x40, the comparison says so by itself.
+static void scanSkinNames( JE::GUI::Widget* w, char (*list)[JE::GUI::SKIN_NAME_MAX],
+                           unsigned n, unsigned& withName, unsigned& matched ) {
+	if ( !w ) { return; }
+	const char* s = w->s40;
+	if ( s && s[0] ) {
+		++withName;
+		for ( unsigned i = 0; i < n; ++i ) {
+			char stem[ JE::GUI::SKIN_NAME_MAX ];
+			if ( strcmp( s, list[i] ) == 0 ) { ++matched; break; }
+			if ( JE::GUI::DeriveTextureKey( list[i], stem, sizeof( stem ) )
+			     && strcmp( s, stem ) == 0 ) { ++matched; break; }
+		}
+	}
+	for ( unsigned c = 0; c < w->nChildren; ++c ) {
+		scanSkinNames( w->children[c], list, n, withName, matched );
+	}
 }
 
 // File-scope because two blocks use it: the per-file corpus check above and the T-007
@@ -581,6 +637,292 @@ int main( int argc, char** argv ) {
 		JE::GUI::SkinTable none;
 		check( none.Load( "NoSuchSkin.ini" ) == 0, "a missing skin ini fails to load, cleanly" );
 		check( none.SectionCount() == 0, "a failed load leaves no records" );
+	}
+
+	// ---- T-007 step 4: the BINDING - Window::virt_meth_0x4b06c0 ported and driven ----------------
+	// This is the join the title asked for: nine slot names built from the shipped table at
+	// 0x6faf2c, looked up in a skin ini, written into a widget's nine inline fragments. The rules
+	// asserted here are the shipped ones (EA in the comment at each write in SkinTable.cpp); the
+	// synthetic records below carry OUR numbers - they exercise the rules, they are not measurements.
+	{
+		// (a) The suffix table is the shipped table: nine entries, dotted, in slot order.
+		static const char* const kShippedSuffixTable[9] = {
+			".upperleft", ".uppermiddle", ".upperright",
+			".left",      ".middle",      ".right",
+			".lowerleft", ".lowermiddle", ".lowerright"
+		};
+		unsigned suffixOk = 0, roundTrip = 0;
+		for ( unsigned i = 0; i < JE::GUI::SLOT_COUNT; ++i ) {
+			if ( strcmp( JE::GUI::SKIN_SLOT_SUFFIX[i], kShippedSuffixTable[i] ) == 0 ) { ++suffixOk; }
+			// SlotOf/GroupOf split on the LAST dot; the suffix that reaches the matcher is what is
+			// left of it, so the dot must not be assumed to be our formatting.
+			const char* s = JE::GUI::SKIN_SLOT_SUFFIX[i];
+			if ( s[0] == '.'
+			     && JE::GUI::SlotFromSectionSuffix( s + 1 ) == i ) { ++roundTrip; }
+		}
+		check( suffixOk == 9, "SKIN_SLOT_SUFFIX is the shipped table at 0x6faf2c verbatim (9 entries)" );
+		check( roundTrip == 9, "each entry carries its own dot and maps back to its slot index" );
+		check( JE::GUI::SKIN_SLOT_SUFFIX[3][0] == '.'
+		       && strcmp( JE::GUI::SKIN_SLOT_SUFFIX[3], ".left" ) == 0,
+		       "the middle row is .left/.middle/.right - there is no .middleleft" );
+
+		// (b) Rules on synthetic records. flags/width/height/rate/colour values are ours.
+		static char kTex[] = "zzmain-upperleft.tga";
+		JE::GUI::SkinAcquireFn acqOk = &nhAcquireResolved;
+		JE::GUI::SkinAcquireFn acqNo = &nhAcquireMiss;
+
+		JE::GUI::SkinFragment f;
+		JE::GUI::SkinDefault  r;
+		memset( &f, 0, sizeof( f ) );
+		memset( &r, 0, sizeof( r ) );
+		r.texture = kTex;  r.color = 0x00112233u;  r.width = 10;  r.height = 20;  r.rate = 3;
+
+		// mode: the shipped `cmp $0x7 / ja` drops a too-large flags WHOLE (0x4b14a4..0x4b14a7)
+		{
+			memset( &f, 0, sizeof( f ) );
+			f.d28 = 5u;
+			r.flags = 8;
+			JE::GUI::SkinApplyReport rep;
+			JE::GUI::ApplySkinRecord( &f, &r, 0x12000000u, acqOk, 0, &rep );
+			check( f.d28 == 5u && rep.modeRejected == 1u,
+			       "flags 8 is dropped whole by the <=7 guard - not clamped to 7 (0x4b14a7)" );
+			check( rep.styleFlagsSet == 2u,
+			       "a rejected mode sets no style byte: 2 writers fired, not 3 (0x4b14ac)" );
+			check( f.d2C == 10u && f.d30 == 20u && f.d34 == 3u,
+			       "the other five writes still happen when the mode is rejected" );
+			r.flags = 3;
+		}
+
+		// size + rate land on the fields the .int reader fills at +0x20/+0x24/+0x28
+		{
+			memset( &f, 0, sizeof( f ) );
+			JE::GUI::SkinApplyReport rep;
+			r.flags = 1;
+			JE::GUI::ApplySkinRecord( &f, &r, 0x12000000u, acqOk, 0, &rep );
+			check( f.d28 == 1u && rep.slotsApplied == 0u && rep.styleFlagsSet == 3u,
+			       "accepted mode + three style-byte writers (0x4b1480/0x4b14ac/0x4b1464)" );
+			check( f.textureIndex == 4242 && rep.indicesStored == 1u,
+			       "the resolved index is written where 0x4b2244 writes the .int's index" );
+		}
+
+		// colour: window top byte | record low 24, notify only on a top-byte STATE change
+		{
+			struct Case { unsigned oldColor; unsigned window; unsigned expect; char notify; };
+			static const Case kCases[4] = {
+				{ 0xFF000000u, 0x12000000u, 0x12112233u, 1 },
+				{ 0x12000000u, 0x12000000u, 0x12112233u, 0 },
+				{ 0x00000000u, 0xFF000000u, 0xFF112233u, 1 },
+				{ 0xFFAAAAAAu, 0xFF000000u, 0xFF112233u, 0 }
+			};
+			unsigned colourOk = 0, notifyOk = 0;
+			for ( unsigned i = 0; i < 4; ++i ) {
+				memset( &f, 0, sizeof( f ) );
+				f.d154 = kCases[i].oldColor;
+				JE::GUI::SkinApplyReport rep;
+				JE::GUI::ApplySkinRecord( &f, &r, kCases[i].window, acqOk, 0, &rep );
+				if ( f.d154 == kCases[i].expect ) { ++colourOk; }
+				else { printf( "     colour case %u: got %08X want %08X\n", i, f.d154, kCases[i].expect ); }
+				const unsigned wantNotify = (unsigned)kCases[i].notify;
+				if ( rep.colourNotified == wantNotify ) { ++notifyOk; }
+				else { printf( "     notify case %u: got %u want %u\n", i, rep.colourNotified, wantNotify ); }
+			}
+			check( colourOk == 4,
+			       "colour = (window+0x5C & 0xFF000000) | (record & 0x00FFFFFF) (0x4b06f0/0x4b07d0)" );
+			check( notifyOk == 4,
+			       "the 0x4abdd0 notify fires iff the top-byte==0xFF state CHANGES (0x4b14e0..0x4b151e)" );
+		}
+
+		// tiles: bit 0 of flags picks the axis; the gate zeroes the NUMERATOR, not the result
+		{
+			memset( &f, 0, sizeof( f ) );
+			f.d8a = 777u;
+			r.flags = 1;  r.height = 20;  r.width = 10;          // dimH 100 / 20 = 5
+			JE::GUI::SkinApplyReport rep;
+			JE::GUI::ApplySkinRecord( &f, &r, 0xFF000000u, acqOk, 0, &rep );
+			check( f.d8a == 5u && rep.tilesComputed == 1u,
+			       "flags&1 -> the +0x20 extent over the record HEIGHT (0x4b07a3..0x4b07a1)" );
+
+			memset( &f, 0, sizeof( f ) );
+			f.d8a = 777u;
+			r.flags = 2;                                          // dimW 60 / 10 = 6
+			rep = JE::GUI::SkinApplyReport();
+			JE::GUI::ApplySkinRecord( &f, &r, 0xFF000000u, acqOk, 0, &rep );
+			check( f.d8a == 6u, "!flags&1 -> the +0x1C extent over the record WIDTH (0x4b07b7..0x4b07bf)" );
+
+			memset( &f, 0, sizeof( f ) );
+			f.d8a = 777u;
+			r.flags = 1;
+			rep = JE::GUI::SkinApplyReport();
+			JE::GUI::ApplySkinRecord( &f, &r, 0xFF000000u, &nhAcquireGateZero, 0, &rep );
+			check( f.d8a == 0u && rep.tilesComputed == 1u,
+			       "gate [obj+0x28] <= 0 zeroes the NUMERATOR and still divides (0x4b079b), not skips" );
+
+			memset( &f, 0, sizeof( f ) );
+			f.d8a = 777u;
+			r.flags = 1;  r.height = 0;                           // shipped: div %ebp with 0 -> #DE
+			rep = JE::GUI::SkinApplyReport();
+			JE::GUI::ApplySkinRecord( &f, &r, 0xFF000000u, acqOk, 0, &rep );
+			check( f.d8a == 777u && rep.tilesDivideByZero == 1u,
+			       "KNOWN-ISSUE: a zero record dimension faults the shipped code; we count it (see .cpp)" );
+			r.height = 20;
+
+			memset( &f, 0, sizeof( f ) );
+			f.textureIndex = -1;
+			rep = JE::GUI::SkinApplyReport();
+			JE::GUI::ApplySkinRecord( &f, &r, 0xFF000000u, acqNo, 0, &rep );
+			check( rep.textureMisses == 1u && rep.tilesComputed == 0u && f.textureIndex == 0,
+			       "an unresolved texture is the quiet path: no tiles, index stored as 0 (0x4b078b)" );
+
+			memset( &f, 0, sizeof( f ) );
+			f.textureIndex = -1;
+			rep = JE::GUI::SkinApplyReport();
+			JE::GUI::ApplySkinRecord( &f, &r, 0xFF000000u, 0, 0, &rep );
+			check( rep.indicesDeferred == 1u && f.textureIndex == -1,
+			       "no acquire at all: the index is DEFERRED, not filled with a name (T-013 supplies it)" );
+		}
+
+		// (c) End-to-end over the shipped skin inis: every group in every shipped file must resolve
+		// all nine names built from our table. That is the suffix table and Find() checked together.
+		unsigned groups = 0, fullNine = 0, appliedTotal = 0, missingTotal = 0, fieldMismatch = 0;
+		for ( unsigned s = 0; s < 5; ++s ) {
+			static const char* const kSkinFile[5] = {
+				"DefaultInterface.ini", "zzmainmenu.ini", "quickslot.ini", "areamap.ini", "f3_green.ini"
+			};
+			JE::GUI::SkinTable t;
+			if ( !t.Load( kSkinFile[s] ) ) { continue; }
+			unsigned groupsInFile = 0;
+			char grp[40], prev[40];
+			prev[0] = 0;
+			for ( unsigned i = 0; i < t.SectionCount(); ++i ) {
+				if ( !t.GroupOf( i, grp, sizeof( grp ) ) ) { continue; }
+				if ( prev[0] && strcmp( prev, grp ) == 0 ) { continue; }   // same group, later slot
+				strncpy( prev, grp, sizeof( prev ) - 1 ); prev[sizeof( prev ) - 1] = 0;
+				++groups;
+				++groupsInFile;
+
+				JE::GUI::Widget w;
+				memset( &w, 0, sizeof( w ) );
+				w.d5C = 0x5A000000u;      // our number: the top byte must reach every fragment
+				JE::GUI::SkinApplyReport rep;
+				check( JE::GUI::ApplySkinGroup( &w, grp, t, acqNo, 0, &rep ) == 1u,
+				       "ApplySkinGroup returns 1 once the loop ran, whatever it found (0x4b0803)" );
+				if ( rep.slotsApplied == 9u ) { ++fullNine; }
+				else { printf( "     %s/%s applied %u missing %u\n", kSkinFile[s], grp,
+				                 rep.slotsApplied, rep.slotsMissing ); }
+				appliedTotal += rep.slotsApplied;
+				missingTotal += rep.slotsMissing;
+
+				// Re-derive each write from the record the NAME resolves to (not from the section
+				// index), so the check is about the binding, not about our ordering of the ini.
+				for ( unsigned k = 0; k < 9u; ++k ) {
+					char nm[96];
+					size_t gl = strlen( grp ), sl = strlen( JE::GUI::SKIN_SLOT_SUFFIX[k] );
+					if ( gl + sl + 1u >= sizeof( nm ) ) { continue; }
+					memcpy( nm, grp, gl ); memcpy( nm + gl, JE::GUI::SKIN_SLOT_SUFFIX[k], sl + 1u );
+					const JE::GUI::SkinDefault* rec = t.Find( nm );
+					if ( !rec ) { ++fieldMismatch; printf( "     Find('%s') failed\n", nm ); continue; }
+					const JE::GUI::SkinFragment& fr = w.skins[k];
+					if ( rec->flags <= 7 && fr.d28 != (unsigned)rec->flags ) { ++fieldMismatch; }
+					if ( fr.d2C != (unsigned)rec->width || fr.d30 != (unsigned)rec->height ) { ++fieldMismatch; }
+					if ( fr.d34 != (unsigned)rec->rate ) { ++fieldMismatch; }
+					if ( fr.d154 != ( 0x5A000000u | ( rec->color & 0x00FFFFFFu ) ) ) { ++fieldMismatch; }
+				}
+			}
+			// The shipped files are groups of nine (54 = 6x9, 63 = 7x9, measured in T-007's table
+			// pass). If this ever breaks, the nine-name construction above is being tested against a
+			// file that is not what we think it is.
+			check( groupsInFile * 9u == t.SectionCount(),
+			       "this skin's sections are exactly groupsInFile x nine" );
+		}
+		check( missingTotal == 0u,
+		       "every shipped skin group resolves all nine names built from 0x6faf2c" );
+		check( fullNine == groups && groups > 0, "every group applied exactly nine records" );
+		check( fieldMismatch == 0u,
+		       "mode/size/rate/colour in the fragment equal the record the name resolved to" );
+		check( appliedTotal == groups * 9u, "nine writes per group over all five shipped skins" );
+
+		// (d) The registry (cls_0x4b5c30 @ 0x707E48): cache on success, do NOT memoise a miss.
+		{
+			JE::GUI::SkinSet set;
+			const JE::GUI::SkinTable* a = set.Get( "zzmainmenu.ini" );
+			const JE::GUI::SkinTable* b = set.Get( "zzmainmenu.ini" );
+			check( a != 0 && a == b && set.Count() == 1u && set.LastLoadWasNew() == 0,
+			       "the second Get() of the same name is the cached table, not a second load" );
+			check( set.Get( "NoSuchSkin.ini" ) == 0 && set.Count() == 1u,
+			       "a failed load is deleted and NOT inserted (0x4b5cbb), so the count is unchanged" );
+			check( set.Get( "NoSuchSkin.ini" ) == 0 && set.LastLoadWasNew() == 0,
+			       "and it is retried next time - a cached failure would be our improvement, not theirs" );
+			set.Get( "quickslot.ini" );
+			check( set.Count() == 2u && set.NameAt( 1 ) && strcmp( set.NameAt( 1 ), "quickslot.ini" ) == 0
+			       && set.At( 1 ) && set.At( 1 )->SectionCount() == 54u,
+			       "insertion order preserved and the second table parses (54 sections, measured)" );
+			check( set.At( 2 ) == 0 && set.NameAt( 9 ) == 0, "out-of-range registry accessors are null" );
+		}
+
+		// (f) The OTHER half of the seam is data: the .int carries each window's skin name at +0x40
+		// (Window::ReadFrom_0x4b10f0), and that string is the binding's registry key (0x4b06cf..0x4b06e4).
+		// The GROUP is the second argument and comes from code - 0x4a8b42 pushes the literal 'label'
+		// @0x66d428 - so it is asserted elsewhere, not here.
+		{
+			char list[8][JE::GUI::SKIN_NAME_MAX];
+			const unsigned n = JE::GUI::LoadSkinList( list, 8 );
+			JE::GUI::InterfaceFile intf;
+			check( n == 5u && intf.Load( "Mainmenu.INT" ) == 1,
+			       "both shipped sides of the skin-name cross-check are loaded" );
+			unsigned withName = 0, matched = 0;
+			if ( intf.RootCount() == 1u ) {
+				scanSkinNames( intf.Root( 0 ), list, n, withName, matched );
+				const JE::GUI::Widget* root = intf.Root( 0 );
+				printf( "     MainmenuWin +0x40 = '%s'; widgets carrying a skin name %u, of them "
+				          "%u name a shipped skin\n",
+				          ( root && root->s40 ) ? root->s40 : "(null)", withName, matched );
+			}
+			check( matched == withName,
+			       "every +0x40 skin name in Mainmenu.INT is one of the five shipped skins (or its stem)" );
+			check( withName > 0u, "Mainmenu.INT actually fills +0x40 - the field is used, not vestigial" );
+
+			// The whole chain, driven by data instead of by our choice of fixture: the widget's OWN
+			// skin name out of the .int, through the registry (cls_0x4b5c30 @0x707E48), into the nine
+			// inline fragments. The GROUP is still ours to name (it is caller-supplied, (e) above);
+			// everything else on this path is shipped bytes.
+			JE::GUI::Widget* root = intf.Root( 0 );
+			if ( root && root->s40 && matched == withName && withName > 0u ) {
+				JE::GUI::SkinSet set;
+				const JE::GUI::SkinTable* t = set.Get( root->s40 );
+				check( t != 0, "the widget's own +0x40 name resolves through the registry, with the "
+				              "extension as stored (0x4b06df -> LoadIniResource_0x4e0960)" );
+				if ( t ) {
+					const unsigned before = root->skins[ JE::GUI::SLOT_CENTER ].d154;
+					JE::GUI::SkinApplyReport rep;
+					JE::GUI::ApplySkinGroup( root, "window", *t, &nhAcquireMiss, 0, &rep );
+					check( rep.slotsApplied == 9u && rep.slotsMissing == 0u,
+					       "zzmainmenu's window group applies all nine to MainmenuWin's own fragments" );
+					const JE::GUI::SkinDefault* c = t->Find( "window.middle" );
+					const unsigned expect = c
+					    ? ( ( root->d5C & 0xFF000000u ) | ( c->color & 0x00FFFFFFu ) ) : 0u;
+					printf( "     MainmenuWin centre fragment colour: authored %08X -> bound %08X "
+				              "(widget alpha %02X, skin %06X)\n", before, expect,
+				              ( root->d5C >> 24 ) & 0xFFu, c ? ( c->color & 0x00FFFFFFu ) : 0u );
+					check( c != 0 && root->skins[ JE::GUI::SLOT_CENTER ].d154 == expect,
+					       "the centre fragment's colour is now skin RGB with the widget's own alpha" );
+					check( rep.indicesStored == 9u && rep.indicesDeferred == 0u
+					       && rep.tilesComputed == 0u,
+					       "an acquire means nine index writes and no invented tile counts on the miss path" );
+					printf( "     slots whose texture the INJECTED test acquire could not resolve: "
+					       "%u of %u (nhAcquireMiss always misses; the shipped-index miss count for "
+					       "this skin is the 0 measured by TextureMisses)\n",
+					       rep.textureMisses, rep.slotsApplied );
+				}
+			}
+		}
+
+		// (e) KNOWN-ISSUE, stated rather than papered over. Nothing in the shipped .int says which
+		// group a widget uses: the group arrives from code (the literal at 0x66d428 is "label", handed
+		// to the binding at 0x4a8b64), so the mapping widget -> group is NOT data we can assert on.
+		printf( "     KNOWN-ISSUE: widget->skin-group is caller-supplied (e.g. 'label' @0x66d428), "
+		        "not stored in the .int; ApplySkinGroup is exercised per group, not per widget\n" );
+		printf( "     KNOWN-ISSUE: texture dims/index come from the injected acquire; the real "
+		        "registry (cls_0x55dc80 @byte_70B200, Gfx_Engine +0xD8) is T-013\n" );
 	}
 
 	if ( !g_fail ) { printf( "OK: GUI .int loading tests passed\n" ); return 0; }

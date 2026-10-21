@@ -9,6 +9,15 @@
 namespace JE {
 	namespace GUI {
 
+		// Verbatim from the shipped pointer table 0x6faf2c (entries 0x66e4bc, 0x66e4ac, 0x66e4a0,
+		// 0x66e498, 0x66e490, 0x66e488, 0x66e47c, 0x66e46c, 0x66e460; strings read out of
+		// $OPENVB_ORIG_EXE). The leading dot is part of the shipped string, not our formatting.
+		const char* const SKIN_SLOT_SUFFIX[ SLOT_COUNT ] = {
+			".upperleft",  ".uppermiddle", ".upperright",
+			".left",       ".middle",      ".right",
+			".lowerleft",  ".lowermiddle", ".lowerright"
+		};
+
 		int ExpectedMode( unsigned slot ) {
 			switch ( slot ) {
 				case SLOT_UPPER_MIDDLE:

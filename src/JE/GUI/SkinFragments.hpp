@@ -54,13 +54,50 @@ namespace JE {
 			PIECE_MODE_ANY_CENTRE = -1   // slot 4 accepts PIECE_AS_IS or PIECE_FILL
 		};
 
+		// The nine position suffixes EXACTLY as the shipped binary stores them: a pointer table at
+		// **0x6faf2c**, walked by `Window::virt_meth_0x4b06c0` with `add $0x4` per step and the loop
+		// bound `cmp $0x6faf50,%ebx` (@0x4b07e4..0x4b07f1) - (0x6faf50-0x6faf2c)/4 = **9 entries by
+		// construction**, not by counting names that happen to appear in the data. Read in stream
+		// order the entries are:
+		//   0x6faf2c .upperleft   0x6faf30 .uppermiddle  0x6faf34 .upperright
+		//   0x6faf38 .left        0x6faf3c .middle       0x6faf40 .right
+		//   0x6faf44 .lowerleft   0x6faf48 .lowermiddle  0x6faf4c .lowerright
+		// Two things this settles that the shipped data alone could not: the middle row is
+		// `.left/.middle/.right` (there is no `.middleleft`), and every entry **begins with the dot**,
+		// because the apply builds the record name as `group ++ suffix` (@0x4b071f..0x4b0722, the
+		// string concat `sub_434600`) - which is why the ini sections are `window.upperleft` and
+		// `button.up.upperleft`. Slot order is therefore proven from the image, replacing the
+		// name-suffix agreement this file previously relied on (see the header note above).
+		extern const char* const SKIN_SLOT_SUFFIX[ SLOT_COUNT ];
+
 		// Expected mode for a slot, or PIECE_MODE_ANY_CENTRE when the slot is not fixed.
 		int ExpectedMode( unsigned slot );
 
-		// ---- geometry rules the shipped files obey ----------------------------------------
-		// d2C / d30 are the SOURCE piece dimensions (pixels taken from the texture); the record's
-		// rect (Base::ReadFrom_0x4b2850's 16-byte move) is where that piece lands. The authored
-		// data then always satisfies:
+		// ---- what the six dwords ACTUALLY are, by shipped fragment offset (T-007) --------------
+		// `Fragment::ReadFrom_0x4b20a0` reads six u32s straight into the object; the `lea` operands
+		// are unambiguous, so the compact struct's field names (d28..d8a, kept for diff size) map to:
+		//   +0x1C  @0x4b20d8  mode/flags   <- written back by the skin apply at 0x4b14a9 (`<= 7` guard)
+		//   +0x20  @0x4b20ec  width        <- size pair, getter 0x4b1550, setter vft[+0x10]=0x4b1450
+		//   +0x24  @0x4b210c  height          (@0x4b1450 forwards to Base::virt_meth_0x4b2790(w,h))
+		//   +0x28  @0x4b2126  rate         <- the skin apply stores record+0x14 here (0x4b1544)
+		//   +0x2C  @0x4b213a  unknown      <- zero in all 14364 shipped records, no writer found
+		//   +0x30  @0x4b215a  tile count   <- the apply recomputes it at 0x4b1574 from the texture's
+		//                                          own size / the record's width or height
+		// then the texture-name string (0x4b2187 via 0x50b880) is resolved through Gfx_Engine
+		// `vft+0xD8` (@0x4b21bb) or `Demand_0x49b750` (@0x4b21dd) and the resulting **index** is
+		// stored at `[frag+0x128]+0x130` (@0x4b2244); then u32 -> **frag+0xC0** (@0x4b2250 `lea
+		// 0xc0(%esi)`), u32 -> **frag+0x154** colour (@0x4b2283), and finally `movb $0x1,0x18(%esi)`
+		// (@0x4b22a8). The recon's "one at +8" for the second post-string dword was wrong: it is
+		// +0xC0. `+0x18` is a one-byte "style was written" flag set by FOUR different setters
+		// (0x4b1480, 0x4b14ac, 0x4b1464, 0x4b22a8) - the only place it is cleared is the ctor.
+		//
+		// Consequence for the two fields this file used to call "reserved": +0x28 is `rate`, which
+		// the .int authors never filled (0 in all 14364) because a rate comes from the skin ini, not
+		// from the interface file - see SkinDefaults.hpp. That is a reason for the zeros, not a guess
+		// at a meaning. +0x2C stays uninterpreted.
+		//
+		// Geometry: the rect (`Base::ReadFrom_0x4b2850`'s 16-byte move) is where the piece lands, and
+		// the authored data always satisfies:
 		//   corners  (0,2,6,8): rect is exactly pieceW x pieceH
 		//   h-edges  (1,7)    : rect height == pieceH          (width is the stretch)
 		//   v-edges  (3,5)    : rect width  == pieceW          (height is the stretch)
@@ -68,8 +105,9 @@ namespace JE {
 		// Verified over 14364 records / 25 files: 0 violations of any of the three rules.
 		char CheckSlotGeometry( const SkinFragment* f, unsigned slot );
 
-		// d34 and d38 are ZERO in all 14364 shipped records (reserved or written elsewhere; no
-		// shipped file distinguishes them, so we audit for "still zero" and claim no meaning).
+		// d34 (+0x28, rate) and d38 (+0x2C) are ZERO in all 14364 shipped records. For +0x28 that is
+		// explained (a rate is authored in the skin ini; see the offset block above); for +0x2C no
+		// shipped file or writer distinguishes it, so we audit for "still zero" and claim no meaning.
 		char ReservedFieldsAreZero( const SkinFragment* f );
 
 		// Audit a whole widget tree. Counts every rule above over all 9 records of every widget
