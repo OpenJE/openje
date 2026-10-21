@@ -57,7 +57,12 @@ namespace JE {
 				unsigned useCount;   // shipped obj+44, ++ at 0x51f679 per acquire hit
 			};
 
-			Gfx_Texture_Manager() : m_head( 0 ), m_nextId( 0 ), m_count( 0 ), m_inserts( 0 ),
+			// id 0 is RESERVED as the absent-sentinel: every shipped consumer tests it before
+			// use (slot 16 skips the texture when [[frag+0x128]+0x130]==0 @0x4b1b12; LoadDefault
+			// skips the +0xD8 gate on id==0 @0x5236da), and the shipped allocator 0x51f680 is a
+			// POP OVER A FREE-ID POOL (vector at this+0x38/0x3c) that itself returns 0 on empty -
+			// so 0 can never be a live id downstream. We therefore hand out 1,2,3,...
+			Gfx_Texture_Manager() : m_head( 0 ), m_nextId( 1 ), m_count( 0 ), m_inserts( 0 ),
 			                        m_failures( 0 ) {}
 
 			~Gfx_Texture_Manager() {
@@ -155,7 +160,8 @@ namespace JE {
 				memcpy( copy, name, len + 1u );
 				Texture* t = new Texture;
 				if ( !t ) { delete[] copy; return 0; }
-				t->id = m_nextId++;              // counter allocation, this+0x50++ @0x521316
+				t->id = m_nextId++;              // >=1; 0 reserved (see ctor comment; shipped
+				                               // pool allocator 0x51f680 returns 0 on empty)
 				t->dimW = t->dimH = 0;
 				t->gate = 0;
 				t->useCount = 0;

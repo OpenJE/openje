@@ -463,7 +463,7 @@ int main(int argc, char** argv) {
 		// fresh insert: id returned, usecount starts at 0 (shipped: creation path never bumps -
 		// the ++ is inside the probe hit, 0x51f679)
 		const int idA = mgr.GetOrCreate("alpha", 64u, 32u, 1);
-		check(idA == 0, "GetOrCreate fresh insert returns the counter id (first == 0, this+0x50++ @0x521316)");
+		check(idA == 1, "GetOrCreate fresh insert returns a live id (first == 1: id 0 is the RESERVED absent-sentinel, 0x4b1b12/0x5236da test it)");
 		check(mgr.Count() == 1u && mgr.Inserts() == 1u, "one node, one insert");
 		check(mgr.Object(idA) && mgr.Object(idA)->useCount == 0u, "fresh texture carries useCount 0");
 		check(mgr.Object(idA) && mgr.Object(idA)->dimW == 64u && mgr.Object(idA)->gate == 1,
