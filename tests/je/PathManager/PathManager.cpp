@@ -81,6 +81,7 @@ static void DigToken( const char* line, const char* key, char* out, int cap ) {
 static int RunDigest( const char* path, int bonus, int hitFrame, int frames,
                      F3::CombatManager* cm, JE::PathManager* pm ) {
 	g_drawCount = 0;
+	F3::Sim::ResetBaseClock();   // clockDelta restarts for this run
 	FILE* f = fopen( path, "w" );
 	if ( !f ) { return -1; }
 	F3::Sim::Sources src;
@@ -377,6 +378,34 @@ int main() {
 		check( strcmp( l1, l1b ) == 0 && strcmp( l2, l2b ) == 0,
 		       "same input -> same digest bytes (determinism)" );
 
+		// CONTEXT must be non-load-bearing, proven rather than asserted in prose: run the same
+		// sequence with a DIFFERENT uptime and the hashed span must be identical. If fnv covered
+		// the ctx: segment (an earlier draft did exactly that), every line would differ across
+		// runs and the oracle could never compare a replay against the original.
+		{
+			char x1[ 2200 ], x2[ 2200 ], f1[ 512 ], f2[ 512 ];
+			FILE* f = fopen( "B-dig-ctx.txt", "w" );
+			F3::Sim::Sources sc; sc.combat = &cm; sc.paths = &pm;
+			F3::Sim::WriteHeader( f, sc );
+			F3::Sim::ResetBaseClock();
+			F3::Sim::WriteFrame( f, sc, 7, 111111u, 500000u, 0, "injected-counter" );
+			fclose( f );
+			FrameLine( "B-dig-ctx.txt", 0, x1, (int)sizeof( x1 ) );
+			f = fopen( "B-dig-ctx.txt", "w" );
+			F3::Sim::WriteHeader( f, sc );
+			F3::Sim::ResetBaseClock();
+			F3::Sim::WriteFrame( f, sc, 7, 999999u, 900000u, 0, "injected-counter" );
+			fclose( f );
+			FrameLine( "B-dig-ctx.txt", 0, x2, (int)sizeof( x2 ) );
+			DigToken( x1, "fnv", f1, (int)sizeof( f1 ) );
+			DigToken( x2, "fnv", f2, (int)sizeof( f2 ) );
+			check( strcmp( f1, f2 ) == 0,
+			       "same state at different uptimes hashes EQUAL - CONTEXT really is non-load-bearing" );
+			check( strcmp( x1, x2 ) != 0,
+			       "and the lines still DIFFER, so uptime is captured rather than discarded" );
+			remove( "B-dig-ctx.txt" );
+		}
+
 		// Sensitivity proof: a logic/input change must move the digest AND name the field.
 		// bonus 2 vs 5 changes the damage at frame 3, so `hp` for the DIGEST_A slot must differ
 		// while frame 0 (before any damage) must not.
@@ -423,6 +452,8 @@ int main() {
 			fclose( f );
 			char a[ 2200 ], b[ 2200 ];
 			CountFileLines( "B-dig-na.txt", a, (int)sizeof( a ), b, (int)sizeof( b ) );
+			check( strstr( a, " ctx:" ) != 0, "CONTEXT segment exists so uptime is captured without poisoning the comparison" );
+			check( strstr( a, "clockDelta=0" ) != 0, "first frame's elapsed clock is 0 by construction (absolute clock is CONTEXT, not compared)" );
 			check( strstr( a, "pathJobs=NA" ) != 0, "missing path seam prints NA, never a silent 0" );
 			check( strstr( a, "turns=NA" ) != 0, "missing combat seam prints NA too" );
 			check( strstr( a, "draws=NA" ) != 0, "no counter on the shipped stream is admitted, not faked" );
