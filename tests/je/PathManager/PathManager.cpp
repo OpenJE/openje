@@ -8,6 +8,7 @@
 #include "JE/HostHooks.hpp"
 #include "F3/SimDigest.hpp"      // T-026 digest harness
 #include "F3/CombatMath.hpp"
+#include "F3/GameActionAttack.hpp"   // T-011: join happens in Start (the OnCreate analogue)
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>   // T-026 digest token helpers
@@ -74,6 +75,23 @@ static void DigToken( const char* line, const char* key, char* out, int cap ) {
 		}
 		k = sp ? sp + 1 : k + strlen( k );
 	}
+}
+
+// The COMPARED payload of one entity's worth of a frame line: from ` key=` up to the next
+// " fnv=" - i.e. everything the digest actually compares, minus the frame counter and the
+// elapsed clock, which differ by construction between two runs. Used by the T-011 control that
+// must compare ENTITY state and nothing else.
+static void DigSpan( const char* line, const char* key, char* out, int cap ) {
+	out[0] = 0;
+	const char* k = strstr( line, key );
+	if ( !k ) { return; }
+	k -= ( strlen( key ) + 1 );            // step back over the leading space and the key
+	if ( k < line ) { k = line; }
+	const char* e = strstr( k, " fnv=" );
+	if ( !e ) { e = k + strlen( k ); }
+	int n = (int)( e - k );
+	if ( n >= cap ) { n = cap - 1; }
+	memcpy( out, k, (size_t)n ); out[n] = 0;
 }
 
 // Run `frames` frames, damaging g_digA at frame `hitFrame` with a weapon whose flat damage
@@ -349,18 +367,203 @@ int main() {
 		cm.AddToTurns( &spawned );
 		cm.AddToTurns( &active );
 		check( cm.TurnCount() == 2, "two nodes queued" );
+		cm.SetRoundMode( 0 );       // free-run: 0x5a951d pumps every node, touches NOTHING else
 		cm.Tick( 16, 3 );            // maintenance: state-5 gets turn-prep; state-4 unlinks
 		check( spawned.frameDt0x300 == 16 && spawned.actedLatch0x319 == 0,
 		       "turn-prep writes dt(+0x300) and clears latch(+0x319) - 0x549090" );
 		check( cm.TurnCount() == 1, "non-SPAWNED entity unlinked from turn queue (session 14)" );
-		check( cm.AccMs() == 3000u, "accMs accumulates clock seconds x1000 (C-23 source)" );
+		// T-011 step 4 RETIRED the old "accMs = clock seconds x1000, every frame" line: the
+		// shipped consumer at 0x5a95aa adds 1000 * (world+0x40 = [World] Seconds Per Round) and
+		// it does so once PER DISPATCHED QUEUE EVENT on the round-walk path (0x5a95ac). The
+		// free-run branch at 0x5a951d-0x5a954f never writes +10, so 0 is the FAITHFUL value here
+		// - and if a frame-accumulation ever came back, this assertion is what catches it.
+		check( cm.AccMs() == 0u, "free-run mode does NOT advance the round accumulator (0x5a951d)" );
 		cm.RemoveFromTurns( &spawned );
 		check( cm.TurnCount() == 0 && !cm.IsActive(), "queue drains" );
 		check( !cm.MidTurn(), "mid-turn gate released after Tick (0x5A9551)" );
 	}
 
 
-	// ---- T-026: the digest is reproducible, sensitive, and honest about gaps -------------
+	// ---- T-011: join, the round walk, and the atomicity that join exists to protect --------
+	// Every case here is one of the row's six, and each one has a mutant: the shipped lines are
+	// cited so a future edit that "simplifies" the walk fails a named assertion instead of
+	// quietly changing combat order.
+	{
+		F3::CombatManager cm;
+		F3::SetActiveCombatManager( &cm );     // 0x5490f4's manager resolution, port-side
+
+		F3::SpawnedEntity atk;                 // attacker, ACTIVE(4) - the only state that may
+		F3::SpawnedEntity vic;                 // join, per ChangeEntityState's table
+		atk.entityState = F3::kStateActive;
+		vic.entityState = F3::kStateActive;
+		strcpy( atk.name, "ATKER" );
+		strcpy( vic.name, "VICTM" );
+		atk.statMax = vic.statMax = 45;
+		atk.statCur = vic.statCur = 45;
+		F3::g_spawnedEntities[ 104 ] = &atk;
+		F3::g_spawnedEntities[ 105 ] = &vic;
+
+		char buf16[ 64 ];
+		F3::AttackModeRecord m = F3::GameActionAttack::MakeUnarmedMode( 1, 2, 1, 0 );
+		F3::GameActionAttack a1; a1.Start( &atk, &vic, 0, &m );
+
+		// (1) join-on-attack: exactly one node, and the 4 -> 5 store happened with it.
+		check( cm.TurnCount() == 1, "attack Start put exactly ONE entity in the turn list" );
+		check( atk.entityState == F3::kStateSpawned,
+		       "join stored state 5 with the insert (0x5a987b), not after some later pass" );
+		check( a1.actor == &atk, "the attack still owns its actor after the join" );
+
+		// (2) a second attack must neither duplicate the node nor re-store the state: 0x5a9826
+		// walks the list and RETURNS on a match, so no insert AND no ChangeState happen.
+		F3::GameActionAttack a2; a2.Start( &atk, &vic, 0, &m );
+		check( cm.TurnCount() == 1, "second attack did not duplicate the turn node (0x5a9837)" );
+
+		// (3) flush returns everyone to 4 (0x5a9440: unlink + ChangeState(4) per entity).
+		cm.Flush();
+		check( cm.TurnCount() == 0 && cm.TurnOrderSignature( buf16, (int)sizeof( buf16 ) ) == 0,
+		       "flush emptied the list" );
+		check( atk.entityState == F3::kStateActive, "flush returned the actor to state 4" );
+
+		// (4) the latch actually skips: an entity that already acted gets its deadline CLEARED
+		// (0x5a9567 writes +0x29C = 0) and is NOT dispatched; the walk moves to the next node.
+		// (4) THE ORDER INSIDE ONE CALL, which the row did not predict and the decompile does:
+		// the maintenance pass runs FIRST and TurnPrep CLEARS +0x319 (0x549094 writes the
+		// gap2F4[37] latch to 0), and only THEN does the walk test it at 0x5a955d. So an entity
+		// that enters the call latched is dispatched anyway - a port that "remembered" the latch
+		// across the clear, or that checked before clearing, would skip an actor that the
+		// original acts on. These four assertions pin that order; they are the reason the
+		// round-advance question below is a question and not a guess.
+		cm.SetRoundMode( 1 );                 // the round-walk branch (0x5a955a onward)
+		F3::SpawnedEntity b1, b2;
+		b1.entityState = b2.entityState = F3::kStateSpawned;
+		b2.entityState = F3::kStateSpawned;
+		strcpy( b1.name, "FIRST" ); strcpy( b2.name, "SECOND" );
+		cm.AddToTurns( &b1 ); cm.AddToTurns( &b2 );
+		b1.actedLatch0x319 = 1;               // latched BEFORE the call
+		b1.turnDeadline0x29C = 77;            // a deadline the walk will overwrite either way
+		cm.Tick( 16, 6 );
+		check( b1.actedLatch0x319 == 0, "TurnPrep cleared the latch inside this call (0x549094)" );
+		check( cm.LastDispatched() == &b1,
+		       "clear-then-check: the head actor is DISPATCHED, not skipped (0x5a955d after 0x5a94fd)" );
+		check( cm.AccMs() == 6000u, "one dispatch = one quantum: 1000 * SecondsPerRound (0x5a95aa)" );
+		check( b1.turnDeadline0x29C == 6, "the armed deadline is accMs/1000 (0x5a95ce) - seconds" );
+		// WHY THERE IS NO ROUND-ROBIN IN THE PORT, and it is not an oversight. The iterator moves
+		// ONLY on the latch-skip path (0x5a9572), and that path needs a +0x319 that SURVIVES this
+		// call's maintenance clear - which in the shipped binary means RE-ENTRANCY: +8 is the
+		// re-entry latch (0x5a94a3 tests it for exactly that), so a Combat tick nested inside an
+		// entity's own ServerUpdate skips maintenance, sees the latch the pump raised at
+		// 0x54c833/0x54c864, and advances. The other way to leave this call early is the +14
+		// branch at 0x5a9575, and +14 has NO nonzero writer anywhere in the DB (0x5a9371 and
+		// 0x5a93b0 both store 0). So advancing the walk is a consequence of re-entrant dispatch,
+		// not of a per-frame rotation, and the port must not invent one: a made-up round-robin
+		// would change WHO acts, which is the single fact the digest's turnOrder exists to compare.
+		cm.Tick( 16, 6 );
+		check( cm.LastDispatched() == &b1,
+		       "no invented rotation: a non-re-entrant second call still dispatches the head" );
+		check( cm.AccMs() == 12000u, "the quantum accrues per dispatched event, not per frame set" );
+
+		// (5) arming is a PURE FUNCTION of the injected clock: same event count, different
+		// wall-ms frame => identical accMs. This is the test that fails if anyone reintroduces
+		// a per-frame or timeGetTime-derived accumulation (the retired C-23 placeholder).
+		// Two FRESH managers, one dispatch event each, frames 1 ms vs 999 ms apart. The round
+		// clock must be identical, because 0x5a95aa adds 1000 * (world+0x40) and nothing else -
+		// the retired C-23 placeholder added TotalSeconds()*1000 PER FRAME, which fails exactly
+		// this assertion. (dtMs still reaches ServerUpdate as `param_1 + accMs`, per 0x5a95de,
+		// so the FRAME ms is not ignored everywhere - only in the accumulator, which is what
+		// arming is a function of.)
+		F3::CombatManager cmA, cmB;
+		cmA.SetRoundMode( 1 ); cmB.SetRoundMode( 1 );
+		F3::SpawnedEntity c1, c2;
+		c1.entityState = c2.entityState = F3::kStateSpawned;
+		strcpy( c1.name, "PONE" ); strcpy( c2.name, "PTWO" );
+		cmA.AddToTurns( &c1 ); cmB.AddToTurns( &c2 );
+		cmA.Tick( 1, 6 );
+		cmB.Tick( 999, 6 );
+		check( cmA.AccMs() == cmB.AccMs() && cmA.AccMs() == 6000u,
+		       "arming ignores the frame ms: 1 ms and 999 ms give the SAME round clock" );
+		check( c1.turnDeadline0x29C == c2.turnDeadline0x29C,
+		       "and the armed deadline is a pure function of that clock, not of wall time" );
+
+		// (6) NON-COMBAT ENTITIES TICK IDENTICALLY WHEN THE TURN LIST IS EMPTY - and, in the
+		// second control, when the list is NON-empty but holds some OTHER entity. The row asks for
+		// the first; the second is the one that catches a real leak, because an empty list can
+		// trivially change nothing. Mutant covered: if a turn tick ever wrote state onto an entity
+		// it does not own (a latch clear, an armed deadline, a queue touch), the payload spans stop
+		// matching and this fails.
+		{
+			char sa[ 2200 ], sb[ 2200 ], ca[ 2200 ], cb[ 2200 ];
+
+			// control A: world loop only, no combat manager at all
+			F3::SpawnedEntity soloA;
+			soloA.entityState = F3::kStateActive;
+			strcpy( soloA.name, "SOLO" );
+			soloA.statMax = soloA.statCur = 30;
+			soloA.pos[0] = 4.0f;
+			F3::SpawnedEntity otherB;   // the combatant that A does not have
+			otherB.entityState = F3::kStateSpawned;
+			strcpy( otherB.name, "OTHER" );
+			F3::CombatManager emptyCm;
+			emptyCm.SetRoundMode( 1 );              // round mode, but NOTHING listed
+			F3::CombatManager busyCm;
+			busyCm.SetRoundMode( 1 );               // round mode with an unrelated actor listed
+			busyCm.AddToTurns( &otherB );
+
+			F3::g_spawnedEntities[ 106 ] = &soloA;
+			for ( int i = 0; i < 4; ++i ) { F3::TickWorldEntities( 16 ); }
+			{
+				FILE* f = fopen( "B-t011-a.txt", "w" );
+				F3::Sim::Sources sc; sc.combat = 0; sc.paths = 0;
+				F3::Sim::ResetBaseClock();
+				F3::Sim::WriteFrame( f, sc, 9, 1000u, 1000u, 0, "injected-counter" );
+				fclose( f );
+			}
+			FrameLine( "B-t011-a.txt", 0, sa, (int)sizeof( sa ) );
+			F3::g_spawnedEntities[ 106 ] = 0;
+
+			// control B: same entity, same world-loop ticks, PLUS a round-mode manager Tick, and
+			// in the second pass a manager that owns a DIFFERENT entity.
+			F3::SpawnedEntity soloB;
+			soloB.entityState = F3::kStateActive;
+			strcpy( soloB.name, "SOLO" );
+			soloB.statMax = soloB.statCur = 30;
+			soloB.pos[0] = 4.0f;
+			F3::g_spawnedEntities[ 106 ] = &soloB;
+			for ( int i = 0; i < 4; ++i ) {
+				emptyCm.Tick( 16, 6 );
+				busyCm.Tick( 16, 6 );
+				F3::TickWorldEntities( 16 );
+			}
+			{
+				FILE* f = fopen( "B-t011-b.txt", "w" );
+				F3::Sim::Sources sc; sc.combat = 0; sc.paths = 0;
+				F3::Sim::ResetBaseClock();
+				F3::Sim::WriteFrame( f, sc, 9, 1000u, 1000u, 0, "injected-counter" );
+				fclose( f );
+			}
+			FrameLine( "B-t011-b.txt", 0, sb, (int)sizeof( sb ) );
+			F3::g_spawnedEntities[ 106 ] = 0;
+
+			// Compare the PAYLOAD SPAN ONLY: " ents=" up to " fnv=", which excludes frame and
+			// clockDelta (they differ by construction) and excludes fnv (derived from the span).
+			DigSpan( sa, "ents", ca, (int)sizeof( ca ) );
+			DigSpan( sb, "ents", cb, (int)sizeof( cb ) );
+			check( ca[0] && cb[0], "empty-list control found both payload spans" );
+			check( strcmp( ca, cb ) == 0,
+			       "a non-combat entity is byte-identical with and without a round-mode Tick:" );
+			if ( strcmp( ca, cb ) != 0 ) { printf( "     A=%s\n     B=%s\n", ca, cb ); }
+			check( strstr( cb, ",q=0," ) != 0,
+			       "  and its own queue stayed empty (the manager never queued anything for it)" );
+			// The listed combatant WAS walked: it is state 5, so the dispatch owns it.
+			check( busyCm.LastDispatched() != 0, "the round walk did dispatch its own node's entity" );
+			remove( "B-t011-a.txt" ); remove( "B-t011-b.txt" );
+		}
+
+		F3::g_spawnedEntities[ 104 ] = 0;
+		F3::g_spawnedEntities[ 105 ] = 0;
+		F3::SetActiveCombatManager( 0 );   // do not leak the manager into later blocks
+	}
+
+		// ---- T-026: the digest is reproducible, sensitive, and honest about gaps -------------
 	{
 		F3::CombatManager cm;
 		JE::PathManager pm;
