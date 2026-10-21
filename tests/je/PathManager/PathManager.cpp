@@ -434,7 +434,7 @@ int main() {
 		// across the clear, or that checked before clearing, would skip an actor that the
 		// original acts on. These four assertions pin that order; they are the reason the
 		// round-advance question below is a question and not a guess.
-		cm.SetRoundMode( 1 );                 // the round-walk branch (0x5a955a onward)
+		cm.SetRoundMode( 1 );                 // the round-walk branch (0x5a955a onward) - TEST-ONLY arming: dead in shipped (10e/045a7ec), annotated per T-051
 		F3::SpawnedEntity b1, b2;
 		b1.entityState = b2.entityState = F3::kStateSpawned;
 		b2.entityState = F3::kStateSpawned;
@@ -473,7 +473,7 @@ int main() {
 		// so the FRAME ms is not ignored everywhere - only in the accumulator, which is what
 		// arming is a function of.)
 		F3::CombatManager cmA, cmB;
-		cmA.SetRoundMode( 1 ); cmB.SetRoundMode( 1 );
+		cmA.SetRoundMode( 1 ); cmB.SetRoundMode( 1 );   // TEST-ONLY walk arming (dead in shipped - 10e, annotated T-051)
 		F3::SpawnedEntity c1, c2;
 		c1.entityState = c2.entityState = F3::kStateSpawned;
 		strcpy( c1.name, "PONE" ); strcpy( c2.name, "PTWO" );
@@ -504,9 +504,9 @@ int main() {
 			otherB.entityState = F3::kStateSpawned;
 			strcpy( otherB.name, "OTHER" );
 			F3::CombatManager emptyCm;
-			emptyCm.SetRoundMode( 1 );              // round mode, but NOTHING listed
+			emptyCm.SetRoundMode( 1 );              // round mode, but NOTHING listed - TEST-ONLY arming (dead in shipped; T-051 annotation)
 			F3::CombatManager busyCm;
-			busyCm.SetRoundMode( 1 );               // round mode with an unrelated actor listed
+			busyCm.SetRoundMode( 1 );               // round mode with an unrelated actor listed - TEST-ONLY arming (dead in shipped; T-051 annotation)
 			busyCm.AddToTurns( &otherB );
 
 			F3::g_spawnedEntities[ 106 ] = &soloA;
@@ -592,7 +592,7 @@ int main() {
 		F3::CombatManager cm;
 		e.entityState = F3::kStateSpawned;
 		cm.AddToTurns( &e );
-		cm.SetRoundMode( 1 );
+		cm.SetRoundMode( 1 );   // TEST-ONLY walk arming (dead in shipped, 10e/045a7ec; T-051 annotation)
 		cm.Tick( 16, 3 );
 		check( e.actedLatch0x319 == 0,
 		       "maintenance/TurnPrep zeroes the latch the pump raised; a pumped-empty queue does not re-raise it" );
@@ -618,7 +618,7 @@ int main() {
 		strcpy( d1.name, "DEFER" ); strcpy( d2.name, "NEXTN" );
 		F3::GameActionWait dw; dw.durationMs = 100000;
 		d1.actions[ 0 ].kind = 2; d1.actions[ 0 ].action = &dw;
-		cm2.SetRoundMode( 1 );
+		cm2.SetRoundMode( 1 );   // TEST-ONLY walk arming (dead in shipped, 10e/045a7ec; T-051 annotation)
 		cm2.AddToTurns( &d1 ); cm2.AddToTurns( &d2 );
 		cm2.Tick( 16, 3 );
 		check( cm2.LastDispatched() == &d1,
@@ -659,6 +659,40 @@ int main() {
 			}
 			F3::g_spawnedEntities[ 120 ] = 0;
 		}
+	}
+
+	// ---- T-051: the walk branch is DEAD in the shipped demo - the port keeps it inert --------
+	// T-010 10e (discoveries/2025-10-21-t010-10e-manager-producers.md, closed at 045a7ec):
+	// +4 (mode) and +14 (rearm) have NO nonzero producer anywhere in the image; the sole +4
+	// writer meth_0x5a9330 is called exactly once (0x5a957f) behind a [this+14]!=0 gate. The
+	// shipped demo NEVER enters the round-walk branch at 0x5a951d - free-run (0x5a9525) is the
+	// only live path. The port mirrors the constants (mode0x4_=0), so every SetRoundMode(1)
+	// call in this file is a TEST-ONLY arming, annotated as such (row requirement: the test
+	// name/comment SAYS SO); sim-driver never arms (audited by sim-driver-verify, T-051).
+	{
+		F3::CombatManager fresh;
+		check( fresh.RoundMode() == 0u,
+		       "T-051: a default-constructed manager is free-run - the only mode the shipped demo can ever be in (10e dead branch)" );
+
+		F3::SpawnedEntity f1, f2;
+		f1.entityState = f2.entityState = F3::kStateSpawned;
+		F3::GameActionWait f1w; f1w.durationMs = 10000;    // defers forever at dt=16
+		f1.actions[ 0 ].kind = 2; f1.actions[ 0 ].action = &f1w;
+		F3::SetActiveCombatManager( &fresh );
+		fresh.AddToTurns( &f1 ); fresh.AddToTurns( &f2 );
+		f1.actedLatch0x319 = 1;                  // latched BEFORE the call, walk-style
+		fresh.Tick( 16, 3 );                      // NO SetRoundMode: the shipped-live branch
+		// A walk-mode call would have SKIPPED this node (0x5a955d) and advanced; free-run
+		// (0x5a9525) has no latch test at all. Proof it dispatched: maintenance zeroes the
+		// manual 1 (0x549094 runs in BOTH branches), so the ONLY way f1 is latched again
+		// after the call is the T-048 raiser firing INSIDE a pump that ran - dispatch
+		// happened despite the latch. Inertness asserted through behavior, not absence.
+		check( fresh.AccMs() == 0u && f1.actedLatch0x319 == 1 && fresh.TurnCount() == 2,
+		       "T-051: free-run DISPATCHES a latched node (skip-advance inert: no 0x5a955d test exists here), advances no round clock, unlinks nothing - the walk machinery never bites outside its test-only arming" );
+		fresh.Tick( 16, 3 );
+		check( fresh.AccMs() == 0u && f1.actedLatch0x319 == 1 && fresh.TurnCount() == 2,
+		       "T-051: same invariants on the second free-run Tick - no rotation accumulates, the deferring node keeps being dispatched (shipped-live behavior, 10e)" );
+		F3::SetActiveCombatManager( 0 );
 	}
 
 		// ---- T-026: the digest is reproducible, sensitive, and honest about gaps -------------
