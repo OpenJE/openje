@@ -453,6 +453,14 @@ namespace JE {
 		return CacheCountForTest();
 	}
 
+	const char* ResourceSystem::ResName( const Res* res ) {
+		// Same selection the file-static ResNamePtr makes (SSO inline vs stored heap pointer).
+		if ( res->nameCap < 0x10u ) {
+			return res->nameBuf;
+		}
+		return *reinterpret_cast<const char* const*>( res->nameBuf );
+	}
+
 	ResourceSystem::Res* ResourceSystem::Demand_0x49b750( const char* name, int managed ) {
 		tracing::instrument( tracing::LOCATION, "name=%s, managed=%d", name, managed );
 

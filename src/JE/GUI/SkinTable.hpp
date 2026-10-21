@@ -86,10 +86,21 @@ namespace JE {
 				// Gfx_Engine's acquire slot, so the demo simply never draws that piece.
 				unsigned TextureMisses() const;
 
+				// T-007 steps 3-4: run LoadDefault's registration tail (0x52363b..0x5236f8 =
+				// GUI::ResolveSkinTexture: probe-hit-skips-demand, negative-clamp, null-object
+				// gate-clears-id) over every parsed record. The shipped record KEEPS the resolved
+				// index at record+0x04 - the name only lives at parse time (recon sec 8d) - so the
+				// ids land in a parallel array here, never in SkinDefault::texture. Ids: -1 before
+				// this call, 0 for absent keys and every miss path, the id otherwise.
+				unsigned ResolveTextures( JE::ResourceSystem& rs, const TextureSlots& slots,
+				                          TextureBindReport* rep );
+				int ResolvedTextureIndex( unsigned i ) const;
+
 			private:
 				SkinTable( const SkinTable& );
 				SkinTable& operator=( const SkinTable& );
 
+				int*              m_ids;       // per-record resolved index (-1 = never bound)
 				char*             m_text;      // owned: the writable, NUL-terminated ini text
 				const char**      m_secs;      // owned array: the section name behind each record
 				JE::VFX_Parameter* m_tree;     // owned: aliases into m_text

@@ -113,6 +113,11 @@ namespace JE {
 			// 0x49C8D0 - {u16 len, chars} stream string reader (owned char* out slot).
 			// Managed-resource cache occupancy (test seam; original = cls_0x50caa0 hash/LRU).
 			static int CachedResourceCount();
+			// The Res's own name: SSO inline buffer while nameCap < 0x10, else the stored heap
+			// pointer (same selection the Demand/Release log lines make through the file-static
+			// ResNamePtr). Public because the GUI texture-index seam (GUI::TextureSlots::index)
+			// passes the RESOLVED name, the way the original reads it off the Res at 0x4b21e8.
+			static const char* ResName( const Res* res );
 
 			static char StreamReadString_0x49c8d0( char** out, MemStream* ms );
 

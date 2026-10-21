@@ -3,6 +3,7 @@
 #include "JE/GUI/SkinFragments.hpp"
 
 #include "JE/GUI/InterfaceFile.hpp"
+#include "JE/ResourceSystem.hpp"
 
 #include <string.h>
 
@@ -125,6 +126,78 @@ namespace JE {
 			unsigned n = 0;
 			if ( w && names ) { CollectOne( w, names, n, maxUnique ); }
 			return n;
+		}
+
+		// ---- the texture registration chain (T-007 steps 3-4) -------------------------------
+		// Shared core of the two shipped call sites. Every decision point carries the original EA
+		// (byte-verified in discoveries/2025-10-21-t007-skin-subrecord-g1-g2.md).
+		static char RunTextureChain( ResourceSystem* rs, const TextureSlots* slots,
+		                             const char* name, int* outIndex,
+		                             TextureBindReport* rep ) {
+			if ( !rs || !slots || !slots->probe || !outIndex ) { return 0; }
+
+			*outIndex = 0;                        // the shipped out slot is pre-zeroed (0x4b21a5 /
+			                                      // record+0x04 cleared at 0x523570)
+			const char* nm = name ? name : "";    // the original probes the string as stored
+
+			int probeId = 0;
+			if ( rep ) { ++rep->probeCalls; }     // 0x4b21bb / 0x52363b
+			if ( slots->probe( nm, &probeId, slots->ctx ) ) {
+				if ( rep ) { ++rep->probeHits; }
+				*outIndex = probeId;
+				return 1;                          // demand SKIPPED (0x4b21c3 / 0x523643)
+			}
+
+			// Probe miss: demand the resource the texture is carried in (flag 1 at 0x4b21da /
+			// 0x523662), convert through +0xC4, release exactly once (0x4b2232 / 0x5236ce).
+			ResourceSystem::Res* res = rs->Demand_0x49b750( nm, 1 );
+			if ( rep ) { ++rep->demands; }
+			if ( !res ) {
+				if ( rep ) { ++rep->demandNulls; }
+				return 1;                          // quiet id-0 path (0x4b21e6 jz -> store 0)
+			}
+			if ( slots->index ) {
+				if ( rep ) { ++rep->indexCalls; }
+				// The shipped convert reads the name/data off the Res itself (0x4b21e8..0x4b21f9:
+				// [res+0x20]/[res+0x2C]); we hand it ResName + the payload the same way.
+				int idx = slots->index( ResourceSystem::ResName( res ), res->data,
+				                        (unsigned)res->size, slots->ctx );
+				if ( idx < 0 ) {                   // load failure: clamp the id, not the release
+					idx = 0;                       // 0x4b2223..0x4b2227 / 0x5236ba..0x5236c5
+					if ( rep ) { ++rep->clamped; }
+				}
+				*outIndex = idx;
+			}
+			rs->Release_0x498eb0( res );
+			if ( rep ) { ++rep->releases; }
+			return 1;
+		}
+
+		char BindFragmentTexture( ResourceSystem* rs, const TextureSlots* slots,
+		                          const char* name, int* outIndex, TextureBindReport* rep ) {
+			// Reader-side chain: NO +0xD8 gate - the shipped reader ends at the store (0x4b2237).
+			return RunTextureChain( rs, slots, name, outIndex, rep );
+		}
+
+		char ResolveSkinTexture( ResourceSystem* rs, const TextureSlots* slots,
+		                          const char* name, int* ioId, TextureBindReport* rep ) {
+			if ( !name ) {
+				if ( ioId ) { *ioId = 0; }   // "texture" key absent: the shipped code pre-zeroed
+				return 0;                    // +0x04 and jumped the whole block (0x523608)
+			}
+			if ( !RunTextureChain( rs, slots, name, ioId, rep ) ) { return 0; }
+
+			// LoadDefault's tail (@0x5236d7): whatever the id slot holds, a nonzero id must resolve
+			// through +0xD8 to an object or it is CLEARED (@0x5236ed cmp / 0x5236f8 mov).
+			if ( *ioId != 0 ) {
+				if ( rep ) { ++rep->gateCalls; }
+				TextureObject* obj = slots->object ? slots->object( *ioId, slots->ctx ) : 0;
+				if ( !obj ) {
+					*ioId = 0;
+					if ( rep ) { ++rep->gateCleared; }
+				}
+			}
+			return 1;
 		}
 
 	} // namespace GUI

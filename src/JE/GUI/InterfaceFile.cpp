@@ -98,24 +98,38 @@ namespace JE {
 		} // anonymous namespace
 
 		// ---- the 9 inline skin records: Fragment::ReadFrom_0x4b20a0 ------------------
-		static char ReadSkinFragment( SkinFragment* s, const unsigned char*& p,
-		                              const unsigned char* end ) {
+		// The byte-level record reader, exposed as the T-004-family test seam and driven by
+		// ReadWidgetBlock for each of the nine inline GUI::Fragment objects (loop
+		// 0x4b1297..0x4b12bf, stride 0x158). Field stores carry the byte-verified EAs of
+		// discoveries/2025-10-21-t007-skin-subrecord-g1-g2.md (G1 table d).
+		char InterfaceFile::ReadFragmentRecord( SkinFragment* s, const unsigned char*& p,
+		                                        const unsigned char* end,
+		                                        const TextureSlots* slots, TextureBindReport* rep ) {
 			if ( !ReadU32( p, end, &s->d28 ) || !ReadU32( p, end, &s->d2C )
 			     || !ReadU32( p, end, &s->d30 ) || !ReadU32( p, end, &s->d34 )
-			     || !ReadU32( p, end, &s->d38 ) || !ReadU32( p, end, &s->d8a ) ) {   // 0x4b215e
+			     || !ReadU32( p, end, &s->d38 ) || !ReadU32( p, end, &s->d8a ) ) {   // 0x4b20d8..0x4b215a
 				return 0;
 			}
 			if ( !ReadString( p, end, &s->textureName ) ) {                            // 0x4b2187
 				return 0;
 			}
-			// 0x4b21bb/0x4b2225: registry probe + index through global byte_707CE4
-			// (vft+0xDC / vft+0xC4) around a Demand of textureName - consumes NO stream bytes.
-			// Not ported (recon gap G1, T-007), so the slot keeps the "not registered" value.
-			s->textureIndex = -1;
-			if ( !ReadU32( p, end, &s->d8b ) ) { return 0; }                            // 0x4b2257
-		                                                                              // 0x4b2260: 3 vftptr
-		                                                                              // copies into +220 (not modelled)
-			if ( !ReadU32( p, end, &s->d154 ) ) { return 0; }                           // 0x4b228a
+			// 0x4b21bb..0x4b2244: the registration chain - probe (+0xDC) and, on a miss,
+			// Demand(name,1) -> get-or-create (+0xC4) -> negative-clamp -> Release. It consumes
+			// NO stream bytes. Unbound (slots == NULL, or no resource system) keeps the honest
+			// "not registered" marker -1; the shipped reader ALWAYS stores an id (0 on every
+			// miss path, out slot pre-zeroed at 0x4b21a5).
+			int bound = -1;
+			if ( !BindFragmentTexture( JE::g_resource_system, slots, s->textureName,
+			                           &bound, rep ) ) {
+				bound = -1;
+			}
+			s->textureIndex = bound;
+			if ( !ReadU32( p, end, &s->d8b ) ) { return 0; }                            // 0x4b2250 (+0xC0)
+			// 0x4b2260..0x4b2278: the shipped broadcast - dword[+0xC0] copied to +0xDC/+0xF8/
+			// +0x114 by a 3-iteration stride-0x1C loop. Port rule: reproduce the COPY, never
+			// compute. The three fields carry exactly the same value and nothing more is claimed.
+			s->dDC = s->dF8 = s->d114 = s->d8b;
+			if ( !ReadU32( p, end, &s->d154 ) ) { return 0; }                           // 0x4b2283 (+0x154)
 			return ReadRaw( p, end, s->rect, 16 ) != 0;                                // Base::ReadFrom_0x4b2850
 		}
 
@@ -147,7 +161,7 @@ namespace JE {
 				if ( !ReadString( p, end, &w->sCF8 ) ) { return 0; }
 			}
 			for ( unsigned i = 0; i < SKINS_PER_WIDGET; ++i ) {         // loop 0x4b1297..0x4b12bf
-				if ( !ReadSkinFragment( &w->skins[i], p, end ) ) { return 0; }
+				if ( !ReadFragmentRecord( &w->skins[i], p, end, m_slots, &m_bindRep ) ) { return 0; }
 			}
 			// child-link table: u32 index, then {string,u32} pairs until index == -1
 			// (0x4b12e3..0x4b134b). A leading -1 means "no table".
@@ -231,7 +245,7 @@ namespace JE {
 		// ---- LoadInterface_0x495b50 --------------------------------------------------
 		InterfaceFile::InterfaceFile()
 		: m_sourceName( 0 ), m_a2( 0 ), m_flag( 0 ), m_nRoots( 0 ), m_widgetCount( 0 )
-		, m_consumed( 0 ) {
+		, m_consumed( 0 ), m_slots( 0 ) {
 			memset( m_roots, 0, sizeof( m_roots ) );
 		}
 

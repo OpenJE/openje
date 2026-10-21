@@ -73,6 +73,71 @@ static JE::GUI::SkinTextureInfo nhAcquireGateZero( const char* name, void* ctx )
 	return ti;
 }
 
+// ---- T-007 steps 3-4 fixtures (KeenStorm): the TextureSlots seam + wire-record writers ------
+// The fixture registry stands in for the REAL one (cls_0x55dc80 @0x70B200, T-013's). Its three
+// functions mirror the byte-verified slot bodies of
+// discoveries/2025-10-21-t007-skin-subrecord-g1-g2.md: a probe hit writes the id through the out
+// pointer AND bumps the object use count (0x51f66b/0x51f679); a miss writes 0 (0x51f643); object()
+// returns NULL for an id with no object (0x51f185 path). g_fxProbeMode: 0 never hits, 1 hits only
+// "hit-me.bmp", 2 hits every non-empty name. All OUR numbers, none measured from any texture.
+static JE::GUI::TextureObject g_fxObj;
+static int g_fxProbeMode = 1;
+static int g_fxProbeHitId = 77;
+static int g_fxKeptId = 77;          // the id fxObject() resolves to an object
+static int g_fxIndexRet = 123;
+static unsigned g_fxIndexCalls = 0;
+static char g_fxIndexName[ 64 ];
+static int  g_fxIndexSize = -1;
+
+static char fxProbe( const char* name, int* outId, void* ) {
+	if ( name && name[0] && g_fxProbeMode != 0
+	     && ( g_fxProbeMode == 2 || strcmp( name, "hit-me.bmp" ) == 0 ) ) {
+		*outId = g_fxProbeHitId;
+		++g_fxObj.useCount;                       // 0x51f679: ++(obj+44) per hit
+		return 1;
+	}
+	*outId = 0;                                   // 0x51f643: miss stores 0
+	return 0;
+}
+static int fxIndex( const char* name, const void*, unsigned size, void* ) {
+	++g_fxIndexCalls;
+	strncpy( g_fxIndexName, name ? name : "", sizeof( g_fxIndexName ) - 1u );
+	g_fxIndexName[ sizeof( g_fxIndexName ) - 1u ] = 0;
+	g_fxIndexSize = (int)size;
+	return g_fxIndexRet;
+}
+static JE::GUI::TextureObject* fxObject( int id, void* ) {
+	return ( id == g_fxKeptId ) ? &g_fxObj : 0;   // 0x51f185 "invalid Texture Handle" path
+}
+static JE::GUI::TextureSlots fxSlots() {
+	JE::GUI::TextureSlots s;
+	s.ctx = 0; s.probe = &fxProbe; s.index = &fxIndex; s.object = &fxObject;
+	return s;
+}
+
+// T-004 family: little-endian writers for a hand-built Fragment wire record.
+static void put32( unsigned char* p, unsigned v ) {
+	p[0] = (unsigned char)( v        & 0xFFu );
+	p[1] = (unsigned char)( ( v >> 8 ) & 0xFFu );
+	p[2] = (unsigned char)( ( v >> 16 ) & 0xFFu );
+	p[3] = (unsigned char)( ( v >> 24 ) & 0xFFu );
+}
+
+// Counts every Fragment record of every widget and how many carry a bound textureIndex.
+static void walkBind( JE::GUI::Widget* w, unsigned& records, unsigned& zeros,
+                     unsigned& minusOnes, unsigned& ids ) {
+	if ( !w ) { return; }
+	for ( int s = 0; s < JE::GUI::SKINS_PER_WIDGET; ++s ) {
+		++records;
+		if ( w->skins[s].textureIndex == 0 ) { ++zeros; }
+		else if ( w->skins[s].textureIndex == -1 ) { ++minusOnes; }
+		else { ++ids; }
+	}
+	for ( unsigned c = 0; c < w->nChildren; ++c ) {
+		walkBind( w->children[c], records, zeros, minusOnes, ids );
+	}
+}
+
 static int lowerEq( const char* a, const char* b ) { return tolower( (unsigned char)*a ) == tolower( (unsigned char)*b ); }
 static int endsWithImage( const char* s ) {
 	size_t n = strlen( s );
@@ -916,6 +981,216 @@ int main( int argc, char** argv ) {
 			}
 		}
 
+	// ---- T-007 steps 3-4 (KeenStorm): byte-level Fragment records + the binding control shape --
+	// Every EA quoted below is byte-verified in discoveries/2025-10-21-t007-skin-subrecord-g1-g2.md.
+	{
+		// (1) Synthetic wire record through the reader's exact footprint. Field widths and order
+		// are Fragment::ReadFrom_0x4b20a0's: 6 x u32 (0x4b20d8 / 0x4b20ec / 0x4b210c / 0x4b2126 /
+		// 0x4b213a / 0x4b215a), {u32 len, chars} name (0x4b2187 via sub_50B880), u32 -> frag+0xC0
+		// (0x4b2250), u32 -> +0x154 (0x4b2283), 16-byte rect (Base::ReadFrom_0x4b2850).
+		static unsigned char rec[ 6 * 4 + 4 + 10 + 4 + 4 + 16 ];
+		unsigned char* q = rec;
+		put32( q + 0, 1u );             // mode/role  (+0x1C)
+		put32( q + 4, 10u );            // width      (+0x20)
+		put32( q + 8, 20u );            // height     (+0x24)
+		put32( q + 12, 44u );           // rate       (+0x28)
+		put32( q + 16, 0xDEADBEEFu );   // +0x2C      NOT interpreted (G1 item 5) - parse and store
+		put32( q + 20, 3u );            // tile count (+0x30)
+		put32( q + 24, 10u );           // name length
+		memcpy( q + 28, "hit-me.bmp", 10 );
+		put32( q + 38, 0x51525354u );   // frag+0xC0
+		put32( q + 42, 0xFF808080u );   // frag+0x154
+		put32( q + 46, 0u ); put32( q + 50, 0u ); put32( q + 54, 64u ); put32( q + 58, 32u );
+
+		JE::GUI::SkinFragment sf;
+		memset( &sf, 0, sizeof( sf ) );
+		const unsigned char* p = rec;
+		check( JE::GUI::InterfaceFile::ReadFragmentRecord( &sf, p, rec + sizeof( rec ), 0, 0 ) == 1,
+		       "synthetic GUI::Fragment wire record parses (T-004 family, byte-exact footprint)" );
+		check( p == rec + sizeof( rec ),
+		       "reader consumed EXACTLY the footprint - the binding chain eats no stream bytes (0x4b2197..0x4b2244)" );
+		check( sf.d28 == 1u && sf.d2C == 10u && sf.d30 == 20u && sf.d34 == 44u && sf.d8a == 3u,
+		       "mode/width/height/rate/tile dwords land per the G1 field table" );
+		check( sf.d38 == 0xDEADBEEFu,
+		       "+0x2C round-trips UNINTERPRETED: read+store, nothing invented (port rule 1)" );
+		check( sf.textureName && strcmp( sf.textureName, "hit-me.bmp" ) == 0, "texture name decoded" );
+		check( sf.d8b == 0x51525354u && sf.dDC == sf.d8b && sf.dF8 == sf.d8b && sf.d114 == sf.d8b,
+		       "the 0x4b2260..0x4b2278 broadcast is a COPY of dword[+0xC0], never a computation (port rule 2)" );
+		check( sf.d154 == 0xFF808080u, "+0x154 colour dword stored" );
+		check( sf.rect[0] == 0 && sf.rect[1] == 0 && sf.rect[2] == 64 && sf.rect[3] == 32,
+		       "the 16-byte rect lands last (Base::ReadFrom_0x4b2850)" );
+		check( sf.textureIndex == -1, "no slots bound: textureIndex says NOT BOUND, not a fake id" );
+		free( sf.textureName );
+
+		{	// one byte short -> clean failure, like the shipped short-read exits (test al,al / jz)
+			JE::GUI::SkinFragment s2; memset( &s2, 0, sizeof( s2 ) );
+			const unsigned char* p2 = rec;
+			check( JE::GUI::InterfaceFile::ReadFragmentRecord( &s2, p2, rec + sizeof( rec ) - 1, 0, 0 ) == 0,
+			       "truncated record fails without overread" );
+			free( s2.textureName );
+		}
+	}
+	{
+		// (2) The fragment-reader chain (0x4b21bb..0x4b2244) direct against the fixture seam.
+		JE::GUI::TextureSlots fx = fxSlots();
+		JE::GUI::TextureBindReport rep;
+		int out = -1;
+		g_fxProbeMode = 1; g_fxProbeHitId = 77; g_fxKeptId = 77; g_fxObj.useCount = 0;
+		check( JE::GUI::BindFragmentTexture( &rs, &fx, "hit-me.bmp", &out, &rep ) == 1
+		       && out == 77 && rep.probeCalls == 1u && rep.probeHits == 1u
+		       && rep.demands == 0u && rep.indexCalls == 0u && g_fxObj.useCount == 1u,
+		       "probe hit stores the id, bumps the use count and demands NOTHING (0x4b21c3 skip)" );
+		check( rep.gateCalls == 0u,
+		       "the FRAGMENT chain never runs the +0xD8 gate - it ends at the store (0x4b2237)" );
+
+		rep = JE::GUI::TextureBindReport(); out = -1;
+		check( JE::GUI::BindFragmentTexture( &rs, &fx, "no-such-texture.tga", &out, &rep ) == 1
+		       && out == 0 && rep.demands == 1u && rep.demandNulls == 1u
+		       && rep.indexCalls == 0u && rep.releases == 0u,
+		       "demand miss is the shipped quiet id-0 path: pre-zeroed store, nothing to release (0x4b21e6)" );
+
+		// (c) miss + a REAL resource ("skinlist", ftype 800, 78 bytes - GUILoadingRecon sec 9).
+		rep = JE::GUI::TextureBindReport(); out = -1; g_fxIndexCalls = 0; g_fxIndexRet = 123;
+		check( JE::GUI::BindFragmentTexture( &rs, &fx, "skinlist", &out, &rep ) == 1
+		       && out == 123 && rep.demands == 1u && rep.indexCalls == 1u && rep.releases == 1u
+		       && strcmp( g_fxIndexName, "skinlist" ) == 0,
+		       "a successful demand converts through +0xC4 with the RESOLVED name and releases exactly once (0x4b221d/0x4b2232)" );
+		check( g_fxIndexSize == 78,
+		       "the convert sees the resource payload size as measured on disk (recon sec 9: skinlist 78 bytes)" );
+		{	// demand-COUNT semantics: the chain left the managed Res cached at count 0; a fresh
+			// demand bumps the SAME cached record instead of re-reading (our Demand_0x49b750
+			// cache-hit path mirrors the shipped 0x49b7xx bump).
+			JE::ResourceSystem::Res* again = rs.Demand_0x49b750( "skinlist", 1 );
+			check( again != 0 && again->demandCount == 1,
+			       "re-demand after the chain lands at count 1 via the cache - no count leaked, no premature free" );
+			rs.Release_0x498eb0( again );
+		}
+
+		rep = JE::GUI::TextureBindReport(); out = -1; g_fxIndexRet = -7;
+		check( JE::GUI::BindFragmentTexture( &rs, &fx, "skinlist", &out, &rep ) == 1
+		       && out == 0 && rep.clamped == 1u && rep.indexCalls == 1u && rep.releases == 1u,
+		       "a NEGATIVE index is clamped to 0 and the resource is STILL released (0x4b2223..0x4b2227)" );
+		g_fxIndexRet = 123;
+
+		rep = JE::GUI::TextureBindReport(); out = -1;
+		check( JE::GUI::BindFragmentTexture( &rs, &fx, "", &out, &rep ) == 1
+		       && out == 0 && rep.probeCalls == 1u && rep.demands == 1u && rep.demandNulls == 1u,
+		       "an empty name is NOT special-cased - the shipped reader probes+demands it like the 432 unnamed records" );
+	}
+	{
+		// (3) The LoadDefault variant (0x52363b..0x5236f8): probe-skip PLUS the validity gate.
+		JE::GUI::TextureSlots fx = fxSlots();
+		JE::GUI::TextureBindReport rep;
+		int out = -1;
+		g_fxProbeMode = 1; g_fxProbeHitId = 99; g_fxKeptId = 77;
+		check( JE::GUI::ResolveSkinTexture( &rs, &fx, "hit-me.bmp", &out, &rep ) == 1
+		       && out == 0 && rep.probeHits == 1u && rep.demands == 0u
+		       && rep.gateCalls == 1u && rep.gateCleared == 1u,
+		       "even a probe hit passes the gate, and a handle with no object CLEARS the id (0x523643 -> 0x5236d7 -> 0x5236f8)" );
+
+		out = -1; rep = JE::GUI::TextureBindReport(); g_fxKeptId = 99;
+		check( JE::GUI::ResolveSkinTexture( &rs, &fx, "hit-me.bmp", &out, &rep ) == 1
+		       && out == 99 && rep.gateCalls == 1u && rep.gateCleared == 0u,
+		       "a gate that resolves to an object KEEPS the id (no 0x5236f8 store)" );
+
+		out = -1; rep = JE::GUI::TextureBindReport(); g_fxProbeMode = 0; g_fxKeptId = 123;
+		check( JE::GUI::ResolveSkinTexture( &rs, &fx, "skinlist", &out, &rep ) == 1
+		       && out == 123 && rep.demands == 1u && rep.releases == 1u
+		       && rep.gateCalls == 1u && rep.gateCleared == 0u,
+		       "miss -> demand -> convert -> release -> gate kept: the full LoadDefault chain lands the id" );
+
+		g_fxKeptId = 999;
+		out = -1; rep = JE::GUI::TextureBindReport();
+		check( JE::GUI::ResolveSkinTexture( &rs, &fx, "skinlist", &out, &rep ) == 1
+		       && out == 0 && rep.gateCleared == 1u && rep.clamped == 0u,
+		       "a CONVERTED id can be gate-cleared too - clamp (negative index) and gate (no object) are DIFFERENT failures" );
+
+		out = 5; rep = JE::GUI::TextureBindReport(); g_fxKeptId = 77;
+		check( JE::GUI::ResolveSkinTexture( &rs, &fx, 0, &out, &rep ) == 0
+		       && out == 0 && rep.probeCalls == 0u && rep.demands == 0u,
+		       "no 'texture' key: pre-zero the slot and jump the whole block, probe included (0x523570 + 0x523608)" );
+	}
+	{
+		// (4) Binding through the real .int loader. The shipped texture names carry their extension
+		// while the rht keys the assets WITHOUT it - the stem-vs-"name.tga" form is T-013's
+		// lockstep question, so with the honest all-miss seam every record must land the shipped
+		// demand-miss id 0, and the PARSE must be untouched.
+		g_fxProbeMode = 0;
+		JE::GUI::TextureSlots slots = fxSlots();
+		JE::GUI::InterfaceFile fb;
+		fb.SetTextureSlots( &slots );
+		check( fb.Load( "Mainmenu.INT" ) == 1, "Mainmenu.INT loads with the binding chain ON" );
+		unsigned records = 0, zeros = 0, minusOnes = 0, ids = 0;
+		walkBind( fb.Root( 0 ), records, zeros, minusOnes, ids );
+		check( records == fb.WidgetCount() * JE::GUI::SKINS_PER_WIDGET,
+		       "binding visited all nine inline Fragment records of every widget" );
+		check( minusOnes == 0u && zeros + ids == records,
+		       "every record ended on a SHIPPED id value: the store at 0x4b2244 always happens (0 = demand miss)" );
+		check( fb.TextureBindCounts().demands == records
+		       && fb.TextureBindCounts().demandNulls + fb.TextureBindCounts().indexCalls == records
+		       && fb.TextureBindCounts().releases == fb.TextureBindCounts().indexCalls
+		       && fb.TextureBindCounts().gateCalls == 0u,
+		       "one demand attempt per record; converts happen exactly for the demands that RESOLVED and each released exactly once; the reader chain never gates (0x4b2237)" );
+		printf( "     Mainmenu binding census: records=%u converted=%u demand-miss=%u (the name resolver strips the extension before the rht probe - ResolveResourceName_0x499f10 behaviour - so a '.tga' demand can still succeed)\n",
+		        records, fb.TextureBindCounts().indexCalls, fb.TextureBindCounts().demandNulls );
+		{
+			void* buf = 0; int len = 0;
+			check( rs.ReadResource( "Mainmenu.INT", &buf, &len ) == 1
+			       && (int)fb.BytesConsumed() == len,
+			       "binding ON consumed no stream bytes - the lump still terminates exactly" );
+			free( buf );
+		}
+		{	// the other extreme: a seam that knows every non-empty name.
+			JE::GUI::TextureSlots slots2 = fxSlots();
+			JE::GUI::InterfaceFile fh;
+			fh.SetTextureSlots( &slots2 );
+			g_fxProbeMode = 2; g_fxProbeHitId = 77;
+			check( fh.Load( "Mainmenu.INT" ) == 1, "Mainmenu.INT loads with an always-hit seam" );
+			unsigned named = 0, plausible = 0;
+			walkSkins( fh.Root( 0 ), &named, &plausible );
+			records = zeros = minusOnes = ids = 0;
+			walkBind( fh.Root( 0 ), records, zeros, minusOnes, ids );
+			check( ids == named && zeros == records - named,
+			       "named records keep the seam id, empty names still store 0 (the reader never gates: 0x4b2237)" );
+			g_fxProbeMode = 0;
+		}
+		JE::GUI::InterfaceFile fu;
+		check( fu.Load( "Mainmenu.INT" ) == 1, "Mainmenu.INT still loads with the binding OFF (default)" );
+		records = zeros = minusOnes = ids = 0;
+		walkBind( fu.Root( 0 ), records, zeros, minusOnes, ids );
+		check( minusOnes == records && zeros == 0u && ids == 0u,
+		       "unbound remains the honest -1 everywhere - pre-existing parse assertions are untouched" );
+	}
+	{
+		// (5) SkinTable::ResolveTextures over shipped ini data. areamap.ini names 54 textures
+		// that exist in NO shipped resource (GUILoadingRecon sec 9) - the all-miss seam must land
+		// an all-zero id table, and never reach the gate for ids that are 0 (0x5236da test).
+		JE::GUI::TextureSlots fx = fxSlots();
+		JE::GUI::SkinTable t0;
+		check( t0.Load( "areamap.ini" ) == 1, "areamap.ini loads for the registration pass" );
+		check( t0.ResolvedTextureIndex( 0 ) == -1 && t0.ResolvedTextureIndex( 9999u ) == -1,
+		       "records say -1 (never bound) before ResolveTextures - out of range too" );
+		JE::GUI::TextureBindReport rep;
+		const unsigned n = t0.ResolveTextures( rs, fx, &rep );
+		unsigned nonzero = 0;
+		for ( unsigned i = 0; i < n; ++i ) { if ( t0.ResolvedTextureIndex( i ) != 0 ) { ++nonzero; } }
+		check( n == t0.SectionCount() && n == 54u && nonzero == 0u
+		       && rep.demands == 54u && rep.indexCalls == 0u && rep.gateCalls == 0u,
+		       "areamap's 54 named records all end id 0 via demand misses; id 0 never reaches the gate" );
+		JE::GUI::SkinTable t1;
+		g_fxProbeMode = 2; g_fxProbeHitId = 77; g_fxKeptId = 77;
+		JE::GUI::TextureBindReport rep2;
+		check( t1.Load( "areamap.ini" ) == 1 && t1.ResolveTextures( rs, fx, &rep2 ) == 54u,
+		       "the always-hit seam runs the pass over the same shipped table" );
+		unsigned kept77 = 0;
+		for ( unsigned i = 0; i < t1.SectionCount(); ++i ) {
+			if ( t1.ResolvedTextureIndex( i ) == 77 ) { ++kept77; }
+		}
+		check( kept77 == 54u && rep2.probeHits == 54u && rep2.demands == 0u && rep2.gateCleared == 0u,
+		       "a seam that knows every name gives every record the id THROUGH the gate - zero demands, zero clears" );
+		g_fxProbeMode = 0;
+	}
+
 		// (e) KNOWN-ISSUE, stated rather than papered over. Nothing in the shipped .int says which
 		// group a widget uses: the group arrives from code (the literal at 0x66d428 is "label", handed
 		// to the binding at 0x4a8b64), so the mapping widget -> group is NOT data we can assert on.
@@ -923,6 +1198,9 @@ int main( int argc, char** argv ) {
 		        "not stored in the .int; ApplySkinGroup is exercised per group, not per widget\n" );
 		printf( "     KNOWN-ISSUE: texture dims/index come from the injected acquire; the real "
 		        "registry (cls_0x55dc80 @byte_70B200, Gfx_Engine +0xD8) is T-013\n" );
+		printf( "     KNOWN-ISSUE: the binding CHAIN is ported (T-007 steps 3-4); the real registry "
+		        "behind GUI::TextureSlots and the stem-vs-extension key string handed to +0xC4 "
+		        "remain T-013's (discoveries/2025-10-21-t007-skin-subrecord-g1-g2.md)\n" );
 	}
 
 	if ( !g_fail ) { printf( "OK: GUI .int loading tests passed\n" ); return 0; }

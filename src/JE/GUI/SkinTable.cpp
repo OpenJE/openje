@@ -68,7 +68,8 @@ namespace JE {
 
 		// ---- SkinTable -------------------------------------------------------------------
 		SkinTable::SkinTable()
-			: m_text( NULL ), m_secs( NULL ), m_tree( NULL ), m_recs( NULL ), m_n( 0 ), m_cap( 0 ) {
+			: m_ids( NULL ), m_text( NULL ), m_secs( NULL ), m_tree( NULL ), m_recs( NULL )
+			, m_n( 0 ), m_cap( 0 ) {
 		}
 
 		SkinTable::~SkinTable() {
@@ -80,6 +81,10 @@ namespace JE {
 				for ( unsigned i = 0; i < m_n; ++i ) { FreeSkinDefaults( &m_recs[i] ); }
 				free( m_recs );
 				m_recs = NULL;
+			}
+			if ( m_ids ) {
+				free( m_ids );
+				m_ids = NULL;
 			}
 			if ( m_secs ) { free( m_secs ); m_secs = NULL; }
 			m_n = 0;
@@ -157,6 +162,30 @@ namespace JE {
 			return misses;
 		}
 
+		// The LoadDefault registration tail over the parsed table (T-007 steps 3-4). Each record
+		// runs GUI::ResolveSkinTexture exactly once, the way the shipped texture block runs once
+		// per record at 0x52356b..0x5236fb; the ids land in the parallel m_ids array because the
+		// SHIPPED record+0x04 is the resolved index, not the parse-time name (recon sec 8d).
+		unsigned SkinTable::ResolveTextures( JE::ResourceSystem& rs, const TextureSlots& slots,
+		                                     TextureBindReport* rep ) {
+			if ( !m_ids ) { return 0; }
+			for ( unsigned i = 0; i < m_n; ++i ) {
+				int id = 0;   // every shipped failure path stores 0: 0x523570 pre-zero,
+				              // 0x5236c5 negative-clamp, 0x5236f8 gate-clear
+				if ( m_recs[i].texture
+				     && !ResolveSkinTexture( &rs, &slots, m_recs[i].texture, &id, rep ) ) {
+					id = -1;   // seam incomplete (no probe / no resource system): not bound
+				}
+				m_ids[i] = id;
+			}
+			return m_n;
+		}
+
+		int SkinTable::ResolvedTextureIndex( unsigned i ) const {
+			if ( !m_ids || i >= m_n ) { return -1; }
+			return m_ids[i];
+		}
+
 		char SkinTable::Load( const char* iniResourceName ) {
 			Unload();
 			if ( !iniResourceName || !JE::g_resource_system ) { return 0; }
@@ -204,10 +233,14 @@ namespace JE {
 						realloc( m_secs, nc * sizeof( const char* ) ) );
 					if ( !ns ) { break; }
 					m_secs = ns;
+					int* ni = static_cast<int*>( realloc( m_ids, nc * sizeof( int ) ) );
+					if ( !ni ) { break; }
+					m_ids = ni;
 					m_cap = nc;
 				}
 				SkinDefault* rec = &m_recs[m_n];
 				memset( rec, 0, sizeof( *rec ) );
+				m_ids[m_n] = -1;   // "never bound" until ResolveTextures runs
 				// width/height fall back through the parent chain in the original; a top-level ini
 				// record has no parent, which is the hasParent = 0 path (0x523917 not taken).
 				if ( ReadSkinDefaults( tree, section, rec, noParent ) ) {

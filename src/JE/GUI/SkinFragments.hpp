@@ -6,6 +6,7 @@
 #include "types.hpp"
 
 namespace JE {
+	class ResourceSystem;   // Demand/Release partner of the binding chain below
 	namespace GUI {
 
 		struct Widget;
@@ -156,6 +157,80 @@ namespace JE {
 		// Count of distinct texture names in a tree, and up to maxUnique of them, for the
 		// coverage test. names[] entries point into the parsed tree (not copied).
 		unsigned CollectTextureNames( Widget* w, const char** names, unsigned maxUnique );
+
+		// ---- T-007 steps 3-4: the texture registration chain, as BEHAVIOUR ----------------
+		// Evidence: discoveries/2025-10-21-t007-skin-subrecord-g1-g2.md (all G1/G2 EAs below are
+		// byte-verified there) + docs/f3/GUILoadingRecon.md sec 7/8d/8e. The shipped code reaches
+		// three Gfx_Engine slots (global 0x707CE4, vftable 0x6ae7ec) that all delegate to the
+		// texture manager at 0x70B200:
+		//   +0xC4 (0x5c0a90 -> cls_0x55dc80::0x521ca0)  get-or-create: name -> registry index,
+		//          NEGATIVE on load failure (that is what the callers clamp);
+		//   +0xD8 (0x5c0930 -> cls_0x55dc80::0x51f160)  handle -> OBJECT, NULL for an invalid id;
+		//   +0xDC (0x5c0970 -> cls_0x55dc80::0x51f570)  LOOKUP ONLY: hit writes the id through an
+		//          out pointer and bumps the object use count (0x51f679); a miss writes 0 and
+		//          returns 0 (0x51f643). It never inserts.
+		// The REAL registry (node layout, and the unresolved key-string form - stem vs "name.tga")
+		// stays T-013. What is ported here is the CONTROL SHAPE around those slots, in our
+		// structure: three plain function pointers + a context, no ABI mimicry.
+		struct TextureObject {
+			int      index;     // the id the record/fragment slot keeps
+			unsigned dimW;      // [[obj+0x24]+0x1C] (read at 0x4b07a3 when flags bit 0 is clear)
+			unsigned dimH;      // [[obj+0x24]+0x20] (read at 0x4b079f when bit 0 is set)
+			int      gate;      // [obj+0x28]: the shipped tile maths tests it > 0 (0x4b079b/0x4b07b3)
+			unsigned useCount;  // object+44, ++ per acquire hit (0x51f679)
+			TextureObject() : index( 0 ), dimW( 0 ), dimH( 0 ), gate( 0 ), useCount( 0 ) {}
+		};
+
+		struct TextureSlots {
+			void* ctx;
+			// +0xDC. Returns nonzero on a hit and MUST have written the id through outId (the
+			// shipped probe does both: 0x51f66b *param_1 = node id, 0x51f679 ++usecount). On a
+			// miss it must write 0 (0x51f643) and return 0.
+			char ( *probe )( const char* name, int* outId, void* ctx );
+			// +0xC4. name/data/size are the fields of the DEMANDED resource (the shipped forwarder
+			// reads them off the Res at 0x4b21e8..0x4b21f9: +0x20/+0x2C). Negative == load failure.
+			int  ( *index )( const char* name, const void* data, unsigned size, void* ctx );
+			// +0xD8. NULL when the handle resolves to no object (0x51f185 path).
+			TextureObject* ( *object )( int id, void* ctx );
+			TextureSlots() : ctx( 0 ), probe( 0 ), index( 0 ), object( 0 ) {}
+		};
+
+		// Counters so the CONTROL SHAPE is assertable (rep may be NULL - the behaviour is
+		// identical, the counts are dropped). Each name is exactly one shipped decision point:
+		struct TextureBindReport {
+			unsigned probeCalls;      // +0xDC reached (0x4b21bb / 0x52363b)
+			unsigned probeHits;       // nonzero return -> the demand is SKIPPED (0x4b21c3/0x523643)
+			unsigned demands;         // Demand_0x49b750(name, 1) calls (0x4b21dd / 0x523665)
+			unsigned demandNulls;     // demand failed -> quiet id-0 path, no release (0x4b21e6)
+			unsigned indexCalls;      // +0xC4 reached
+			unsigned clamped;         // index < 0 forced to 0 (0x4b2227 / 0x5236c5)
+			unsigned releases;        // Release_0x498eb0 of a successful demand (0x4b2232/0x5236ce)
+			unsigned gateCalls;       // the +0xD8 validity gate ran (LoadDefault only, 0x5236d7)
+			unsigned gateCleared;     // gate found no object and cleared the id (0x5236f8)
+			TextureBindReport()
+				: probeCalls( 0 ), probeHits( 0 ), demands( 0 ), demandNulls( 0 ),
+				  indexCalls( 0 ), clamped( 0 ), releases( 0 ), gateCalls( 0 ), gateCleared( 0 ) {}
+		};
+
+		// The chain inside Fragment::ReadFrom_0x4b20a0 (0x4b2197..0x4b2244): out is pre-zeroed like
+		// the shipped stack slot (0x4b21a5), probed through +0xDC, a hit stores the id and SKIPS the
+		// demand; a miss demands, converts (+0xC4, negative -> 0), releases, stores. NO gate call -
+		// the reader ends at the store. Returns 0 (nothing written) only when slots/probe/rs/out are
+		// absent: the caller keeps its "not bound" value. An empty name is NOT special-cased: the
+		// shipped reader probes and demands it like any other (the 432 unnamed records take this
+		// miss path), so we do too.
+		char BindFragmentTexture( ResourceSystem* rs, const TextureSlots* slots,
+		                          const char* name, int* outIndex, TextureBindReport* rep );
+
+		// The texture block of Skin::LoadDefault_0x523490 (0x52363b..0x5236f8): same shape as
+		// BindFragmentTexture PLUS the two proven LoadDefault-only facts - a NULL name means the
+		// "texture" key was absent (the shipped code zeroes the slot at 0x523570 and jumps the whole
+		// block, probe included), and after ANY path an id != 0 passes the +0xD8 gate, whose failure
+		// CLEARS the id (0x5236f8). The fragment reader has no gate; the difference is shipped, not
+		// accidental. Returns 1 when the chain ran (id slot written), 0 when name == NULL or the
+		// seam is incomplete.
+		char ResolveSkinTexture( ResourceSystem* rs, const TextureSlots* slots,
+		                         const char* name, int* ioId, TextureBindReport* rep );
 
 	} // namespace GUI
 } // namespace JE

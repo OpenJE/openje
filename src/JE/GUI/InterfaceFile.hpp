@@ -5,6 +5,8 @@
 
 #include "types.hpp"
 
+#include "JE/GUI/SkinFragments.hpp"   // TextureSlots / TextureBindReport / the binding chain
+
 namespace JE {
 	namespace GUI {
 		// JE::GUI interface-file loader (the ".int" family: resource ftype 1600, 25 shipped
@@ -28,12 +30,20 @@ namespace JE {
 		//     FileStreamRead_0x499220; we cursor over the demanded lump (MemStreamOpen_0x49beb0).
 		//     Same widths in the same order, so the stream footprint is identical - each byte
 		//     order below is the original's, not a guess.
-		//   * The texture registry global byte_707CE4 (vft+0xDC probe / vft+0xC4 index, used at
-		//     0x4b21bb and 0x4b2225, and by Skin::LoadDefault_0x523490 at 0x52363b/0x5236b4) is
-		//     NOT ported: recon gap G1, owned by T-007. It consumes no stream bytes, so parsing
-		//     is unaffected; SkinFragment::textureIndex stays -1 and the texture NAME survives.
-		//   * The 3 sub-object vftptr copies at 0x4b2260..0x4b2278 and the link container's
-		//     internal bookkeeping (mbr_0xca8) are not modelled; links keep raw {name, index}.
+		//   * The texture registry chain of the original (global byte_707CE4, vftable 0x6ae7ec:
+		//     +0xDC probe 0x5c0970, +0xC4 get-or-create 0x5c0a90, +0xD8 handle->object 0x5c0930;
+		//     reader site 0x4b21bb..0x4b2244, LoadDefault site 0x52363b..0x5236f8) is ported as
+		//     the BEHAVIOUR chain GUI::BindFragmentTexture / GUI::ResolveSkinTexture behind a
+		//     pluggable GUI::TextureSlots seam (JE/GUI/SkinFragments.hpp, T-007 steps 3-4; all
+		//     EAs byte-verified in discoveries/2025-10-21-t007-skin-subrecord-g1-g2.md). It
+		//     consumes no stream bytes, so the parse footprint is unaffected either way. The
+		//     REAL registry behind the seam (cls_0x55dc80 @0x70B200 node layout + the
+		//     stem-vs-"name.tga" key-string question) stays T-013; with no slots bound,
+		//     SkinFragment::textureIndex stays -1 ("not bound") and the texture NAME survives.
+		//   * The 3 sub-object vftptr copies at 0x4b2260..0x4b2278 are ported as the documented
+		//     broadcast COPY of dword[+0xC0] into dDC/dF8/d114 (reproduce the copy, never
+		//     compute - T-007 port rule); the link container's internal bookkeeping (mbr_0xca8)
+		//     is not modelled; links keep raw {name, index}.
 
 		// Fragment type ids accepted by GUI_CreateFragment_0x4b2910 (switch at 0x4b2934);
 		// anything else yields NULL and makes the loader abort (0x495cfa path).
@@ -53,17 +63,26 @@ namespace JE {
 			FRAGMENT_SIZE = 0x158
 		};
 
-		// One of the 9 inline skin records. Footprint from Fragment::ReadFrom_0x4b20a0:
-		// 6 x u32 (0x4b215e: +28,+32,+36,+40,+44 and one at +8), the texture-name string
-		// (0x4b2187 via 0x50b880), u32 (+8 again, 0x4b2257), u32 (+0x154, 0x4b228a), then
-		// Base::ReadFrom_0x4b2850's 16-byte rect. 48 bytes + string payload.
+		// One of the 9 inline skin records (one GUI::Fragment object, stride 0x158). Footprint
+		// from Fragment::ReadFrom_0x4b20a0, EAs byte-verified (discoveries doc, G1 table):
+		// 6 x u32 (+0x1C @0x4b20d8, +0x20 @0x4b20ec, +0x24 @0x4b210c, +0x28 @0x4b2126,
+		// +0x2C @0x4b213a, +0x30 @0x4b215a - the field names d28..d8a below keep the OLDER
+		// record-relative numbering of docs/f3/GUILoadingRecon.md sec 8), the texture-name
+		// string (0x4b2187 via 0x50b880) + the no-byte registration chain (0x4b21bb..0x4b2244),
+		// u32 -> frag+0xC0 (0x4b2250; the recon's "+8 again" note was WRONG - sec 8c),
+		// broadcast copy to +0xDC/+0xF8/+0x114 (0x4b2260..0x4b2278, 3 x stride 0x1C),
+		// u32 -> +0x154 (0x4b2283), then Base::ReadFrom_0x4b2850's 16-byte rect.
+		// 48 stream bytes + string payload.
 		struct SkinFragment {
 			unsigned d28, d2C, d30, d34, d38, d8a;   // the 6 dwords, in stream order
 			char*    textureName;                     // e.g. "quickslot-left.bmp"
-			unsigned d8b;                             // second +8 dword
-			unsigned d154;
+			unsigned d8b;                             // wire u32 -> frag+0xC0 (0x4b2250)
+			unsigned dDC, dF8, d114;                  // the shipped broadcast of dword[+0xC0]
+			                                          // (COPY, never computed; see above)
+			unsigned d154;                            // frag+0x154 colour (0x4b2283)
 			int      rect[4];                         // Base+0x08 (16-byte move)
-			int      textureIndex;                    // -1: registry not ported (G1/T-007)
+			int      textureIndex;                    // resolved id once a GUI::TextureSlots is
+			                                          // bound (SetTextureSlots); -1 == not bound
 		};
 
 		// {string,u32} pair of the child-link table read at 0x4b12e3..0x4b134b (original
@@ -144,6 +163,24 @@ namespace JE {
 				// mismatch means some field width/order is wrong - asserted in the suite.
 				unsigned        BytesConsumed() const { return m_consumed; }
 
+				// T-007 steps 3-4: attach the texture registration chain (GUI::BindFragmentTexture)
+				// to the fragment reader. NULL (the default) leaves SkinFragment::textureIndex at -1
+				// ("not bound"). The chain consumes no stream bytes - neither the switch nor the
+				// binding can move BytesConsumed(). Counts accumulate across loads into
+				// TextureBindCounts().
+				void SetTextureSlots( const TextureSlots* slots ) { m_slots = slots; }
+				const TextureBindReport& TextureBindCounts() const { return m_bindRep; }
+
+				// Byte-level Fragment record reader - the T-004-family seam, and what Load()
+				// itself drives for each of the 9 inline GUI::Fragment records (loop
+				// 0x4b1297..0x4b12bf). Reads exactly Fragment::ReadFrom_0x4b20a0's footprint from
+				// a caller-owned buffer; with a bound `slots` it runs the registration chain for
+				// the texture name the way the original's inline block does (0x4b2197..0x4b2244,
+				// no bytes). slots/rep may be NULL.
+				static char ReadFragmentRecord( SkinFragment* s, const unsigned char*& p,
+				                                const unsigned char* end,
+				                                const TextureSlots* slots, TextureBindReport* rep );
+
 			private:
 				InterfaceFile( const InterfaceFile& );
 				InterfaceFile& operator=( const InterfaceFile& );
@@ -162,6 +199,8 @@ namespace JE {
 				unsigned        m_nRoots;
 				unsigned        m_widgetCount;
 				unsigned        m_consumed;
+				const TextureSlots* m_slots;     // texture binding seam (NULL == not bound)
+				TextureBindReport   m_bindRep;   // accumulated across loads while bound
 		};
 	} // namespace GUI
 } // namespace JE
