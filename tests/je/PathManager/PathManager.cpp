@@ -9,6 +9,7 @@
 #include "F3/SimDigest.hpp"      // T-026 digest harness
 #include "F3/CombatMath.hpp"
 #include "F3/GameActionAttack.hpp"   // T-011: join happens in Start (the OnCreate analogue)
+#include "F3/GameActionMoveTo.hpp"   // T-048: F3::GameActionWait, the header-only deferral prop
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>   // T-026 digest token helpers
@@ -561,6 +562,103 @@ int main() {
 		F3::g_spawnedEntities[ 104 ] = 0;
 		F3::g_spawnedEntities[ 105 ] = 0;
 		F3::SetActiveCombatManager( 0 );   // do not leak the manager into later blocks
+	}
+
+	// ---- T-048: the +0x319 raiser - the store is live, and NO rotation is invented ----------
+	{
+		// Shipped `Entity::virt_meth_0x54c570` raises +0x319 at 0x54c833 when an event was
+		// PROCESSED but did not FINISH this tick. Port analog (src/F3/MapEntitySpawn.cpp):
+		// the FIFO took a slot and the slot is STILL occupied after the branch ran.
+		// A Wait with duration 10000 stamped at ms=100 cannot be expired at ms=100 - DEFERS.
+		F3::SpawnedEntity e;
+		e.entityState = F3::kStateActive;              // world-loop state, not a combatant
+		F3::GameActionWait w;
+		w.durationMs = 10000;
+		e.actions[ 0 ].kind = 2; e.actions[ 0 ].action = &w;
+		F3::TickWorldForEntity( &e, 100 );
+		check( w.startMs == 100u && e.actedLatch0x319 == 1,
+		       "T-048: processed-and-not-finished raises +0x319 (0x54c833 analog) - the falsifier: delete the store and this goes red" );
+
+		// The DROP tick must not clear: shipped leaves the latch as the EARLIER branch decided;
+		// the only zeroing writers are TurnPrep 0x549094 and the ctor 0x5515ff. A "helpful"
+		// `e->actedLatch0x319 = 0;` inside a drop branch fails this assertion.
+		F3::TickWorldForEntity( &e, 20000 );
+		check( e.actions[ 0 ].kind == 0, "the Wait expired and dropped its slot" );
+		check( e.actedLatch0x319 == 1,
+		       "slot drop does NOT clear the latch - clear belongs to TurnPrep (0x549094), not to the pump" );
+
+		// TurnPrep still owns the clear: now a state-5 combatant, the next maintenance zeroes
+		// what the pump raised, and the empty queue raises nothing back.
+		F3::CombatManager cm;
+		e.entityState = F3::kStateSpawned;
+		cm.AddToTurns( &e );
+		cm.SetRoundMode( 1 );
+		cm.Tick( 16, 3 );
+		check( e.actedLatch0x319 == 0,
+		       "maintenance/TurnPrep zeroes the latch the pump raised; a pumped-empty queue does not re-raise it" );
+		cm.RemoveFromTurns( &e );
+
+		// The complement: an action that COMPLETES in the tick it is processed never raises -
+		// this is the run-shape where the digest st= byte stays stable.
+		F3::SpawnedEntity q;
+		q.entityState = F3::kStateActive;
+		F3::GameActionWait w0;   // duration 0 -> Expired on first look, slot drops same tick
+		q.actions[ 0 ].kind = 2; q.actions[ 0 ].action = &w0;
+		F3::TickWorldForEntity( &q, 500 );
+		check( q.actions[ 0 ].kind == 0 && q.actedLatch0x319 == 0,
+		       "completes-in-one-tick never raises: nothing defers => st= stays byte-stable" );
+
+		// Stable head WITH the store live. The skip-advance (0x5a955d -> 0x5a9572) needs a latch
+		// that SURVIVES this call's maintenance clear - only RE-ENTRANCY provides that window
+		// (docs/f3/CombatTurnDispatch.md), and this row must not assume it. A rotation appearing
+		// without re-entrancy is the failure the acceptance names; these checks make it loud.
+		F3::CombatManager cm2;
+		F3::SpawnedEntity d1, d2;
+		d1.entityState = d2.entityState = F3::kStateSpawned;
+		strcpy( d1.name, "DEFER" ); strcpy( d2.name, "NEXTN" );
+		F3::GameActionWait dw; dw.durationMs = 100000;
+		d1.actions[ 0 ].kind = 2; d1.actions[ 0 ].action = &dw;
+		cm2.SetRoundMode( 1 );
+		cm2.AddToTurns( &d1 ); cm2.AddToTurns( &d2 );
+		cm2.Tick( 16, 3 );
+		check( cm2.LastDispatched() == &d1,
+		       "walk dispatched the head" );
+		check( d1.actedLatch0x319 == 1,
+		       "the raise fires under manager dispatch too - it belongs to the entity's own update, whoever calls it" );
+		cm2.Tick( 16, 3 );
+		check( cm2.LastDispatched() == &d1 && d2.actedLatch0x319 == 0,
+		       "no invented rotation: deferring head dispatched AGAIN (clear-then-check), successor untouched" );
+		F3::SetActiveCombatManager( 0 );
+
+		// The digest sees it: one frame line with a deferring entity carries st=<state>,0,1.
+		// (docs/f3/SimDigest.md: the third value is NOW-MOVING by design, mirroring the shipped
+		// raiser; it stays 0 for entities whose actions complete in-tick, as checked above.)
+		{
+			F3::SpawnedEntity dg;
+			dg.entityState = F3::kStateActive;
+			strcpy( dg.name, "T048DG" );
+			F3::GameActionWait dgw; dgw.durationMs = 10000;
+			dg.actions[ 0 ].kind = 2; dg.actions[ 0 ].action = &dgw;
+			F3::TickWorldForEntity( &dg, 50 );   // raise through the REAL store path
+			check( dg.actedLatch0x319 == 1, "digest prop defers and is latched" );
+			F3::g_spawnedEntities[ 120 ] = &dg;
+			FILE* f = fopen( "B-t048-digest.txt", "w" );
+			check( f != 0, "digest prop file opens" );
+			if ( f ) {
+				F3::CombatManager dcm; JE::PathManager dpm;
+				F3::Sim::Sources s48; s48.combat = &dcm; s48.paths = &dpm;
+				F3::Sim::ResetBaseClock();
+				F3::Sim::WriteHeader( f, s48 );
+				F3::Sim::WriteFrame( f, s48, 0u, 16u, 0u, 0, "injected-counter" );
+				fclose( f );
+				char lbuf[ 2200 ];
+				FrameLine( "B-t048-digest.txt", 0, lbuf, (int)sizeof( lbuf ) );
+				check( strstr( lbuf, "T048DG" ) != 0 && strstr( lbuf, ",st=4,0,1" ) != 0,
+				       "digest line names the latched entity and prints the raised byte (st=4,0,1)" );
+				remove( "B-t048-digest.txt" );
+			}
+			F3::g_spawnedEntities[ 120 ] = 0;
+		}
 	}
 
 		// ---- T-026: the digest is reproducible, sensitive, and honest about gaps -------------
