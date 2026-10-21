@@ -3,6 +3,7 @@
 // from the repo root with the staged data dir arg.
 #define JE_TEST_ALLOW_PROTECTED_MEMBER_ACCESS 1
 #include "F3/MapEntitySpawn.hpp"
+#include "F3/SimDigest.hpp"   // T-071: ActionKindName (header-only mapping table)
 #include "F3/GameActionAttack.hpp"
 #include "F3/GameActionMoveTo.hpp"
 #include "F3/GamePathManager.hpp"
@@ -508,6 +509,109 @@ int main( int argc, char** argv ) {
 
 		F3::g_spawnedEntityCount = savedCount;
 		for ( int i = 0; i < 4; ++i ) { t30Vic.actions[i].kind = 0; t30Vic.actions[i].action = 0; }
+		F3::GameActionAttack::s_rand = 0;
+	}
+
+	// ---------------------------------------------------------------------------
+	// T-071: the idle RESIDENT. Mechanism RE'd in
+	// discoveries/2025-10-21-t070-idle-resident-rootcause.md; every EA below is from
+	// that census. This block proves the three observables that made absence-equivalence
+	// fail, IN THE PORT: occupation, head-of-line blocking until a drain, activation
+	// side effects, the never-set predicate, the no-raise rule, and the numbering table.
+	{
+		static int seqCtr71 = 0;
+		struct R71 { static int Fn() { ++seqCtr71; return seqCtr71; } };
+		F3::GameActionAttack::s_rand = &R71::Fn;   // deterministic, like the t30 block above
+
+		F3::SpawnedEntity t71Atk;    // stack-built: the harness IS our spawn path here
+		F3::SpawnedEntity t71Vic;
+		t71Atk.entityState = F3::kStateActive;
+		t71Vic.entityState = F3::kStateActive;
+		t71Atk.statMax = t71Atk.statCur = 45;
+		t71Vic.statMax = t71Vic.statCur = 10;
+		t71Vic.pos[0] = 0.4f;        // in reach of t71Atk at 0
+		t71Atk.name[0] = 0; t71Vic.name[0] = 0;
+
+		// (a) REBASE: drain-then-feed, mirror of SetInMap_0x551ba0 (drain @0x551bbe ->
+			// create(1) @0x551bde -> funnel @0x551be4). q=1, slot 0 holds kind 6, and the
+			// owner store lands exactly like the shipped uniform 0x550737 (R4, 12/12).
+		F3::RebaseOntoIdle( &t71Atk, 0 );
+		check( t71Atk.QueuedActionCount() == 1u, "rebase: the resident occupies the queue (q=1)" );
+		check( t71Atk.actions[0].kind == 6 && t71Atk.actions[0].action == &t71Atk.idleResident,
+		       "rebase: slot 0 is the idle resident (shipped factory case 1 class)" );
+		check( t71Atk.idleResident.owner0x14 == &t71Atk,
+		       "rebase: 0x550737 analog fired - owner linked through the seam" );
+		check( t71Atk.idleResident.done0x18 == 0u && t71Atk.idleResident.startPending0x10 == 1u,
+		       "rebase: armed fresh - predicate 0 (0x56018d), start pending (0x560184)" );
+
+		// (b) ACTIVATION on the first pump tick, NOT at rebase time (the shipped start runs
+		// inside the pump, sub_55A1C0:20 clears the pending byte before calling vft+0x10):
+		// world-ms stamp into the +0x184 analog + the 9-then-1 QueueAnimEvent pair.
+		F3::TickWorldForEntity( &t71Atk, 500 );
+		check( t71Atk.actionStartMs0x184 == 500,
+		       "activation: 0x548f90 stamp - [entity+0x184] took the world ms of the tick" );
+		check( t71Atk.queuedAnimEvent == 1,
+		       "activation: QueueAnimEvent 9@0x40566d then 1@0x40567a; last-id seam holds 1" );
+		check( t71Atk.idleResident.startPending0x10 == 0u && t71Atk.idleResident.consumed0x16 == 1u,
+		       "activation: pending byte cleared before start; update byte +0x16 set (0x5a9070)" );
+		F3::TickWorldForEntity( &t71Atk, 900 );
+		check( t71Atk.actionStartMs0x184 == 500,
+		       "activation ran ONCE - 900 did not restamp (pending cleared at the start tick)" );
+		check( t71Atk.idleResident.done0x18 == 0u && t71Atk.actions[0].kind == 6,
+		       "the resident NEVER finishes: predicate stays 0, slot stays held (0x404b60 reads +0x18)" );
+		check( t71Atk.actedLatch0x319 == 0u,
+		       "NO raise for the resident - the shipped raiser 0x54c833 watches the anim-event deque, not the action queue" );
+
+		// (c) HEAD-OF-LINE BLOCKING (run H's "Attack never fired" in one assertion): push
+		// an order WITHOUT draining (the F3::Attack native shape, 0x459f5d) - it occupies
+		// slot 1, ticks nothing, and the pump breaks on the resident head every frame.
+		F3::AttackModeRecord m71 = F3::GameActionAttack::MakeUnarmedMode( 2, 2, 1, 0 );
+		F3::GameActionAttack blocked71;
+		blocked71.Start( &t71Atk, &t71Vic, 0, &m71 );
+		check( F3::EnqueueEntityAction( &t71Atk, &blocked71, 4 ) == 1,
+		       "native-shape push: queued into slot 1 behind the resident" );
+		check( t71Atk.QueuedActionCount() == 2u, "push: q=2 counts the resident - shipped R3 semantics" );
+		for ( int i = 0; i < 20; ++i ) { F3::TickWorldForEntity( &t71Atk, 1000 + 100 * i ); }
+		check( !blocked71.finished && t71Vic.statCur == 10,
+		       "head-of-line block: behind a never-finishing resident the order does NOT run (run H)" );
+		check( t71Atk.actions[0].kind == 6 && t71Atk.actions[1].kind == 4,
+		       "the queue shape is unchanged by the block: resident head, order behind it" );
+
+		// (d) DRAIN-THEN-FEED idempotence (stop-packet case 0x3B, @0x55763b->@0x55765d):
+		// a rebase erases EVERYTHING (resident AND the stuck order) and leaves exactly one
+		// freshly armed resident. A stuck native order is never revived - shipped discards
+		// it, the new command re-issues fresh (case 0x3C shape).
+		F3::RebaseOntoIdle( &t71Atk, 0 );
+		check( t71Atk.QueuedActionCount() == 1u && t71Atk.actions[0].kind == 6
+		           && t71Atk.actions[1].kind == 0,
+		       "rebase is drain+feed: the stuck order is gone, one resident remains" );
+		check( t71Atk.idleResident.startPending0x10 == 1u,
+		       "the resident was RE-ARMED (fresh 0x560184 pending), not reused mid-state" );
+
+		// (e) FREED HEAD: after the drain, a fresh order at the head runs - the block was
+		// the RESIDENT, not the container. Command-boundary shape: drain, then issue.
+		F3::ClearActionQueue( &t71Atk );
+		F3::GameActionAttack go71;
+		go71.Start( &t71Atk, &t71Vic, 0, &m71 );
+		check( F3::EnqueueEntityAction( &t71Atk, &go71, 4 ) == 1, "post-drain order takes slot 0" );
+		for ( int i = 0; i < 12 && !go71.finished; ++i ) { F3::TickWorldForEntity( &t71Atk, 100 * ( i + 1 ) ); }
+		                            // same clock pacing as the t30 block above: the session-21
+		                            // attack gates are absolute-vs-nowMs windows, and t30 proves
+		                            // this ms sequence carries an order from Start(0) to a hit
+		check( t71Vic.statCur < 10, "post-drain, the order fires through the pump (head is free)" );
+
+		// (f) NUMBERING: the digest's shared axis is the CLASS NAME (T-031 ruling); this
+		// pins the port-kind -> shipped-class mapping incl. the new resident and proves the
+		// table is TOTAL over the used kinds (no UNKNOWN leak).
+		check( strcmp( F3::Sim::ActionKindName( 6 ), "GameActionIdle" ) == 0,
+		       "kind 6 -> GameActionIdle (shipped factory case 1, 0x46f290)" );
+		check( strcmp( F3::Sim::ActionKindName( 2 ), "GameActionWait" ) == 0
+		           && strcmp( F3::Sim::ActionKindName( 4 ), "GameActionAttack" ) == 0
+		           && strcmp( F3::Sim::ActionKindName( 1 ), "GameActionMoveTo" ) == 0
+		           && strcmp( F3::Sim::ActionKindName( 3 ), "GameActionOperateDoor" ) == 0
+		           && strcmp( F3::Sim::ActionKindName( 5 ), "GameActionDie" ) == 0,
+		       "the whole mapping table resolves to shipped class names" );
+		check( strcmp( F3::Sim::ActionKindName( 0 ), "-" ) == 0, "kind 0 stays the empty sentinel" );
 		F3::GameActionAttack::s_rand = 0;
 	}
 
