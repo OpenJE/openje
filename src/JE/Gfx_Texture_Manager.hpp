@@ -132,6 +132,13 @@ namespace JE {
 			unsigned Count() const { return m_count; }
 			unsigned Inserts() const { return m_inserts; }
 			unsigned Failures() const { return m_failures; }
+			// Sum of all live use counts - lets tests prove dedupe accounting exactly
+			// (N records naming K distinct textures => N-K bumps, the inserts being unbumped).
+			unsigned UseCountTotal() const {
+				unsigned sum = 0;
+				for ( const Node* n = m_head; n; n = n->next ) { sum += n->tex->useCount; }
+				return sum;
+			}
 
 		private:
 			// Intrusive-ish storage mirroring the shipped shape (list walk + id lookup); the

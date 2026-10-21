@@ -7,6 +7,7 @@
 
 namespace JE {
 	class ResourceSystem;   // Demand/Release partner of the binding chain below
+	class Gfx_Texture_Manager;   // the real registry (JE/Gfx_Texture_Manager.hpp), T-013/T-066
 	namespace GUI {
 
 		struct Widget;
@@ -210,6 +211,22 @@ namespace JE {
 			TextureBindReport()
 				: probeCalls( 0 ), probeHits( 0 ), demands( 0 ), demandNulls( 0 ),
 				  indexCalls( 0 ), clamped( 0 ), releases( 0 ), gateCalls( 0 ), gateCleared( 0 ) {}
+		};
+
+		// Adapter binding the REAL registry behind this seam (T-066 step 3): three static thunks
+		// over Gfx_Texture_Manager's Probe/GetOrCreate/Object. The caller owns the adapter and it
+		// must outlive every use of the TextureSlots it hands out (InterfaceFile stores the
+		// pointer). `view` is single-slot scratch: the shipped contract is that an object() result
+		// is consumed before the next slot call (both chains do exactly that) - documented, not
+		// thread-safe, deliberately no hidden heap.
+		struct GfxTextureSlots : public TextureSlots {
+			explicit GfxTextureSlots( Gfx_Texture_Manager* manager );
+			Gfx_Texture_Manager* mgr;
+			TextureObject view;
+			// The convert thunk passes dims 0/0 + gate 0 for now: the shipped +0xC4 decodes the
+			// resource payload through the device (meth_0x535a80) and only M-001 supplies extents.
+			// data/size are forwarded-but-unused ON PURPOSE - inventing a decoder here would be
+			// the fabrication the port laws forbid (design doc Step 4).
 		};
 
 		// The chain inside Fragment::ReadFrom_0x4b20a0 (0x4b2197..0x4b2244): out is pre-zeroed like

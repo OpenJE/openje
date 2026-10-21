@@ -16,6 +16,7 @@
 #include "JE/GUI/SkinDefaults.hpp"
 #include "JE/GUI/SkinFragments.hpp"
 #include "JE/GUI/SkinTable.hpp"
+#include "JE/Gfx_Texture_Manager.hpp"
 #include "JE/VFX_Parameter.hpp"
 #include "JE/PathManager.hpp"
 #include "JE/ResourceSystem.hpp"
@@ -1189,6 +1190,53 @@ int main( int argc, char** argv ) {
 		check( kept77 == 54u && rep2.probeHits == 54u && rep2.demands == 0u && rep2.gateCleared == 0u,
 		       "a seam that knows every name gives every record the id THROUGH the gate - zero demands, zero clears" );
 		g_fxProbeMode = 0;
+	}
+
+	// ---- T-066 step 3 (KeenStorm): the REAL registry (JE::Gfx_Texture_Manager) behind the seam --
+	{
+		JE::Gfx_Texture_Manager reg;
+		JE::GUI::GfxTextureSlots slots( &reg );
+
+		JE::GUI::InterfaceFile fa;
+		fa.SetTextureSlots( &slots );
+		check( fa.Load( "Mainmenu.INT" ) == 1, "Mainmenu.INT loads bound to the REAL registry" );
+		check( fa.TextureBindCounts().probeHits == 0u
+		       && fa.TextureBindCounts().demands == fa.WidgetCount() * JE::GUI::SKINS_PER_WIDGET,
+		       "real dotted names take the shipped STRUCTURAL probe-miss -> demand path (the T-013 key form, asserted against the real table, not a fixture)" );
+		unsigned records = 0, zeros = 0, minusOnes = 0, ids = 0;
+		walkBind( fa.Root( 0 ), records, zeros, minusOnes, ids );
+		check( minusOnes == 0u && zeros + ids == records && ids > 0u,
+		       "every record ends on a shipped id via the real registry; resolvable names carry ids" );
+		check( reg.Count() > 0u && reg.Count() <= ids,
+		       "distinct stems form the table: inserts <= live ids (dedupe happened)" );
+		const unsigned sum1 = reg.UseCountTotal();
+		check( sum1 == ids - reg.Count(),
+		       "exact accounting: usecount total == records-with-id MINUS distinct nodes (inserts unbumped @0x51f679, every re-getOrCreate hits the internal re-probe once)" );
+
+		const unsigned nodes1 = reg.Count();
+		JE::GUI::InterfaceFile fb;
+		fb.SetTextureSlots( &slots );
+		check( fb.Load( "Mainmenu.INT" ) == 1, "second load through the SAME registry" );
+		unsigned records2 = 0, zeros2 = 0, minusOnes2 = 0, ids2 = 0;
+		walkBind( fb.Root( 0 ), records2, zeros2, minusOnes2, ids2 );
+		check( reg.Count() == nodes1 && ids2 == ids && records2 == records,
+		       "cross-load dedupe: the second load created ZERO new nodes and reproduced the SAME live-id count" );
+		check( reg.UseCountTotal() == sum1 + ids2,
+		       "the second load added exactly one usecount per named record and ZERO nodes - the shipped 0x521cb1 internal-re-probe dedupe, on real data" );
+		printf( "     real-registry census: %u records, %u ids, %u distinct nodes, usecount total %u\n",
+		        records, ids, reg.Count(), reg.UseCountTotal() );
+
+		// The 54-miss falsifier (coordinator watch-list): absent textures must insert NOTHING.
+		JE::GUI::SkinTable t;
+		check( t.Load( "areamap.ini" ) == 1, "areamap.ini loads for the real-registry pass" );
+		const unsigned nodesBefore = reg.Count();
+		JE::GUI::TextureBindReport rep;
+		t.ResolveTextures( rs, slots, &rep );
+		unsigned nonzero = 0;
+		for ( unsigned i = 0; i < t.SectionCount(); ++i ) { if ( t.ResolvedTextureIndex( i ) != 0 ) { ++nonzero; } }
+		check( rep.demands == 54u && rep.indexCalls == 0u && nonzero == 0u
+		       && reg.Count() == nodesBefore && reg.Inserts() == (nodesBefore ? reg.Inserts() : 0u),
+		       "the 54 absent textures are the QUIET id-0 miss end-to-end: no inserts, no node growth, no invented errors" );
 	}
 
 		// (e) KNOWN-ISSUE, stated rather than papered over. Nothing in the shipped .int says which

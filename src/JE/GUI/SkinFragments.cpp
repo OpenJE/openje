@@ -4,6 +4,7 @@
 
 #include "JE/GUI/InterfaceFile.hpp"
 #include "JE/ResourceSystem.hpp"
+#include "JE/Gfx_Texture_Manager.hpp"
 
 #include <string.h>
 
@@ -171,6 +172,36 @@ namespace JE {
 			rs->Release_0x498eb0( res );
 			if ( rep ) { ++rep->releases; }
 			return 1;
+		}
+
+		// ctx is the GfxTextureSlots adapter itself (set in its ctor), so every thunk
+		// dispatches through ->mgr.
+		static char mgrProbe( const char* name, int* outId, void* ctx ) {
+			return static_cast<GfxTextureSlots*>( ctx )->mgr->Probe( name, outId );
+		}
+		static int mgrIndex( const char* name, const void* data, unsigned size, void* ctx ) {
+			(void)data; (void)size;   // device decode = design Step 4 (M-001); see hpp note
+			return static_cast<GfxTextureSlots*>( ctx )->mgr->GetOrCreate( name, 0u, 0u, 0 );
+		}
+		static TextureObject* mgrObject( int id, void* ctx ) {
+			GfxTextureSlots* self = static_cast<GfxTextureSlots*>( ctx );
+			Gfx_Texture_Manager::Texture* t = self->mgr->Object( id );
+			if ( !t ) { return 0; }
+			self->view.index = t->id;
+			self->view.dimW = t->dimW;
+			self->view.dimH = t->dimH;
+			self->view.gate = t->gate;
+			self->view.useCount = t->useCount;
+			return &self->view;
+		}
+
+		GfxTextureSlots::GfxTextureSlots( Gfx_Texture_Manager* manager )
+		: mgr( manager ) {
+			ctx = this;               // thunks cast ctx back to the adapter (see above)
+			probe = &mgrProbe;
+			index = &mgrIndex;
+			object = &mgrObject;
+			view = TextureObject();
 		}
 
 		char BindFragmentTexture( ResourceSystem* rs, const TextureSlots* slots,
