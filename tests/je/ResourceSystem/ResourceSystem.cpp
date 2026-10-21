@@ -286,6 +286,32 @@ int main(int argc, char** argv) {
 		rs.Release_0x498eb0(u);
 	}
 
+	// T-066 step 1 (stem alignment): Demand resolves the name to its STEM before storing or
+	// caching, mirroring the shipped sub_499F10 in-place mutation (0x499f89) that precedes the
+	// Res name copy @0x49b948. ResolveStem is the pure-string half; asserts are the doc's list.
+	{
+		char b[ 64 ];
+		check( strcmp( JE::ResourceSystem::ResolveStem( "foo.bmp", b, sizeof( b ) ), "foo" ) == 0,
+		       "foo.bmp -> foo (extension stripped, T-013 key form)" );
+		check( strcmp( JE::ResourceSystem::ResolveStem( "a.b.bmp", b, sizeof( b ) ), "a.b" ) == 0,
+		       "a.b.bmp -> a.b (LAST-dot rfind shape, 0x458a20 seed-from-end)" );
+		check( strcmp( JE::ResourceSystem::ResolveStem( "FOO.TGA", b, sizeof( b ) ), "FOO" ) == 0,
+		       "FOO.TGA -> FOO (case PRESERVED - the assigners are byte copies, no folding)" );
+		check( strcmp( JE::ResourceSystem::ResolveStem( "dir\\noext", b, sizeof( b ) ), "dir\\noext" ) == 0,
+		       "no trailing-dot extension -> name unchanged" );
+		check( strcmp( JE::ResourceSystem::ResolveStem( "path.d/x", b, sizeof( b ) ), "path.d/x" ) == 0,
+		       "a dot BEFORE the last separator is not an extension (sep-guard, same rule FindRht uses)" );
+
+		// Demand stores the stem and caches on it: two case-different dotted demands hit ONE Res.
+		JE::ResourceSystem::Res* s1 = rs.Demand_0x49b750( "Default_StartMap.RLE", 1 );
+		check( s1 && strcmp( JE::ResourceSystem::ResName( s1 ), "Default_StartMap" ) == 0,
+		       "the stored Res name is the STEM, not the dotted authoring string" );
+		JE::ResourceSystem::Res* s2 = rs.Demand_0x49b750( "Default_StartMap.rle", 1 );
+		check( s1 && s1 == s2, "re-demand by a different-cased extension returns the SAME cached Res (stem identity)" );
+		rs.Release_0x498eb0( s1 );
+		rs.Release_0x498eb0( s2 );
+	}
+
 	// Demand / MemStream / chunk-header end-to-end on a real item:
 	// "KitsFirst_Aid_Kit" (_ITM.grp, 268 bytes, first tag "EEN2" per python ground truth).
 	JE::ResourceSystem::MemStream* ms = rs.MemStreamOpen_0x49beb0("KitsFirst_Aid_Kit", 0);

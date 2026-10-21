@@ -461,13 +461,44 @@ namespace JE {
 		return *reinterpret_cast<const char* const*>( res->nameBuf );
 	}
 
+	const char* ResourceSystem::ResolveStem( const char* name, char* out, unsigned cap ) {
+		// Same split rule FindRht uses for its probe (last '.' after the last separator) -
+		// single source of truth lives here; FindRht layers the ftype gate on top of it.
+		const size_t len = strlen( name );
+		if ( len == 0u || len + 1u > cap ) { return name; }
+		memcpy( out, name, len + 1u );
+		char* dot  = strrchr( out, '.' );
+		char* sepB = strrchr( out, '\\' );
+		char* sepF = strrchr( out, '/' );
+		char* sep  = ( sepB > sepF ) ? sepB : sepF;
+		if ( dot && dot > out && ( !sep || dot > sep ) ) { *dot = 0; }
+		return out;
+	}
+
 	ResourceSystem::Res* ResourceSystem::Demand_0x49b750( const char* name, int managed ) {
 		tracing::instrument( tracing::LOCATION, "name=%s, managed=%d", name, managed );
 
+		// T-066 step 1 (stem alignment, docs/f3/T013-registry-port-design.md): the shipped
+		// Demand mutates its caller copy through sub_499F10 into the extension-stripped STEM
+		// BEFORE anything is stored or looked up by string: the Res name copy at 0x49b948
+		// (sub_401C70(res, Block)) and the cache key (v6 = meth_0x50bb00(stem, ftype)) both
+		// carry the STEM, never the dotted authoring string. So a re-demand of "X.INT" hits
+		// the entry stored as "X" (case preserved; the case-fold, where any exists, is the
+		// RHT probe's _stricmp, not the stored string). Everything downstream in this port
+		// (ResName, the GUI::TextureSlots index arg, cache identity) inherits the stem from
+		// this one resolution.
+		// The STEM governs IDENTITY only (cache key + stored name). The payload read below keeps
+		// the RAW name: FindRht's type gate needs the extension to disambiguate duplicate
+		// basenames across types (the "Default_StartMap" .8/.rle pair - the shipped engine hits
+		// the same ambiguity and its ftype probe rides on the full string).
+		char stem[ 0x200 ];
+		const char* key = ResourceSystem::ResolveStem( name, stem, sizeof( stem ) );
+
 		if ( managed ) {
 			// 0x49b7xx cache probe first: a resident resource bumps demandCount and is
-			// returned WITHOUT re-reading the group file.
-			Res* hit = CacheFind( name );
+			// returned WITHOUT re-reading the group file. Keyed on the STEM (0x49b7dd-0x49b806
+			// passes the resolved v5/v7 string, not the caller's original).
+			Res* hit = CacheFind( key );
 			if ( hit ) {
 				++hit->demandCount;
 				return hit;
@@ -476,7 +507,7 @@ namespace JE {
 
 		void* data = NULL;
 		int size = 0;
-		if ( !ReadResource( name, &data, &size ) ) {
+		if ( !ReadResource( name, &data, &size ) ) {   // RAW name - see stem note above
 			return NULL;   // ReadResource logs "Demand - Couldn't open file %s\n"
 		}
 
@@ -488,7 +519,7 @@ namespace JE {
 			return NULL;
 		}
 		memset( res, 0, sizeof(Res) );
-		ResSetName( res, name );
+		ResSetName( res, key );   // STEM, per the shipped in-place mutation (T-066 step 1)
 		res->size        = size;                    // 0x49b959
 		res->key         = 0;                       // +0x20: sub_499F10 resolved key (hash unmodeled)
 		res->managed     = static_cast<byte>( managed );   // 0x49b96b

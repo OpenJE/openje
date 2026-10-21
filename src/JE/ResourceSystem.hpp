@@ -117,7 +117,20 @@ namespace JE {
 			// pointer (same selection the Demand/Release log lines make through the file-static
 			// ResNamePtr). Public because the GUI texture-index seam (GUI::TextureSlots::index)
 			// passes the RESOLVED name, the way the original reads it off the Res at 0x4b21e8.
+			// SINCE T-066 STEP 1 this string is the RESOLVED STEM (see ResolveStem): the shipped
+			// chain never stores the dotted authoring string on a Res (sub_499F10 mutates it
+			// away before the Res copy @0x49b948).
 			static const char* ResName( const Res* res );
+
+			// The shipped name resolver's observable half (sub_499F10 in-place mutation,
+			// @0x499f89; '.' is found by 0x458a20 scanning BACKWARD from the end - an rfind,
+			// so "a.b.bmp" stems to "a.b"): copy `name` into `out`, truncating after the LAST
+			// '.' that follows the last path separator. Case is PRESERVED - 0x401b20/0x401bd0
+			// are byte-copy assigns, no folding (the fold, if any, lives in the RHT probe
+			// (_stricmp), not in the stored string). Returns `out`; on truncation-to-empty or
+			// overflow it returns `name` unchanged (degenerate guards - shipped would truncate
+			// its own heap string, which no shipped resource name hits).
+			static const char* ResolveStem( const char* name, char* out, unsigned cap );
 
 			static char StreamReadString_0x49c8d0( char** out, MemStream* ms );
 
