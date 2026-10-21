@@ -10,8 +10,16 @@ namespace JE { class VFX_Parameter; class PathManager; struct Gregorian; }
 
 namespace JE {
 	struct World : public Subsystem {
-		World() : m_clock(0), m_secondsPerRound(6), m_calendarYear(0), m_calendarMonth(0),
-		          m_calendarDay(0), m_calendarHour(0), m_calendarMinute(0), m_calendarSecond(0),
+		// The calendar trio's defaults are the SHIPPED CTOR's values, not sys.ini's contents.
+		// Shipped `JE::World`'s ctor (the function that installs the World vftable 0x691a1c at
+		// @0x548abb, `xor edi,edi` @0x548a9e / `mov $0x1,%eax` @0x548aeb) writes
+		//   +0x14 <- 0   @0x548af6      +0x18 <- 1   @0x548af9      +0x1C <- 1   @0x548afc
+		//   +0x20 <- 0   @0x548aff      +0x24 <- 0   @0x548b02      +0x28 <- 0   @0x548b05
+		// and vft[4] ApplyWorldClockParams_0x546B50 overwrites ONLY the keys it finds, so with a
+		// stripped/absent [World] block the shipped world clock is 0-1-1 00:00:00 - structurally
+		// invalid but DEFINED. 2253-10-18 is data, and data is not a default (T-042).
+		World() : m_clock(0), m_secondsPerRound(6), m_calendarYear(0), m_calendarMonth(1),
+		          m_calendarDay(1), m_calendarHour(0), m_calendarMinute(0), m_calendarSecond(0),
 		          m_state(0), m_pauseStampMS(0), m_pauseAccumMS(0), m_pauseLastMS(0),
 		          mbr_0x2c(0), mbr_0x34(0), mbr_0x44(0), mbr_0x48(0), mbr_0x54(0),
 		          mbr_0x64(0), mbr_0x68(0) {}

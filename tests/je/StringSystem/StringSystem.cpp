@@ -126,6 +126,56 @@ int main(int argc, char** argv) {
 		check(0, "sys.ini readable for calendar test");
 	}
 
+	// ---- T-042: the absent-key fallback is the CTOR's, not sys.ini's contents ------------------
+	// Shipped JE::World's ctor (installs the World vftable 0x691a1c @0x548abb; edi = 0 from
+	// `xor edi,edi` @0x548a9e, eax = 1 from `mov $0x1,%eax` @0x548aeb) writes +0x14 <- 0 (@0x548af6),
+	// +0x18 <- 1 (@0x548af9), +0x1C <- 1 (@0x548afc) and zeros +0x20/+0x24/+0x28
+	// (@0x548aff/@0x548b02/@0x548b05). vft[4] 0x546B50 overwrites only the keys it FINDS, and the
+	// clock is seeded by a verbatim 6-dword block copy (`rep movsl` with ecx = 6, @0x54497d) - there
+	// is no fallback and no clamp anywhere on that path. So with no [World] block the shipped clock
+	// reads 0-1-1 00:00:00: structurally invalid, but DEFINED. The ini TEXT below is our fixture;
+	// every expected VALUE is shipped's.
+	{
+		JE::World fresh;   // no parameter tree at all - this is the pure ctor
+		check( fresh.m_calendarYear == 0 && fresh.m_calendarMonth == 1 && fresh.m_calendarDay == 1,
+		       "ctor defaults are 0,1,1 (@0x548af6/@0x548af9/@0x548afc) - not 0,0,0 and not 2253-10-18" );
+		check( fresh.m_calendarHour == 0 && fresh.m_calendarMinute == 0 && fresh.m_calendarSecond == 0,
+		       "ctor zeroes the time side too (@0x548aff/@0x548b02/@0x548b05)" );
+
+		static char stripped[] = "[World]\r\nSeconds Per Round=6\r\n";
+		static JE::VFX_Parameter strippedTree;
+		strippedTree.ParseIniText( stripped, (int)strlen( stripped ) );
+		g_testParams = &strippedTree;
+		JE::World w;
+		w.ApplyWorldClockParams();
+		check( w.m_calendarYear == 0 && w.m_calendarMonth == 1 && w.m_calendarDay == 1,
+		       "section present, Year/Month/Day absent -> the ctor values survive (0x546B50 pattern)" );
+		check( w.m_secondsPerRound == 6, "Seconds Per Round is still read from that section" );
+
+		static char mixed[] = "[World]\r\nYear=2253\r\nHour=7\r\n";
+		static JE::VFX_Parameter mixedTree;
+		mixedTree.ParseIniText( mixed, (int)strlen( mixed ) );
+		g_testParams = &mixedTree;
+		JE::World p;
+		p.ApplyWorldClockParams();
+		check( p.m_calendarYear == 2253 && p.m_calendarHour == 7, "present keys pass through" );
+		check( p.m_calendarMonth == 1 && p.m_calendarDay == 1 && p.m_calendarMinute == 0,
+		       "absent siblings keep the ctor value - the fallback is PER KEY, not all-or-nothing" );
+
+		// The old GameWorld.cpp spelled its defaults `x ? x : 2253`, which did more than invent a
+		// number: it made an AUTHORED 0 unreachable, silently retiming a world the shipped code would
+		// build with Year=0. Pinned so the deletion is not later "restored for robustness".
+		static char zeroYear[] = "[World]\r\nYear=0\r\nMonth=0\r\nDay=0\r\n";
+		static JE::VFX_Parameter zeroTree;
+		zeroTree.ParseIniText( zeroYear, (int)strlen( zeroYear ) );
+		g_testParams = &zeroTree;
+		JE::World z;
+		z.ApplyWorldClockParams();
+		check( z.m_calendarYear == 0 && z.m_calendarMonth == 0 && z.m_calendarDay == 0,
+		       "an authored 0 stays 0 - the removed ternary would have retimed it to 2253-10-18" );
+		g_testParams = NULL;
+	}
+
 	// ---- T-006: Format_0x56BE30 substitution pass (see helpers above) ----
 	{
 		checkFormat( "no tags here", "no tags here", "strings without '<' are untouched" );
