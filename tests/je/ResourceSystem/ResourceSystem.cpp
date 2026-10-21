@@ -7,6 +7,7 @@
 // Run (arg = data root, use wine Z:\ path of the demo staging dir or the nix store path):
 //   wine ResourceSystem.exe "Z:/nix/store/.../share/f3demo"
 #include "JE/ResourceSystem.hpp"
+#include "JE/Gfx_Texture_Manager.hpp"
 #include "JE/Resources.hpp"
 #include "JE/VFX_Parameter.hpp"
 #include "JE/Map.hpp"
@@ -448,6 +449,60 @@ int main(int argc, char** argv) {
 		unsigned char* b110 = (unsigned char*)&mF.mbr_0x110;
 		check( b110[0] == 0 && b110[1] == 0 && b110[2] == 0,
 		       "KNOWN-ISSUE: +0x110..+0x112 stay 0; original leaves the raw fog bytes there (0x56CA4F)" );
+	}
+
+	// T-066 step 2: JE::Gfx_Texture_Manager (the 0x70B200 registry, T-013's port target) as a
+	// standalone unit - behaviour mirror of the byte-verified slot bodies. Evidence:
+	// discoveries/2025-10-21-t007-skin-subrecord-g1-g2.md (+0xDC probe 0x5c0970/0x51f570,
+	// +0xC4 get-or-create 0x5c0a90/0x521ca0, +0xD8 handle->object 0x5c0930/0x51f160, node
+	// id/name/usecount layout), t013-static-tail (key form: memcmp'd stems, dotted probes miss),
+	// t062 (use-count bumps at acquire only - NO shipped decrement exists).
+	{
+		JE::Gfx_Texture_Manager mgr;
+
+		// fresh insert: id returned, usecount starts at 0 (shipped: creation path never bumps -
+		// the ++ is inside the probe hit, 0x51f679)
+		const int idA = mgr.GetOrCreate("alpha", 64u, 32u, 1);
+		check(idA == 0, "GetOrCreate fresh insert returns the counter id (first == 0, this+0x50++ @0x521316)");
+		check(mgr.Count() == 1u && mgr.Inserts() == 1u, "one node, one insert");
+		check(mgr.Object(idA) && mgr.Object(idA)->useCount == 0u, "fresh texture carries useCount 0");
+		check(mgr.Object(idA) && mgr.Object(idA)->dimW == 64u && mgr.Object(idA)->gate == 1,
+		      "dims/gate stored as INPUTS (Step-4 device decode will supply them)");
+
+		// probe hit: writes id out, bumps usecount (0x51f66b/0x51f679)
+		int outId = -1;
+		check(mgr.Probe("alpha", &outId) == 1 && outId == idA, "probe hit writes the id through the out ptr");
+		check(mgr.Object(idA)->useCount == 1u, "probe hit bumps the use count");
+
+		// probe miss: pre-zeroed out slot, return 0, no side effects (0x51f643; NEVER inserts)
+		outId = -1; unsigned countBefore = mgr.Count();
+		check(mgr.Probe("beta", &outId) == 0 && outId == 0,
+		      "probe miss stores 0 through the out ptr and returns 0 - the QUIET shape, not an error");
+		check(mgr.Count() == countBefore && mgr.Inserts() == 1u, "probe miss inserted nothing");
+
+		// policy 1: names differing only in CASE are TWO nodes (repz cmps @0x41e4b0 semantics)
+		const int idA2 = mgr.GetOrCreate("Alpha", 0u, 0u, 0);
+		check(idA2 != idA && mgr.Count() == 2u,
+		      "case-sensitivity assert: two names differing only in case = TWO nodes (policy 1, never stricmp here)");
+
+		// GetOrCreate re-probes internally first (0x521cb1): a hit returns the existing id AND
+		// bumps the usecount like the shipped internal probe does - no second node, no insert.
+		const unsigned useBefore = mgr.Object(idA2)->useCount;
+		check(mgr.GetOrCreate("Alpha", 8u, 8u, 0) == idA2, "GetOrCreate on an existing key returns the SAME id");
+		check(mgr.Count() == 2u && mgr.Object(idA2)->useCount == useBefore + 1u,
+		      "internal re-probe: no re-insert, usecount bumped by the dedupe hit");
+
+		// no invented decrements: nothing on this class lowers a usecount (T-062 law)
+		mgr.Probe("alpha", &outId);
+		check(mgr.Object(idA)->useCount == 2u, "usecount is monotone - acquire bumps, no shipped release decrements");
+
+		// invalid handle -> NULL object (0x51f160 "invalid Texture Handle" path)
+		check(mgr.Object(1234) == 0, "unknown id resolves to no object - the LoadDefault gate's clear-input");
+
+		// empty/null names are the shipped negative path (callers clamp; NOT a node)
+		check(mgr.GetOrCreate("", 1u, 1u, 0) < 0 && mgr.GetOrCreate(0, 1u, 1u, 0) < 0
+		      && mgr.Count() == 2u && mgr.Failures() == 2u,
+		      "empty/null name = negative return (clamp path), never a node");
 	}
 
 	if (!g_fail) { printf("OK: ResourceSystem RHT parse tests passed (%d entries)\n", ResourceSystem::RhtCount()); return 0; }
