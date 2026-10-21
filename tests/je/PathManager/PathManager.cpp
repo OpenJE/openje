@@ -442,6 +442,57 @@ int main() {
 		check( strcmp( d0, "0" ) == 0, "no draws reported before anything drew" );
 		check( d2[0] == 0 || atoi( d2 ) >= 2, "draws counted once damage drew (>=2 per weapon call)" );
 
+		// T-039: the action-queue depth must be a COUNT in the digest, not a boolean. Shipped
+		// Entity+0x314 is the element count of the block deque at Entity+0x304 - the writers are
+		// `++this->mbr_0x10` at 0x54ea71 (the push_back that funnel 0x55072e calls) and the
+		// decrements at 0x54b637/0x54b672 (the erase that walks it) - so a port that models it as
+		// a "busy" byte cannot represent a queue of two AT ALL, and cannot see deviation D-2 (our
+		// 4-slot first block refusing a fifth order) in a diff. Mutant covered below: if `q` is
+		// ever folded back into a flag, or dropped from the hashed span, one of these turns red.
+		{
+			F3::SpawnedEntity qent;
+			qent.statMax = 10; qent.statCur = 10;
+			strcpy( qent.name, "QUEUED" );
+			void* dummy = &qent;   // the digest reads `kind` only; nothing is ticked here
+			qent.actions[0].kind = 1; qent.actions[0].action = dummy;
+			check( qent.QueuedActionCount() == 1u, "one live slot counts as depth 1" );
+			qent.actions[1].kind = 3; qent.actions[1].action = dummy;
+			check( qent.QueuedActionCount() == 2u,
+			       "two live slots count as depth 2 - a boolean model would say 1 (T-039)" );
+			qent.actions[2].kind = 4; qent.actions[2].action = dummy;
+			qent.actions[3].kind = 5; qent.actions[3].action = dummy;
+			check( qent.QueuedActionCount() == 4u, "depth saturates at our first block, i.e. 4 (D-2)" );
+
+			// And the field is LOAD-BEARING in the hash: same state, depth 3 vs depth 4, must
+			// differ - proving a queue change reaches the digest rather than being smoothed over.
+			char d3[ 2200 ], d4[ 2200 ], h3[ 512 ], h4[ 512 ];
+			F3::Sim::Sources sc; sc.combat = &cm; sc.paths = &pm;
+			F3::g_spawnedEntities[ 102 ] = &qent;
+			FILE* f = fopen( "B-dig-q.txt", "w" );
+			F3::Sim::ResetBaseClock();
+			F3::Sim::WriteFrame( f, sc, 1, 1000u, 1000u, 0, "injected-counter" );
+			qent.actions[3].kind = 0; qent.actions[3].action = 0;   // drain one slot
+			F3::Sim::WriteFrame( f, sc, 2, 1000u, 1000u, 0, "injected-counter" );
+			fclose( f );
+			F3::g_spawnedEntities[ 102 ] = 0;
+			FrameLine( "B-dig-q.txt", 0, d3, (int)sizeof( d3 ) );   // frame 1 = depth 4
+			FrameLine( "B-dig-q.txt", 1, d4, (int)sizeof( d4 ) );   // frame 2 = depth 3
+			check( strstr( d3, ",q=4," ) != 0, "the digest prints the queue DEPTH, not a busy flag (4)" );
+			check( strstr( d4, ",q=3," ) != 0, "and it follows the queue down when a slot drains (3)" );
+			DigToken( d3, "fnv", h3, (int)sizeof( h3 ) );
+			DigToken( d4, "fnv", h4, (int)sizeof( h4 ) );
+			check( h3[0] && h4[0] && strcmp( h3, h4 ) != 0,
+			       "depth is INSIDE the hashed span: 4 vs 3 with everything else equal must differ" );
+			// st= is THREE values now; a fourth would mean the old busy byte crept back.
+			check( strstr( d3, ",st=5,0,0,q=4," ) != 0,
+			       "st= carries state/moving/acted only - busy0x314 is gone from the triple" );
+			// SimDigest's clockDelta base is a PROCESS STATIC (F3::Sim::BaseClockRef). Capturing it
+			// here at clock=1000 would make the later NA block's `clockDelta=0` assertion fail for
+			// reasons that have nothing to do with what that block tests, so release it again.
+			F3::Sim::ResetBaseClock();
+			remove( "B-dig-q.txt" );
+		}
+
 		// Honest gaps: with no sources wired, the digest must SAY so instead of printing a line
 		// that looks like a healthy frame with unchanged queues.
 		{
