@@ -14,6 +14,7 @@
 // Build/run: the Commands row in devenv/scripts/run-all-tests.nix (mingw32 + wine).
 #include "F3.hpp"
 #include "F3/Commands.hpp"
+#include "JE/DialogueManager.hpp"
 
 #include <stdio.h>
 #include <string.h>
@@ -186,6 +187,27 @@ int main() {
 	F3::ExecutePendingCommands();
 	check( g_probeCalls == after + 2, "script family is boot-safe, queue kept flowing" );
 	check( strcmp( g_cell1, "boot-safe-confirmed" ) == 0, "post-script argv intact" );
+
+	// 13) slice-7a: the GameClient ctor era's four shared-STUB registrations (AttackModeSelect,
+	// CharacterRecordWindow, SneakToggle, WeaponLinkToggle - all @0x404b70 'retn' in shipped,
+	// registered by src/F3/GameClient.cpp::ctor_0x460b30 @0x460b8d/0x460b9c/0x460c17/0x460c44).
+	// The row compiles that TU (link proof); here the same registrations are reproduced to
+	// drive dispatch: the shipped stub must resolve, run, and cost NOTHING.
+	F3::RegisterCommand( "AttackModeSelect",
+	    reinterpret_cast<void ( __cdecl *)()>( &JE::DialogueManager::virt_meth_0x404b70 ) );
+	F3::RegisterCommand( "CharacterRecordWindow",
+	    reinterpret_cast<void ( __cdecl *)()>( &JE::DialogueManager::virt_meth_0x404b70 ) );
+	F3::RegisterCommand( "SneakToggle",
+	    reinterpret_cast<void ( __cdecl *)()>( &JE::DialogueManager::virt_meth_0x404b70 ) );
+	F3::RegisterCommand( "WeaponLinkToggle",
+	    reinterpret_cast<void ( __cdecl *)()>( &JE::DialogueManager::virt_meth_0x404b70 ) );
+	F3::PushCommand( "attackmodeselect" );
+	F3::PushCommand( "characterrecordwindow" );
+	F3::PushCommand( "sneaktoggle" );
+	F3::PushCommand( "weaponlinktoggle" );
+	F3::PushCommand( "probe stub-era-survivor" );
+	F3::ExecutePendingCommands();
+	check( g_probeCalls == after + 3, "four shipped no-op stubs dispatch, queue survives" );
 
 	if (!g_fail) { printf("OK: console executor tests passed\n"); return 0; }
 	printf("%d failures\n", g_fail);
