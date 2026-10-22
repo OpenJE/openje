@@ -15,6 +15,7 @@
 #include "F3.hpp"
 #include "F3/Commands.hpp"
 #include "JE/DialogueManager.hpp"
+#include "JE/Network.hpp"
 
 #include <stdio.h>
 #include <string.h>
@@ -22,6 +23,7 @@
 // host seam stub (the app installs the real one; GUILoading/SpawnMove row precedent)
 namespace JE { namespace Host {
 	int TickMilliseconds() { return 0; }
+	void* GetParameterTree() { return 0; }   // config READ skips ini overrides on null (7c)
 } }
 
 static int g_fail = 0;
@@ -208,6 +210,35 @@ int main() {
 	F3::PushCommand( "probe stub-era-survivor" );
 	F3::ExecutePendingCommands();
 	check( g_probeCalls == after + 3, "four shipped no-op stubs dispatch, queue survives" );
+
+	// 14) slice-7c: the CONFIG PIPELINE on a real JE::Network. ctor defaults -> config READ
+	// (vft[6] defaults, tree-null skip) -> APPLY client-only (bit1): server bit cleared,
+	// both conn slots stay 0 (factory instantiation named-gated, P2 netcode), and the
+	// script-family gate now reads the LIVE config: 2 & 1 == 0 -> remote-echo path, safe.
+	JE::Network net;
+	net.ctor_0x543890();
+	check( JE::Network::GetGameNetwork() == &net, "ctor installs the singleton (0x70BD90 twin)" );
+
+	net.virt_meth_0x543ac0();   // config read @0x543ac0 (Host::GetParameterTree is 0 in tests)
+	check( net.mbr_0x4 == 3, "config default server+client @0x543ad9" );
+	check( net.mbr_0x8 == 21498, "server port default @0x543ae0" );
+	check( net.mbr_0x14 == 600000, "server timeout default @0x543af0" );
+	check( net.mbr_0x1c == 22501, "client port default @0x543af3" );
+	check( net.mbr_0x28 == 600000, "client timeout default @0x543aff" );
+
+	const char applied = net.ApplyNetConfig( 2 );   // client only; @0x543930 body ported
+	(void) applied;
+	check( net.mbr_0x4 == 2, "ApplyNetConfig writes the config @0x543a1c" );
+	check( net.mbr_0x18 == 0 && net.mbr_0x2c == 0,
+	       "factories gated (0 GameServer/GameClient), port guards keep apply non-faulting" );
+
+	// live-config dispatch: the script commands now see net->mbr_0x4 = 2 (&1 == 0), so the
+	// remote-echo branches run through the REAL chain (client slot still 0 -> conn guards).
+	F3::PushCommand( "disablescripts" );
+	F3::PushCommand( "togglescripts" );
+	F3::PushCommand( "probe config-live" );
+	F3::ExecutePendingCommands();
+	check( g_probeCalls == after + 4, "remote-config script branches dispatch safely" );
 
 	if (!g_fail) { printf("OK: console executor tests passed\n"); return 0; }
 	printf("%d failures\n", g_fail);
