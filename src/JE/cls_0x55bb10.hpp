@@ -19,7 +19,7 @@ namespace JE {
 			undefined4 meth_0x55e910();
 			undefined4 meth_0x55e960();
 			undefined4 meth_0x55ea40();
-			meth_0x55je60;
+			undefined4 meth_0x55f360();   // R-HEADERSAN: retyped from the 2024 bare form
 			undefined4 meth_0x55f9e0();
 	}; // 
 } // namespace JE
