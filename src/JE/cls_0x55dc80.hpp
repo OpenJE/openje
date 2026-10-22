@@ -90,8 +90,8 @@ namespace JE {
 			undefined4 meth_0x51f160();
 			undefined4 meth_0x51f1a0();
 			undefined4 meth_0x51f200();
-			meth_0x51je40;
-			meth_0x51jee0;
+			undefined4 meth_0x51f340();   // R-HEADERSAN: retyped from the 2024 bare form
+			undefined4 meth_0x51f3e0();   // R-HEADERSAN: retyped from the 2024 bare form
 			undefined4 meth_0x51f570();
 			undefined4 meth_0x51f680();
 			undefined4 meth_0x51f6d0();
@@ -140,7 +140,7 @@ namespace JE {
 			undefined4 meth_0x57e5f0();
 			undefined4 meth_0x57e920();
 			undefined4 meth_0x57ebf0();
-			meth_0x57je70;
+			undefined4 meth_0x57f370();   // R-HEADERSAN: retyped from the 2024 bare form
 			undefined4 meth_0x57f730();
 			undefined4 meth_0x57f950();
 			undefined4 meth_0x5800a0();
