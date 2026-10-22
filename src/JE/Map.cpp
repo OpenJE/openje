@@ -326,6 +326,9 @@ namespace JE {
 		return 1;
 	} // ParseFromBytes
 
+	// Shipped counterpart: JE::Map::GetOctree 0x56D960 (lazy-loads the octree at +0x48 from the
+	// filename at +0x2C through the ResourceSystem; live name banked in the T-055 reconcile, the
+	// documented caller 0x578D3D sits in StitchWaterTiles).
 	Octree* Map::GetOctree() {
 		tracing::instrument( tracing::LOCATION, "" );
 		if ( mbr_0x48 ) {
