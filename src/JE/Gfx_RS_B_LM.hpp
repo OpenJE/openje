@@ -32,7 +32,7 @@ namespace JE {
 			undefined4 virt_meth_0x537ba0();
 			undefined4 virt_meth_0x537bc0();
 			void ctor_0x53bef0();
-			virt_meth_0x53bje0;
+			undefined4 virt_meth_0x53bf30();   // R-HEADERSAN: retyped from the 2024 bare form
 			undefined4 virt_meth_0x53c290();
 	}; // Gfx_RS_B_LM
 } // namespace JE
