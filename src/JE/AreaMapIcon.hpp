@@ -83,7 +83,7 @@ namespace JE {
 			void meth_0x41d5f0(); // meth_0x41d5f0
 			void meth_0x41e5f0( int param_1, int param_2, int param_3, int param_4 ); // meth_0x41e5f0
 			void meth_0x41e640( float param_1, float param_2, float param_3, float param_4 ); // meth_0x41e640
-			void meth_0x41je00( int param_1 ); // meth_0x41je00
+			void meth_0x41f300( int param_1 ); // meth_0x41f300
 			void meth_0x436ad0( int param_1 ); // meth_0x436ad0
 			void meth_0x437940( int param_1, uint param_2 ); // meth_0x437940
 			undefined meth_0x437b90 (); // meth_0x437b90
