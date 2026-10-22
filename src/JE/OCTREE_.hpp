@@ -88,7 +88,7 @@ namespace JE {
 			undefined4 virt_meth_0x5af160();
 			undefined4 virt_meth_0x5af200();
 			undefined4 virt_meth_0x5af270();
-			virt_meth_0x5aje70;
+			undefined4 virt_meth_0x5af370();   // R-HEADERSAN: retyped from the 2024 bare form
 			undefined4 virt_meth_0x5af4c0();
 			undefined4 virt_meth_0x5af630();
 			undefined4 virt_meth_0x5af710();
