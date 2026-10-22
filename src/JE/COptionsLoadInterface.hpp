@@ -9,7 +9,7 @@ namespace JE {
 	class COptionsLoadInterface {
 		//: Methods
 		public:
-			virt_meth_0x423je0;
+			undefined4 virt_meth_0x423f30();   // R-HEADERSAN: retyped from the 2024 bare form
 			undefined4 virt_meth_0x448800();
 			undefined4 virt_meth_0x448810();
 	}; // COptionsLoadInterface
