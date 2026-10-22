@@ -216,25 +216,47 @@ namespace JE {
 		NodeSetKey( fresh, queryText );
 		*reinterpret_cast<dword*>( fresh + Node_Value ) = 0; // pair value defaults to 0 before assignment
 
+		byte* root = NodeLink( header, Node_Parent );
 		byte* parent;
-		if ( NodeLink( header, Node_Parent ) == header ) {
+		bool wentLeft;
+		if ( NodeIsNil( root ) ) {
 			// empty tree: the new node is the root; header keeps linking to itself for left/right.
 			parent = header;
+			wentLeft = false;
 			*reinterpret_cast<byte**>( header + Node_Parent ) = fresh;
 			*reinterpret_cast<byte**>( header + Node_Left ) = fresh;
 			*reinterpret_cast<byte**>( header + Node_Right ) = fresh;
-		} else if ( node != header ) {
-			// insert as `node`'s left child (query sorts before an existing key)
-			parent = node;
-			*reinterpret_cast<byte**>( node + Node_Left ) = fresh;
-			if ( node == NodeLink( header, Node_Left ) ) {
-				*reinterpret_cast<byte**>( header + Node_Left ) = fresh; // new leftmost
-			}
 		} else {
-			// query sorts after everything: attach to the current rightmost node's right side
-			parent = NodeLink( header, Node_Right );
-			*reinterpret_cast<byte**>( parent + Node_Right ) = fresh;
-			*reinterpret_cast<byte**>( header + Node_Right ) = fresh;    // new rightmost
+			// shipped descent 0x59f3f0-0x59f443 (StringTree::meth_0x59f3e0, the _Insert_hint walk):
+			// from the root compare _stricmp(query, nodeKey) < 0 ? left (0x59f43a) : right (0x59f43e),
+			// stopping AT the nil child slot. THE slot found is the only place a new link may go -
+			// a slice-5b defect caught by the Commands suite: the previous placement attached under
+			// the lower_bound node's LEFT slot unconditionally, orphaning whatever subtree lived
+			// there (registering 'alpha' after 'probe'/'simple' made 'alpha' unreachable while
+			// mbr_0x8 still counted it - keys lost silently).
+			byte* cur = root;
+			for (;;) {
+				if ( _stricmp( queryText, NodeKey( cur ) ) < 0 ) {
+					byte* left = NodeLink( cur, Node_Left );
+					if ( NodeIsNil( left ) ) { parent = cur; wentLeft = true; break; }
+					cur = left;
+				} else {
+					byte* right = NodeLink( cur, Node_Right );
+					if ( NodeIsNil( right ) ) { parent = cur; wentLeft = false; break; }
+					cur = right;
+				}
+			}
+			if ( wentLeft ) {
+				*reinterpret_cast<byte**>( parent + Node_Left ) = fresh;
+				if ( parent == NodeLink( header, Node_Left ) ) {
+					*reinterpret_cast<byte**>( header + Node_Left ) = fresh;   // new leftmost
+				}
+			} else {
+				*reinterpret_cast<byte**>( parent + Node_Right ) = fresh;
+				if ( parent == NodeLink( header, Node_Right ) ) {
+					*reinterpret_cast<byte**>( header + Node_Right ) = fresh;  // new rightmost
+				}
+			}
 		}
 		*reinterpret_cast<byte**>( fresh + Node_Parent ) = parent;
 		*reinterpret_cast<byte**>( fresh + Node_Left ) = header;
