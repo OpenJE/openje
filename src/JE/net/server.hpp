@@ -47,7 +47,7 @@ namespace JE {
                 undefined4 meth_0x5a0bf0();
                 undefined4 meth_0x5a0c20();
                 undefined4 meth_0x5a0d60();
-                meth_0x5a0je0;
+                undefined4 meth_0x5a0f30();   // R-HEADERSAN: retyped from the 2024 bare form
                 undefined4 meth_0x5a1410();
                 undefined4 meth_0x5a1550();
                 undefined4 meth_0x5a16a0();
