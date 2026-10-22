@@ -97,11 +97,11 @@ namespace JE {
                 undefined4 virt_meth_0x4af2d0();
                 undefined4 virt_meth_0x4af2e0();
                 undefined4 virt_meth_0x4af2f0();
-                virt_meth_0x4aje00;
-                virt_meth_0x4aje10;
-                virt_meth_0x4aje20;
-                virt_meth_0x4aje80;
-                virt_meth_0x4aje90;
+                undefined4 virt_meth_0x4af300();   // R-HEADERSAN: retyped from the 2024 bare form
+                undefined4 virt_meth_0x4af310();   // R-HEADERSAN: retyped from the 2024 bare form
+                undefined4 virt_meth_0x4af320();   // R-HEADERSAN: retyped from the 2024 bare form
+                undefined4 virt_meth_0x4af380();   // R-HEADERSAN: retyped from the 2024 bare form
+                undefined4 virt_meth_0x4af390();   // R-HEADERSAN: retyped from the 2024 bare form
                 undefined4 virt_meth_0x4af460();
                 undefined4 virt_meth_0x4af470();
                 undefined4 virt_meth_0x4af480();
@@ -125,7 +125,7 @@ namespace JE {
                 undefined4 virt_meth_0x4afb30();
                 undefined4 virt_meth_0x4afc00();
                 undefined4 virt_meth_0x4afc70();
-                virt_meth_0x4afje0;
+                undefined4 virt_meth_0x4aff30();   // R-HEADERSAN: retyped from the 2024 bare form
                 undefined4 virt_meth_0x4affa0();
                 undefined4 virt_meth_0x4b0000();
                 undefined4 virt_meth_0x4b0040();
