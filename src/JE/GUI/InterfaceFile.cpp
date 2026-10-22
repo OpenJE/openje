@@ -49,6 +49,9 @@ namespace JE {
 				return 1;
 			}
 
+		// Port-side .int widget teardown: shipped has no single free fn — teardown is inlined in
+		// the .int load chain (0x495220 / 0x495740, T-003 recon; string frees hit the 0x4B2DD0
+		// SSO dtor fan, T-059 tier).
 		void FreeTree( Widget* w ) {
 			if ( !w ) { return; }
 			free( w->name ); free( w->s40 );
@@ -63,13 +66,16 @@ namespace JE {
 			free( w );
 		}
 
-			Widget* AllocWidget( unsigned type ) {
+			// Port allocation seam for parsed widgets (shipped constructs inline in the 0x495220-era
+		// chain above).
+		Widget* AllocWidget( unsigned type ) {
 				Widget* w = static_cast<Widget*>( calloc( 1, sizeof( Widget ) ) );
 				if ( w ) { w->type = type; }
 				return w;
 			}
 
-			char AddChild( Widget* parent, Widget* child ) {
+			// Port grow-attach for the children array (shipped attach is inline in the 0x495740 chain).
+		char AddChild( Widget* parent, Widget* child ) {
 				if ( parent->nChildren == parent->capChildren ) {
 					unsigned cap = parent->capChildren ? parent->capChildren * 2 : 8;
 					Widget** n = static_cast<Widget**>( realloc( parent->children, cap * sizeof( Widget* ) ) );
@@ -329,6 +335,8 @@ namespace JE {
 			}
 		} // anonymous namespace
 
+		// Name lookup over the widget tree (T-005 feature): shipped performs its lookup inline in
+		// the .int post-load pass (chain 0x495740, T-003/T-005 recon docs).
 		Widget* InterfaceFile::FindWidget( const char* name ) {
 			for ( unsigned i = 0; i < m_nRoots; ++i ) {
 				Widget* hit = FindIn( m_roots[i], name );
