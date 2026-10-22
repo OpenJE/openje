@@ -26,7 +26,7 @@ namespace JE {
 			void ctor_0x4cbb90();
 			undefined4 virt_meth_0x4cbbd0();
 			void dtor_0x4cbbf0();
-			virt_meth_0x4ceje0;
+			undefined4 virt_meth_0x4cef30();   // R-HEADERSAN: retyped from the 2024 bare form
 			undefined4 virt_meth_0x4d2260();
 			undefined4 virt_meth_0x4d2330();
 			undefined4 virt_meth_0x4d23e0();
