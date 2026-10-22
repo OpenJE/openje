@@ -63,11 +63,17 @@ namespace JE {
         return (undefined4)this;
     } // meth_0x401bd0
 
-    // 0x401940 — the original reserve/realloc helper. The SSO transition and growth are folded into
-    // meth_0x401bd0 above; this stub is retained for entry-point parity with the database.
-    undefined4 cls_0x50db20::meth_0x401940(int param_1, int param_2) {
-        return 0;
-    }
+    // 0x401940 — RESIZE/SHRINK helper, VERIFIED-READ but NOT PORTED (body deliberately absent).
+    // Byte shape (this seat's decompile): _Xlen length_error guard on n==-1 @0x40194d;
+    // shrink-to-inline frees the heap block and resets cap=15 / size=0 / NUL @0x40199d-0x4019c9;
+    // zero-size branch @0x4019d1-0x4019f1; growth delegates to the realloc primitive
+    // meth_0x401510 @0x401967/0x401980 (that primitive: capacity (n|0xF)+1 rounding @0x401532,
+    // SSO-select copy @0x401599-0x4015aa, old-block free @0x4015c3, cap/size/NUL store).
+    // All port-side NEED for this shape is folded into meth_0x401bd0 (assign) above - same 0x10
+    // inline rule, same grow path. Per the owner's own rule (src/F3/GameActionAttack.hpp:61: a
+    // DB-parity stub that LIES about its body gets deleted, not kept), the previous
+    // `return 0` fake entry is REMOVED; the hpp declaration stays labelled UNPORTED so the DB
+    // entry point is recorded without pretending behavior.
 
     // 0x401B20 — substring copy used by meth_0x59f540 to clone a key before insertion
     // (assign(pos=0, count=-1) == full copy). Kept simple: delegates to the assign path.

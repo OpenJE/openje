@@ -15,8 +15,10 @@ namespace JE {
 	class PathManager;
 
 	// JE::Entity layout EXCERPT used by the movement pipeline (original offsets). F3::GameEntity
-	// derives from the full JE::Entity stub; unit tests use this directly. Virtual slots mirror
-	// the entity vft indices seen in the decompilation.
+	// derives from the fully NAMED JE::Entity (JE/Entity.hpp - the IDB's 43+-method class whose base
+	// vft 0x692084 carries the frame pump at byte +0xC8, per the T-083 vft census / T-085 raw);
+	// unit tests use this EXCERPT directly. Virtual slots mirror the entity vft indices verified
+	// against that table.
 	struct Mover {
 		// NB: no explicit vft member - the compiler vptr occupies +0x0 exactly as in the
 		// original Entity, keeping pos at +0x4 and every documented offset true.

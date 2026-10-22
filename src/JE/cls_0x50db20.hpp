@@ -126,8 +126,10 @@ namespace JE {
 			undefined4 meth_0x401440();
 			undefined4 meth_0x401490();
 			undefined4 meth_0x4014b0();
-			undefined4 meth_0x401510();
-			undefined4 meth_0x401940(int param_1, int param_2);
+			undefined4 meth_0x401510();   // UNPORTED realloc primitive (n|0xF)+1 rounding @0x401532,
+			                              //  SSO-select copy, old-free @0x4015c3; NO body on purpose
+			undefined4 meth_0x401940(int param_1, int param_2);   // UNPORTED resize/shrink (_Xlen guard
+			                              //  @0x40194d); shape + cite live at cls_0x50db20.cpp
 			undefined4 meth_0x401a40();
 			undefined4 meth_0x401b20(void* other, int pos, int count);  // substring/full copy (assign path)
 			undefined4 meth_0x401bd0(const char* param_1, int param_2);
