@@ -14,7 +14,7 @@ namespace JE {
 		//: Methods
 			undefined4 virt_meth_0x58f2a0();
 			void ctor_0x58f2f0();
-			undefined4 virt_meth_0x58jee0();
+			undefined4 virt_meth_0x58f3e0();
 			void dtor_0x58f450();
 			undefined4 virt_meth_0x58f5b0();
 			undefined4 virt_meth_0x58f750();
