@@ -36,7 +36,8 @@
 namespace JE {
 	namespace SS {
 
-		// sub_4C5D10 - open an .stf and slurp its directory.
+		// Shipped loader 0x4C5D10 (sub_4C5D10) — open an .stf and slurp its directory (layout
+		// note up top: Init 0x4C5E30 / fetch 0x4C5900 / this loader; sizeof 0x16C).
 		static char LoadStfTable( const char* path, FILE** streamOut, void** dirOut, unsigned* countOut ) {
 			FILE* f = fopen( path, "rb" );            // original: filebuf open mode 33 ("rb")
 			if ( !f ) {
