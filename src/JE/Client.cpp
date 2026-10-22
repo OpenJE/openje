@@ -29,6 +29,23 @@ namespace F3 {
 	void __stdcall CommandCameraTopDown();
 	void __stdcall CommandCameraTiltUp();
 	void __stdcall CommandCameraTiltDown();
+	void __stdcall CommandCameraDistance(unsigned int argv);
+	void __stdcall CommandCameraDistanceSpeed(unsigned int argv);
+	void __stdcall CommandCameraScrollLeft_On();
+	void __stdcall CommandCameraScrollRight_On();
+	void __stdcall CommandCameraScrollUp_On();
+	void __stdcall CommandCameraScrollDown_On();
+	void __stdcall CommandCameraScrollLeft_Off();
+	void __stdcall CommandCameraScrollRight_Off();
+	void __stdcall CommandCameraScrollUp_Off();
+	void __stdcall CommandCameraScrollDown_Off();
+	void __stdcall CommandCameraZoomIn_On();
+	void __stdcall CommandCameraZoomIn_Off();
+	void __stdcall CommandCameraZoomOut_On();
+	void __stdcall CommandCameraZoomOut_Off();
+	void __stdcall CommandCameraRotateLeft();
+	void __stdcall CommandCameraRotateRight();
+	void __stdcall CommandCameraDown();
 
 	// Command registry entry (src/F3.cpp), original 0x59F5D0.
 	void RegisterCommand( const char* name, void ( __stdcall *handler )() );
@@ -88,22 +105,34 @@ namespace JE {
 		F3::RegisterCommand( "CameraAzimuthSpeed", (void ( __stdcall *)())F3::CommandCameraAzimuthSpeed );    // 0x58ec85
 		F3::RegisterCommand( "CameraElevation", (void ( __stdcall *)())F3::CommandCameraElevation );           // 0x58ec94
 		F3::RegisterCommand( "CameraElevationSpeed", (void ( __stdcall *)())F3::CommandCameraElevationSpeed ); // 0x58eca3
-		// 0x58ecb5 CameraDistance @0x58b5b0 + 0x58ecc4 CameraDistanceSpeed @0x58b600 - slice 2
-		//   (setters 0x586140 read; scroll/zoom fields 0xe8/0xec/0xf0/0xf4 need one more clamp-
-		//   boundary read at 0x586167/0x586184 first - boundary regs unresolved, NOT guessed).
+		F3::RegisterCommand( "CameraDistance", (void ( __stdcall *)())F3::CommandCameraDistance );                 // 0x58ecb5
+		F3::RegisterCommand( "CameraDistanceSpeed", (void ( __stdcall *)())F3::CommandCameraDistanceSpeed );        // 0x58ecc4
 		// 0x58ecd3 CameraFOV @0x58b660 - slice 3: the Gfx_Engine seam [0x707CE4] vft+0xA8 is
 		//   now testable against the LIVE device (G1 positive 41b1a74), so this lands with
 		//   real validation instead of a guessed layout.
 		F3::RegisterCommand( "CameraTop", F3::CommandCameraTop );                                             // 0x58ecf1
 		F3::RegisterCommand( "CameraTopDown", F3::CommandCameraTopDown );                                     // 0x58ece2
-		// 0x58ed00 CameraDown @0x588420 - slice 2 (sub_586290(cam,0), the 0/45-degree twin of
-		//   TopDown - body read, registration lands with the Distance slice).
+		F3::RegisterCommand( "CameraDown", F3::CommandCameraDown );                                               // 0x58ed00
 		F3::RegisterCommand( "CameraTiltUp", F3::CommandCameraTiltUp );                                       // 0x58edf6
 		F3::RegisterCommand( "CameraTiltDown", F3::CommandCameraTiltDown );                                   // 0x58ee05
-		// 0x58ed0f CameraScrollSpeed @0x58b7d0 (writes cam+0x110 - field map pending one
-		//   re-read; kept out of slice 1 until cited). 0x58ed1e..0x58edc9 scroll/zoom On/Off
-		//   family (0x588440-0x588520) + 0x58edd8..0x58ee35 rotate/mouse/constraints
-		//   (0x588540-0x5885e0) - slice 2 camera tail.
+		// 0x58ed0f CameraScrollSpeed @0x58b7d0 - DEFERRED to slice 3 with a WARNING: it writes
+		//   a FLOAT at cam+0x110 which the ctor 0x586fd9 stamps with the Gfx_Engine VIEW POINTER
+		//   - shipped slot collision, needs the anim-tick consumer read before the echo/FOV
+		//   interpretation settles (ledger, not guessed).
+		F3::RegisterCommand( "CameraScrollLeft_On", F3::CommandCameraScrollLeft_On );                              // 0x58ed1e
+		F3::RegisterCommand( "CameraScrollRight_On", F3::CommandCameraScrollRight_On );                             // 0x58ed30
+		F3::RegisterCommand( "CameraScrollUp_On", F3::CommandCameraScrollUp_On );                                   // 0x58ed3f
+		F3::RegisterCommand( "CameraScrollDown_On", F3::CommandCameraScrollDown_On );                                // 0x58ed4e
+		F3::RegisterCommand( "CameraScrollLeft_Off", F3::CommandCameraScrollLeft_Off );                              // 0x58ed5d
+		F3::RegisterCommand( "CameraScrollRight_Off", F3::CommandCameraScrollRight_Off );                             // 0x58ed6c
+		F3::RegisterCommand( "CameraScrollUp_Off", F3::CommandCameraScrollUp_Off );                                   // 0x58ed7b
+		F3::RegisterCommand( "CameraScrollDown_Off", F3::CommandCameraScrollDown_Off );                               // 0x58ed8a
+		F3::RegisterCommand( "CameraZoomIn_On", F3::CommandCameraZoomIn_On );                                        // 0x58ed99
+		F3::RegisterCommand( "CameraZoomIn_Off", F3::CommandCameraZoomIn_Off );                                       // 0x58edab
+		F3::RegisterCommand( "CameraZoomOut_On", F3::CommandCameraZoomOut_On );                                       // 0x58edba
+		F3::RegisterCommand( "CameraZoomOut_Off", F3::CommandCameraZoomOut_Off );                                    // 0x58edc9
+		F3::RegisterCommand( "CameraRotateLeft", F3::CommandCameraRotateLeft );                                     // 0x58edd8
+		F3::RegisterCommand( "CameraRotateRight", F3::CommandCameraRotateRight );                                    // 0x58ede7
 		//   0x58ee44 ScreenCap 0x58ee53 ShowCursor 0x58ee62 Warp 0x58ee71 GuiOptimizationLevel
 		//   0x58ee80 ConsoleWindow 0x58ee8f DebugWindow 0x58eea1 StackWindow 0x58eeb0 DebugTools
 		//   0x58eebf FontTest 0x58eece GetGlobal 0x58eedd SetGlobal 0x58eeec ToggleScene

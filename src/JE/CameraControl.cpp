@@ -37,15 +37,18 @@ namespace JE {
 		}
 		mbr_0xc0 |= 1u;                                                                 // 0x585f34
 		float d = 360.0f - fabsf( t - cur );                                            // 0x585f4b
+		// RAW-CORRECTED (slice-1's pseudocode swapped target/direction; displacements below are
+		// from the store opcodes): direction +-1.0 -> mbr_0xd0 (0x585f8f/0x585fa7),
+		// target degrees -> mbr_0xcc (fstps 0x585fae), start -> mbr_0xd4 (0x585fb4).
 		if ( cur <= t ) {
-			mbr_0xcc = 1.0f;                                                            // 0x585f67 (target = cur + d, 0x585faa)
-			mbr_0xd0 = cur + d;
+			mbr_0xd0 = 1.0f;                                                            // 0x585f67-era leg
+			mbr_0xcc = cur + d;
 		} else {
-			mbr_0xcc = 1.0f;                                                            // 0x585f88 (wrap-overshoot leg)
-			mbr_0xd0 = cur + d;
+			mbr_0xd0 = 1.0f;                                                            // 0x585f88 (movl +1.0,0xd0)
+			mbr_0xcc = cur + d;
 			if ( cur > t ) {                                                            // 0x585f65 re-test
-				mbr_0xcc = -1.0f;                                                       // 0x585fa0 (target = cur - d)
-				mbr_0xd0 = cur - d;
+				mbr_0xd0 = -1.0f;                                                       // 0x585fa7 (movl -1.0,0xd0)
+				mbr_0xcc = cur - d;
 			}
 		}
 		mbr_0xd4 = cur;                                                                 // 0x585fb4
@@ -63,10 +66,13 @@ namespace JE {
 		tracing::instrument( tracing::LOCATION, "deg=%f", degrees );
 
 		float v = degrees;
-		if ( v < mbr_0xdc ) {
-			v = mbr_0xdc;            // clamp LOW (0x58603d-0x586045)
-		} else if ( v > mbr_0xe0 ) {
-			v = mbr_0xe0;            // clamp HIGH (0x58605a-0x586062)
+		// clamp pair 0xd8/0xdc (fcomps 0xdc @0x586032 raw); the bound ORDER (which is min vs
+		// max) is NAMED-OPEN - resolved by the anim-tick consumer, not guessed. Reading A:
+		// 0xd8=min, 0xdc=max, matching the 0x586045 below-branch stamp.
+		if ( v < mbr_0xd8 ) {
+			v = mbr_0xd8;            // clamp to bound A (0x58603d-0x586045)
+		} else if ( v > mbr_0xdc ) {
+			v = mbr_0xdc;            // clamp to bound B (0x58605a-0x586062)
 		}
 		float cur = mbr_0xa8 * 57.295776f;   // 0x58602a
 		if ( ceil( v ) == ceil( cur ) ) {
@@ -95,6 +101,36 @@ namespace JE {
 		char* orbit = reinterpret_cast<char*>( this ) + 8;   // 0x585ffe (this+8)
 		reinterpret_cast<Gfx_CamCtrl*>( orbit )->set_pose_0x424670( *reinterpret_cast<float*>( orbit + 0x9c ), degrees * 0.017453292f, mbr_0xa8 );
 	} // set_elevation_instant_0x585fd0
+
+	// 0x586140 - DISTANCE animated setter (raw roles: current mbr_0xac via flds 0xac era
+	// 0x586154; clamp pair 0xec/0xf0 legs 0x586167/0x586184; equal branch -> direct orbit set
+	// 0x5861db + bit2 clear 0x5861e0; else direction +-1.0 -> mbr_0xfc (0x5861fd/0x586209),
+	// flag bit2 |= 0x586217, TARGET -> mbr_0xf8 (mov %ecx,0xf8 @0x58621e)). NOTE the shipped
+	// slot collision: CommandCameraDistanceSpeed also writes 0xf8 - ported verbatim.
+	void CameraControl::set_distance_0x586140( float degrees ) {
+		tracing::instrument( tracing::LOCATION, "d=%f", degrees );
+
+		float v = degrees;
+		if ( v < mbr_0xec ) {
+			v = mbr_0xec;            // 0x58616f leg (bound A)
+		} else if ( v > mbr_0xf0 ) {
+			v = mbr_0xf0;            // 0x58618c leg (bound B)
+		}
+		float cur = mbr_0xac;        // 0x586154
+		if ( ceil( v ) == ceil( cur ) ) {
+			char* orbit = reinterpret_cast<char*>( this ) + 8;
+			reinterpret_cast<Gfx_CamCtrl*>( orbit )->set_pose_0x424670( mbr_0xa4 * 0.017453292f, mbr_0xa8 * 0.017453292f, v );   // 0x5861db (arg coercion per the shipped calls: azimuth/elev passed as their CURRENT slots)
+			mbr_0xc0 = (word)( mbr_0xc0 & 0xFFFB );   // bit2 clear, 0x5861e0-era
+		} else {
+			if ( v <= cur ) {
+				mbr_0xfc = -1.0f;    // 0x586209
+			} else {
+				mbr_0xfc = 1.0f;     // 0x5861fd
+			}
+			mbr_0xc0 |= 4u;          // 0x586217
+			mbr_0xf8 = v;            // 0x58621e
+		}
+	} // set_distance_0x586140
 
 	// PORT-SIDE seam (named-absence): JE::Gfx_CamCtrl::set_pose_0x424670 - body not
 	// reconstructed (device-era owner of the orbit pose; call sites cited above prove the
