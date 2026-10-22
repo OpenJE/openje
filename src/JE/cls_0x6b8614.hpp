@@ -21,7 +21,7 @@ namespace JE {
 		//: Methods
 		public:
 			undefined4 virt_meth_0x5d8837();
-			virt_meth_0x5d9jee;
+			undefined4 virt_meth_0x5d9f3e();   // R-HEADERSAN: retyped from the 2024 bare form
 			void ctor_0x5db1fb();
 	}; // 
 } // namespace JE
