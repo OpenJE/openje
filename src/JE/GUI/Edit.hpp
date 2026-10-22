@@ -94,10 +94,10 @@ namespace JE {
                 dword mbr_0xf24;
                 dword mbr_0xf28;
                 dword mbr_0xf2c;
-                dword mbr_0xje0;
-                dword mbr_0xje4;
-                byte mbr_0xje8;
-                dword mbr_0xjec;
+                dword mbr_0xf30;
+                dword mbr_0xf34;
+                byte mbr_0xf38;
+                dword mbr_0xf3c;
                 dword mbr_0xf40;
                 dword mbr_0xf44;
                 dword mbr_0xf48;
@@ -164,7 +164,10 @@ namespace JE {
                 void meth_0x4c2390(); // meth_0x4c2390
                 void meth_0x4c2f20(); // meth_0x4c2f20
                 void meth_0x4c3af0( int param_1 ); // meth_0x4c3af0
-                void meth_0x4c3af0( int param_1 ); // meth_0x4c4ed0
+                void meth_0x4c4ed0( int param_1 ); // R-HEADERSAN: the 2024 export DUPLICATED
+                    // meth_0x4c3af0 here; the line's own comment named the true method and BOTH
+                    // 0x4c3af0 and 0x4c4ed0 exist in Edit's F3.json method table - the second
+                    // decl is renamed to its own identity (pre-existing error, fixed in-pass).
                 virtual void virt_meth_0x4c0330(); // virt_meth_0x4c0330
                 virtual void virt_meth_0x4c0360(); // virt_meth_0x4c0360
                 virtual void virt_meth_0x4c0380(); // virt_meth_0x4c0380
