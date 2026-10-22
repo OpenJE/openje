@@ -130,10 +130,10 @@ namespace JE {
 			dword mbr_0xf24;
 			dword mbr_0xf28;
 			dword mbr_0xf2c;
-			dword mbr_0xje0;
-			dword mbr_0xje4;
-			dword mbr_0xje8;
-			dword mbr_0xjec;
+			dword mbr_0xf30;
+			dword mbr_0xf34;
+			dword mbr_0xf38;
+			dword mbr_0xf3c;
 			dword mbr_0xf40;
 			dword mbr_0xf44;
 			dword mbr_0xf48;
@@ -180,7 +180,7 @@ namespace JE {
 			undefined4 meth_0x41e9b0();
 			undefined4 meth_0x41ef80();
 			undefined4 meth_0x41f080();
-			virt_meth_0x41jed0;
+			undefined4 virt_meth_0x41f3d0();   // R-HEADERSAN: retyped from the 2024 bare form
 			undefined4 virt_meth_0x41f410();
 			undefined4 meth_0x41f480();
 			undefined4 meth_0x41f4d0();
