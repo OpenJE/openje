@@ -28,7 +28,9 @@ namespace JE {
 				Out( const Out& );
 				Out& operator=( const Out& );
 			public:
-				char Reserve( unsigned extra ) {
+				// Port output builder (Format 0x56BE30 era — shipped appends into its fixed scratch
+			// buffer inline; growth doubling is the port's own memory discipline).
+			char Reserve( unsigned extra ) {
 					if ( len + extra <= cap ) { return 1; }
 					unsigned want = cap ? cap : 64u;
 					while ( want < len + extra ) { want *= 2u; }
@@ -37,13 +39,15 @@ namespace JE {
 					p = grown; cap = want;
 					return 1;
 				}
-				char Add( char c ) {
+				// append byte (port builder; shipped emit path EngineStringSystem::Format_0x56BE30)
+			char Add( char c ) {
 					if ( !Reserve( 1 ) ) { return 0; }
 					p[len++] = c;
 					return 1;
 				}
 				char Add( const char* s ) { return Add( s, (unsigned)strlen( s ) ); }
-				char Add( const char* s, unsigned n ) {
+				// append span (port builder; same 0x56BE30 era as Reserve above)
+			char Add( const char* s, unsigned n ) {
 					if ( !Reserve( n ) ) { return 0; }
 					memcpy( p + len, s, n );
 					len += n;
@@ -93,12 +97,16 @@ namespace JE {
 		// The seam signature is fixed by FormatEnv::lookupToken (void* ctx), so the parameter
 		// cannot be const here - local, visible suppression rather than a file-level baseline.
 		// cppcheck-suppress constParameterCallback
+		// Adapter binding the port builder's token seam to EngineStringSystem::Get (0x56BE30
+		// Format's token-fetch side, GUIStringTags doc; seam signature note below stands).
+		// cppcheck-suppress constParameterCallback
 		static const char* LookupTokenFromEss( const char* name, void* ctx ) {
 			const EngineStringSystem* ess = static_cast<const EngineStringSystem*>( ctx );
 			return ess ? ess->GetToken( name ) : 0;
 		}
 
-		FormatEnv MakeEnv( EngineStringSystem* ess ) {
+		// Port seam constructor wrapping the EngineStringSystem for the 0x56BE30-era formatter.
+	FormatEnv MakeEnv( EngineStringSystem* ess ) {
 			FormatEnv e;
 			e.ctx = ess;
 			e.resolveVariable = &ResolveVariableFromParams;
