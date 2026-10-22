@@ -25,7 +25,8 @@ namespace JE {
 			// meth_0x4339B0, section create meth_0x4E0470) and each 56-byte section is itself a
 			// map<string(std::string value)> (find sub_4DF070, insert-or-get meth_0x4DFEB0, all
 			// _stricmp-ordered). GetInt (sub_4DF770) resolves section+key then j__atol's the value
-			// string; GetBool lives at sub_4DF8B0. This interim model keeps identical OBSERVABLE
+			// string; GetBool lives at sub_4DF8B0 (VERIFIED atol>0 strict-positive, default
+			// returned AS-IS on either miss - see cpp). This interim model keeps identical OBSERVABLE
 			// behavior (case-insensitive section/key lookup, last-write-wins values, atol parsing)
 			// without the map template reconstruction; the binary layout (0x34 bytes of map handles)
 			// is tracked in docs/DEFERRED-NOTES.md.

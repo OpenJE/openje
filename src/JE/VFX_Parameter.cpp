@@ -26,9 +26,30 @@ namespace JE {
 		m_sections = NULL;
 		m_sectionCount = 0;
 		m_sectionCapacity = 0;
-		// legacy placeholder fields (pre-reconstruction database record) - zero for cleanliness
-		mbr_0x4 = 0; mbr_0x8 = 0; mbr_0x18 = 0; mbr_0x1c = 0; mbr_0x20 = 0;
-		mbr_0x24 = 0; mbr_0x28 = 0; mbr_0x2c = 0; mbr_0x30 = 0;
+		// R-FINISH item 2: these fields left their pre-reconstruction placeholder state here -
+		// the roles were
+		// CLOSED by R-VEG-E (+0x20/+0x24/+0x28-0x30) and every VALUE below is pinned from the
+		// decompiled default ctor @0x4fe1e0 (supersedes the old zero-for-cleanliness sweep, which
+		// was WRONG in four places: +0x1c constructs to 15, and +0x20/+0x24/+0x28 construct to -1):
+		//   mbr_0x1c = 15  @0x4fe1ea   name-SSO capacity (the <0x10 inline rule, string family)
+		//   mbr_0x18 = 0   @0x4fe1f1   name-SSO head
+		//   mbr_0x8  = 0   @0x4fe1f4   (byte store; role not shipped-named - zero matches the byte)
+		//   mbr_0x20 = -1  @0x4fe1fa   TYPE UNSET (enum 0..0xE over the 15-name vocab @0x6fbbe8)
+		//   mbr_0x24 = -1  @0x4fe1fd   inline-declared default: NONE (float bits when declared)
+		//   mbr_0x28 = -1  @0x4fe200   buffer SIZE unset (-1 here; the 0x5006f0 COPY ctor zeroes
+		//                               all three @0x500729-0x50072f per R-VEG-E - the split is
+		//                               documented, this ctor is the -1 shape)
+		//   mbr_0x2c = 0   @0x4fe203   allocated
+		//   mbr_0x30 = 0   @0x4fe206   data ptr (typed readers deref [+0x30] per [+0x20])
+		// mbr_0x4 is NOT written by the shipped ctor at all - it is the section-map handle whose
+		// end-comparison lives in the readers (@0x4df8f5); the port keeps it zeroed for
+		// determinism and the sections live in m_sections (named, not silent).
+		mbr_0x4 = 0;                        // not ctor-written shipped-side (see above)
+		mbr_0x8 = 0;                        // @0x4fe1f4
+		mbr_0x18 = 0;  mbr_0x1c = 15;       // @0x4fe1f1/0x4fe1ea  name SSO
+		mbr_0x20 = -1; mbr_0x24 = -1;       // @0x4fe1fa/0x4fe1fd  TYPE/default unset sentinels
+		mbr_0x28 = -1;                      // @0x4fe200           buffer size unset
+		mbr_0x2c = 0;  mbr_0x30 = 0;        // @0x4fe203/0x4fe206  allocated/data ptr
 	} // VFX_Parameter
 
 	VFX_Parameter::~VFX_Parameter() {
@@ -205,10 +226,17 @@ namespace JE {
 		return v ? (int)atol( v ) : def;
 	} // GetInt
 
-	// sub_4DF8B0 - boolean read; body NOT verified beyond the call sites seen (Resources
-	// "use_managed_file", default 0). Modeled as GetInt for now.
+	// sub_4DF8B0 - boolean read, BODY NOW VERIFIED (this seat's decompile; supersedes "modeled as
+	// GetInt for now"). Shape: resolve section via the map find (@0x4df8f0, end-handle compared
+	// @0x4df8f5) then key via sub_4DF070 (@0x4df98e); EITHER miss returns the DEFAULT AS-IS
+	// (@0x4df94d/@0x4df9ef - NO clamp: def=7 returns 7); a FOUND value returns j__atol(v) > 0
+	// (@0x4df9cb/0x4df9e7 - STRICTLY POSITIVE: "0"->false, "-5"->false, "7"->TRUE). The old
+	// GetInt delegation returned the raw number and broke both halves: no clamp on hit, clamp
+	// semantics on miss. Shipped caller: Resources "use_managed_file" (default 0) per the
+	// cls_0x50dbb0 config-string band (T-033 batch-3); port-side callerless until Resources lands.
 	int VFX_Parameter::GetBool(const char* section, const char* key, int def) const {
-		return GetInt( section, key, def );
+		const char* v = GetStringRaw_0x4df070( section, key );
+		return v ? ( atol( v ) > 0 ? 1 : 0 ) : def;
 	} // GetBool
 
 	// ---- Read-only section/entry iteration (T-009, chat/from-B.md C-36) ----------------------
