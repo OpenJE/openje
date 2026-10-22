@@ -102,7 +102,7 @@ namespace JE {
 		public:
 			undefined4 virt_meth_0x4e8e60();
 			undefined4 meth_0x4e8e90();
-			virt_meth_0x4e8je0;
+			undefined4 virt_meth_0x4e8f30();   // R-HEADERSAN: retyped from the 2024 bare form
 			undefined4 virt_meth_0x4e8f70();
 			undefined4 virt_meth_0x4e9170();
 			undefined4 virt_meth_0x4e9530();
