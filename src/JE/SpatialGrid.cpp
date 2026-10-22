@@ -6,6 +6,10 @@
 #include "JE/SpatialGrid.hpp"
 
 namespace JE {
+	// Port-side spatial index (implementer design; door-rebase + entity-shape docs). No shipped
+	// counterpart fns for these four lifecycle methods: the shipped side inserts entity-owned
+	// tick-stamped convex quads into the .rle grid (0x58-byte records, coverage virt 0x40A4B0,
+	// query era 0x405F80 — RLE-convex-quad doc); this Cell array models that insert surface.
 	SpatialGrid::~SpatialGrid() {
 		if ( m_cells ) {
 			for ( unsigned i = 0; i < m_cols * m_rows; ++i ) {
@@ -15,6 +19,7 @@ namespace JE {
 		}
 	} // ~SpatialGrid
 
+	// Port design (no shipped fn; era cites at ~SpatialGrid above: records 0x58B, 0x40A4B0).
 	void SpatialGrid::Init( unsigned cols, unsigned rows ) {
 		if ( cols > 0xFFFF || rows > 0xFFFF || !cols || !rows ) {
 			return;
@@ -24,6 +29,8 @@ namespace JE {
 		m_cells = (Cell*)calloc( cols * rows, sizeof( Cell ) );
 	} // Init
 
+	// Port design (no shipped fn): growth realloc shape stands in for the shipped per-entity
+	// .rle insertion path (coverage virt 0x40A4B0, RLE-convex-quad doc).
 	int SpatialGrid::Insert( int col, int row, void* entity ) {
 		tracing::instrument( tracing::LOCATION, "col=%d row=%d", col, row );
 		if ( !m_cells || col < 0 || row < 0
@@ -44,6 +51,7 @@ namespace JE {
 		return 1;
 	} // Insert
 
+	// Port design (no shipped fn): unlink mirrors Init/Insert era above (0x40A4B0/0x405F80).
 	int SpatialGrid::Remove( int col, int row, void* entity ) {
 		tracing::instrument( tracing::LOCATION, "" );
 		if ( !m_cells || col < 0 || row < 0
