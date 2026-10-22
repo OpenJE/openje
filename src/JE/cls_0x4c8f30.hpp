@@ -6,14 +6,14 @@
 #include "types.hpp"
 
 namespace JE {
-	class cls_0x4c8je0 {
+	class cls_0x4c8f30 {
 		//: Members
 		public:
 			dword mbr_0x4;
 			dword mbr_0x8;
 		//: Methods
 		public:
-			meth_0x4c8je0;
+			undefined4 meth_0x4c8f30();   // R-HEADERSAN: retyped from the 2024 bare form
 			undefined4 meth_0x4c8fc0();
 			undefined4 meth_0x4cbea0();
 			undefined4 meth_0x4ccdc0();
