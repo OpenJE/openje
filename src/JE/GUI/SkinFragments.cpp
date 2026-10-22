@@ -31,6 +31,11 @@ namespace JE {
 			}
 		}
 
+		// Port-side geometry ASSERTION over the shipped record (Fragment::ReadFrom_0x4b20a0 era:
+		// width store @0x4b20ec, height store @0x4b210c, 16-byte rect via Base::ReadFrom_0x4b2850
+		// called @0x4b22b9; per-slot mode census 3192/3192 + 6384/6384 with ZERO exceptions, T-007
+		// G1/G2 byte-verified). No shipped fn performs this check — it is our verification that the
+		// wire layout was read right, not a port of shipped behavior.
 		char CheckSlotGeometry( const SkinFragment* f, unsigned slot ) {
 			if ( !f ) { return 0; }
 
@@ -53,10 +58,18 @@ namespace JE {
 			}
 		}
 
+		// Audits the two all-zero shipped fields: d34 = rate (wire item 4, store @0x4b2126 —
+		// ini-authored, 14364/14364 zeros) and d38 = +0x2C (wire item 5, store @0x4b213a; zero in
+		// all shipped records, no writer found — T-007 §8c). No shipped counterpart check; port-side
+		// drift sentinel for our record reading.
 		char ReservedFieldsAreZero( const SkinFragment* f ) {
 			return ( f && f->d34 == 0u && f->d38 == 0u ) ? 1 : 0;
 		}
 
+		// Recursion over the port's reconstructed Widget tree (children/nChildren as built by the
+		// T-005 InterfaceFile reader) applying the 9-slot record rules of the 0x4b20a0 era. NO
+		// shipped counterpart located via ea-index 2026-10-22 — port-side audit scaffolding; the
+		// per-field expectations it checks are all shipped-cited at ExpectedMode/CheckSlotGeometry.
 		static void AuditOne( Widget* w, SkinAudit& out ) {
 			out.widgets++;
 			for ( unsigned i = 0; i < SLOT_COUNT; ++i ) {
@@ -89,10 +102,16 @@ namespace JE {
 			for ( unsigned c = 0; c < w->nChildren; ++c ) { AuditOne( w->children[c], out ); }
 		}
 
+		// Public entry of the audit walk; no shipped counterpart (port verification surface),
+		// era anchors at AuditOne above (0x4b20a0 record family).
 		void AuditWidgetTree( Widget* w, SkinAudit& out ) {
 			if ( w ) { AuditOne( w, out ); }
 		}
 
+		// Stem extraction: strip the trailing '.ext'. Mirrors the shipped IN-PLACE last-dot rfind
+		// stem resolver `sub_499F10` @0x499F84 (T-013 key-form decision; T-072 errata records the
+		// GUI-side probe as a structural miss of exactly this stripped form). Our copy-out is the
+		// const-safe port shape; the KEY FORM is shipped.
 		unsigned char DeriveTextureKey( const char* textureName, char* outKey, unsigned cap ) {
 			if ( !textureName || !outKey || cap == 0u ) { return 0; }
 
@@ -106,6 +125,9 @@ namespace JE {
 			return 1;
 		}
 
+		// Linear dedup helper for the port collector below; no shipped counterpart located via
+		// ea-index 2026-10-22 — our uniqueness policy (exact strcmp) filters the textureName strings
+		// of the 0x4b2187 read era; the policy itself is port-side.
 		static int Contains( const char** names, unsigned n, const char* candidate ) {
 			for ( unsigned i = 0; i < n; ++i ) {
 				if ( strcmp( names[i], candidate ) == 0 ) { return 1; }
@@ -113,6 +135,9 @@ namespace JE {
 			return 0;
 		}
 
+		// Recursive collection over the port Widget tree; the per-slot textureName it reads IS the
+		// shipped string field (name read `sub_50B880` @0x4b2187 era). The dedupe + cap policy is
+		// port-side; no shipped counterpart located via ea-index 2026-10-22.
 		static void CollectOne( Widget* w, const char** names, unsigned& n, unsigned maxUnique ) {
 			for ( unsigned i = 0; i < SLOT_COUNT; ++i ) {
 				const char* t = w->skins[i].textureName;
@@ -123,6 +148,9 @@ namespace JE {
 			for ( unsigned c = 0; c < w->nChildren; ++c ) { CollectOne( w->children[c], names, n, maxUnique ); }
 		}
 
+		// Port-side enumeration entry (test/resource census). Its 9-slot iteration shape mirrors
+		// the shipped suffix table 0x6faf2c walked with `add $0x4` bound @0x4b07e4..0x4b07f1
+		// (Window::virt_meth_0x4b06c0 era); no shipped collector function exists.
 		unsigned CollectTextureNames( Widget* w, const char** names, unsigned maxUnique ) {
 			unsigned n = 0;
 			if ( w && names ) { CollectOne( w, names, n, maxUnique ); }
@@ -179,10 +207,15 @@ namespace JE {
 		static char mgrProbe( const char* name, int* outId, void* ctx ) {
 			return static_cast<GfxTextureSlots*>( ctx )->mgr->Probe( name, outId );
 		}
+		// Thunk for the shipped vft+0xC4 CONVERT call sites: reader @0x4b221d, LoadDefault
+		// @0x5236b4 (result <0 clamped to id 0 @0x4b2223..0x4b2227 / 0x5236ba..0x5236c5).
 		static int mgrIndex( const char* name, const void* data, unsigned size, void* ctx ) {
 			(void)data; (void)size;   // device decode = design Step 4 (M-001); see hpp note
 			return static_cast<GfxTextureSlots*>( ctx )->mgr->GetOrCreate( name, 0u, 0u, 0 );
 		}
+		// Thunk for the shipped vft+0xD8 VALIDITY gate (LoadDefault tail: nonzero id must resolve
+		// @0x5236e7 or the slot is cleared @0x5236ed/0x5236f8; the reader side ends at the store
+		// @0x4b2237 with NO gate — the asymmetry is per-slot in ResolveSkinTexture vs the hpp note).
 		static TextureObject* mgrObject( int id, void* ctx ) {
 			GfxTextureSlots* self = static_cast<GfxTextureSlots*>( ctx );
 			Gfx_Texture_Manager::Texture* t = self->mgr->Object( id );
@@ -195,6 +228,10 @@ namespace JE {
 			return &self->view;
 		}
 
+		// Adapter install standing in for the shipped GLOBAL slot viewports: probe/convert/object
+		// thunks map the vft+0xDC/+0xC4/+0xD8 dispatches off [0x707CE4] (call sites @0x4b21bb /
+		// @0x4b221d / @0x5236e7, T-007 G2). Shipped had one global manager; the port injects per
+		// adapter — the ctor's ctx=this wiring is our shape, the three slots are shipped.
 		GfxTextureSlots::GfxTextureSlots( Gfx_Texture_Manager* manager )
 		: mgr( manager ) {
 			ctx = this;               // thunks cast ctx back to the adapter (see above)
