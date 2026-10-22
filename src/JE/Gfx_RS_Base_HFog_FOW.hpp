@@ -30,7 +30,7 @@ namespace JE {
 			undefined4 virt_meth_0x537570();
 			void ctor_0x53f100();
 			undefined4 virt_meth_0x53f120();
-			virt_meth_0x53je60;
+			undefined4 virt_meth_0x53f360();   // R-HEADERSAN: retyped from the 2024 bare form
 	}; // Gfx_RS_Base_HFog_FOW
 } // namespace JE
 
