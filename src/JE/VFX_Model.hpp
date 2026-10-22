@@ -107,16 +107,16 @@ namespace JE {
 			dword mbr_0xbc;
 		//: Methods
 		public:
-			virt_meth_0x4je0c0;
-			virt_meth_0x4je690;
-			virt_meth_0x4je6c0;
-			virt_meth_0x4je6f0;
-			virt_meth_0x4je720;
-			virt_meth_0x4je740;
-			virt_meth_0x4je760;
-			virt_meth_0x4je770;
-			virt_meth_0x4je780;
-			meth_0x4jea00;
+			undefined4 virt_meth_0x4f30c0();   // R-HEADERSAN: retyped from the 2024 bare form
+			undefined4 virt_meth_0x4f3690();   // R-HEADERSAN: retyped from the 2024 bare form
+			undefined4 virt_meth_0x4f36c0();   // R-HEADERSAN: retyped from the 2024 bare form
+			undefined4 virt_meth_0x4f36f0();   // R-HEADERSAN: retyped from the 2024 bare form
+			undefined4 virt_meth_0x4f3720();   // R-HEADERSAN: retyped from the 2024 bare form
+			undefined4 virt_meth_0x4f3740();   // R-HEADERSAN: retyped from the 2024 bare form
+			undefined4 virt_meth_0x4f3760();   // R-HEADERSAN: retyped from the 2024 bare form
+			undefined4 virt_meth_0x4f3770();   // R-HEADERSAN: retyped from the 2024 bare form
+			undefined4 virt_meth_0x4f3780();   // R-HEADERSAN: retyped from the 2024 bare form
+			undefined4 meth_0x4f3a00();   // R-HEADERSAN: retyped from the 2024 bare form
 			undefined4 meth_0x4f4000();
 			void dtor_0x4f4240();
 			undefined4 virt_meth_0x4f43d0();
