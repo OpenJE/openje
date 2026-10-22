@@ -26,8 +26,18 @@ namespace JE {
 	ResourceSystem::ResourceSystem() {
 		tracing::instrument( tracing::LOCATION, "" );   // ctor_0x49c610
 
-		// Observed sub-object constructions (stubbed blobs) and the six zeroed cache words at
-		// 0x12C..0x140; nothing observable to model until the hash/cache sub-objects are done.
+		// Sub-object construction VERBATIM from the IDB-verified ctor_0x49c610 (JE::ResourceSystem):
+		//   0x49c62e/0x49c63c  two cls_0x50db20 string-family objects (outer head + the +0x14 twin)
+		//   0x49c658           eh vector ctor: 8 x 28B records (cls_0x404bc0 fill) - the config band
+		//   0x49c668           cls_0x50dbb0 list at +0x108  (the root+params registry, Init's target)
+		//   0x49c678           cls_0x50ca00 at +0x128        (resource-cache head)
+		//   0x49c681-0x49c69f  SIX cache-accounting words zeroed (IDB names the band
+		//                      resource_cache_0x12c; Demand/Release traffic at 0x49b7c4/0x49b970/
+		//                      0x498ecb, mbr_0x12c also read at 0x49b821/0x49b983/0x49c2ec)
+		// The port does NOT construct the hash/cache sub-objects (meth_0x50cb10 init / meth_0x50bf30
+		// insert still deferred - docs/DEFERRED-NOTES.md); zeroing their heads is the safe stand-in,
+		// and the cache BEHAVIOR lives in the file-static s_cache below (interim faithful walk,
+		// same pattern as FindRht vs meth_0x50bb00).
 		this->mbr_0x0 = 0;     // blob heads: original sub-objects' ctors own their bytes; zeroing
 		this->mbr_0x108 = 0;   // is the safe equivalent for the fields nothing writes yet
 		this->mbr_0x128 = 0;
@@ -176,6 +186,10 @@ namespace JE {
 		return &g_rhtEntries[ index ];
 	}
 
+	// Offset read into the NUL-terminated string blocks the RHT parse built (20B header +
+	// 20B/record + pack/name blocks; parse guards: version string @0x49c39b, alloc log @0x49c194,
+	// header word reads in the 0x49c1d8/0x49c1fa band). The shipped consumer is the hashed-table
+	// path (see FindRht note re meth_0x50bb00 @0x49ba98); ours reads the parsed records directly.
 	const char* ResourceSystem::RhtName( const RhtEntry& e ) {
 		return g_rhtNameBlock ? ( g_rhtNameBlock + e.nameOff ) : "";
 	}
@@ -350,6 +364,9 @@ namespace JE {
 
 	// ---- Res / memory-stream family -------------------------------------------------------
 
+	// SSO selection over the Res name string - same cls_0x50db20 family rule (cap<0x10 inline, else
+	// stored pointer; assign shape meth_0x401bd0 @0x401bd0). The stored bytes are the RESOLVED STEM
+	// copied to the Res at 0x49b948 (T-013 design: mutate-first @0x499f89, then copy, then cache).
 	static char* ResNamePtr( ResourceSystem::Res* res ) {
 		if ( res->nameCap < 0x10u ) {
 			return res->nameBuf;                       // SSO inline
@@ -357,6 +374,9 @@ namespace JE {
 		return *reinterpret_cast<char**>( res->nameBuf );
 	}
 
+	// Name store replicating the shipped copy-to-Res shape @0x49b948 (assign-over-source of the
+	// in-place-stripped stem; SSO inline-vs-heap threshold 0x10 = cls_0x50db20 rule, meth_0x401bd0
+	// family). Case is PRESERVED - the design's do-not-case-fold law.
 	static void ResSetName( ResourceSystem::Res* res, const char* name ) {
 		size_t len = strlen( name );
 		if ( len < 0x10u ) {
@@ -391,6 +411,10 @@ namespace JE {
 	static unsigned  s_cacheClock = 0;
 	static int       s_cacheBytes = 0;
 
+	// Interim cache probe: linear _stricmp walk over the file-static stand-in for the shipped
+	// resource_cache_0x12c band (zeroed @0x49c681-0x49c69f; Demand/Release users 0x49b7c4/0x49b970/
+	// 0x498ecb). The original routes lookup through the hash tables (sub_499F10 hash +
+	// meth_0x50bb00 temp/main probes @0x49ba98/0x49babb); hit-refreshes-locale is our clock model.
 	static ResourceSystem::Res* CacheFind( const char* name ) {
 		for ( int i = 0; i < 256; ++i ) {
 			if ( s_cache[i].res && _stricmp( ResNamePtr( s_cache[i].res ), name ) == 0 ) {
@@ -400,6 +424,9 @@ namespace JE {
 		}
 		return NULL;
 	}
+	// Detach on the release path - shipped counterpart is the cache-band traffic at Release
+	// (cls_0x50ca00 usage 0x498ecb inside Release_0x498eb0); we clear slot+bytes in the stand-in
+	// array instead of the hash bookkeeping.
 	static void CacheUnlink( ResourceSystem::Res* res ) {
 		for ( int i = 0; i < 256; ++i ) {
 			if ( s_cache[i].res == res ) {
@@ -443,16 +470,23 @@ namespace JE {
 			}
 		}
 	}
+	// TEST seam over the interim s_cache array. NO shipped counterpart function (tests reach the
+	// hash/cache bookkeeping via the resource_cache_0x12c band words themselves, @0x49c681-0x49c69f
+	// era stores); this counts our stand-in slots.
 	static int CacheCountForTest() {
 		int n = 0;
 		for ( int i = 0; i < 256; ++i ) { if ( s_cache[i].res ) ++n; }
 		return n;
 	}
 
+	// Public depth accessor for the suites - same interim-cache family as CacheCountForTest
+	// (stand-in for the resource_cache_0x12c accounting band, ctor-zeroed @0x49c681-0x49c69f).
 	int ResourceSystem::CachedResourceCount() {
 		return CacheCountForTest();
 	}
 
+	// Public twin of ResNamePtr - same SSO rule (cap<0x10 inline) over the stem bytes stored at
+	// the 0x49b948 copy era; const-qualified for readers outside this TU.
 	const char* ResourceSystem::ResName( const Res* res ) {
 		// Same selection the file-static ResNamePtr makes (SSO inline vs stored heap pointer).
 		if ( res->nameCap < 0x10u ) {
@@ -461,6 +495,10 @@ namespace JE {
 		return *reinterpret_cast<const char* const*>( res->nameBuf );
 	}
 
+	// Pure form of the shipped IN-PLACE stem mutation the Demand prologue performs on the caller
+	// string: sub_499F10 rfind '.' (0x458a20 seeded with strlen) with assign-over-source @0x499f89,
+	// BEFORE the Res copy @0x49b948 and the meth_0x50bb00 cache key. We copy-then-strip (const
+	// input, T-013 Step 1) - the KEY FORM is shipped, the mutation-vs-copy mechanics are ours.
 	const char* ResourceSystem::ResolveStem( const char* name, char* out, unsigned cap ) {
 		// Same split rule FindRht uses for its probe (last '.' after the last separator) -
 		// single source of truth lives here; FindRht layers the ftype gate on top of it.
