@@ -189,7 +189,17 @@ namespace JE {
 			undefined4 meth_0x4154f0();
 			undefined4 meth_0x467af0();
 			undefined4 meth_0x467be0();
-			undefined4 meth_0x548d80();
+			// R-FINISH item 5: byte-verified shipped signatures (0x548d80 this-seat decompile:
+			// this, p1 animId, p2 animParam, a4 u16 MODE/COUNT, a5 byte SYNC, a6 explicit-time MS;
+			// T-085 record anatomy assigns every argument's role). The earlier zero-arg DB-era
+			// declaration is SUPERSEDED in place - the modeled body + the cite-and-omit device
+			// boundary live in ActionAnim.cpp.
+			char meth_0x548d80( int animId, int animParam, unsigned short mode, char syncFlag,
+			                    int explicitTimeMS );
+			// Duration getter 0x548fc0 (IDB's net::critical_section label is a MISLABEL - body is
+			// the anim-model duration read: 0.0 short-circuit @0x548fce when [this+0x160] = 0, else
+			// Gfx_AnimationObject::GetDuration_4a26d0 seconds via the +0x28C/+0x290 pair).
+			double meth_0x548fc0();
 			undefined4 meth_0x548ff0();
 			undefined4 virt_meth_0x549030();
 			undefined4 meth_0x549040();
