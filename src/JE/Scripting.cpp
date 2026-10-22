@@ -31,6 +31,9 @@ namespace JE {
 	static Script*      s_scriptObjs[32];
 	static int          s_scriptObjCount = 0;
 
+	// Port-side per-name script cache: no single shipped fn counterpart — the shipped AMX side
+	// keeps name bindings in the amx_Init 0x5CC810 / amx_Register 0x5CCDE0 era (pawn-amx docs)
+	// with an UNBOUNDED store; the 32-slot cap below is a documented port deviation.
 	static ScriptImpl& EnsureScript(const char* n) {
 		for ( int i = 0; i < s_scriptObjCount; ++i ) {
 			if ( _stricmp( s_scriptStore[i].name, n ) == 0 ) {
@@ -48,6 +51,9 @@ namespace JE {
 		return s;
 	}
 
+	// Registration shape mirrors shipped amx_Register 0x5CCDE0 ({name,fn} table walk, per-entry
+	// 0x5CCD60, miss err 19 — mov ebp,0x13 @0x5CCE2E; scripting-abi-native-tables doc). The port
+	// registry is a separate per-process store (128-entry cap, below) rather than a caller table.
 	void RegisterNativeScript( const char* scriptName, const char* fnName, NativeScriptFn fn ) {
 		tracing::instrument( tracing::LOCATION, "script=%s fn=%s", scriptName, fnName );
 		if ( s_scriptCount >= 128 ) {
