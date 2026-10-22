@@ -42,7 +42,10 @@ namespace JE {
 			//   states: 0 = pre-init; 1/2 = startup sub-states; 3 = running; 4 = paused.
 			//   Legal transitions: {1,2} -> 3 -> 4 -> 3; only 1/2 valid from state 0.
 			//   Entering 4 stamps JE::TickMilliseconds_0x56af50() into +0x58; leaving 4 computes
-			//   the pause duration into +0x5C and +0x60. Illegal transitions FatalError
+			//   the pause duration into +0x5C and +0x60. RETURN VALUES follow the same split:
+			//   enter-4 yields the tick stamp (@0x54556a->0x545572), leave-4 yields elapsed
+			//   (@0x545585), every other legal transition yields the PRE-transition state
+			//   (@0x545516 result-load). Illegal transitions FatalError
 			//   "Invalid state change in World::ChangeState()." (the state-4 exit message in the
 			//   original says "Entity::ChangeState()." - kept verbatim at 0x54555D).
 			int  ChangeState_0x5454f0( int newState );

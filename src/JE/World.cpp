@@ -57,19 +57,30 @@ namespace JE {
 			JE::FatalError( "Invalid state change in Entity::ChangeState()." );
 		}
 		if ( newState == 4 ) {
-			// original: JE_TickMilliseconds_0x56af50 - the reimpl's tick source lives in the game
-			// layer; using timeGetTime-equivalent via the same helper when modeled. Keep 0 stub-safe.
-			m_pauseStampMS = newState ? (int)clock() : 0;   // placeholder until JE::TickMilliseconds
+			// @0x54556a-0x545573 verbatim: stamp the tick into +0x58, set state, and RETURN THE
+			// TICK (the original returns JE_TickMilliseconds_0x56af50()'s value from this arm, not
+			// a state code). Tick source = the modeled one: Host::TickMilliseconds (the 0x56AF50
+			// timeGetTime wrapper; same source PathManager uses at 0x563196/0x563199).
+			const int tick = JE::Host::TickMilliseconds();
+			m_pauseStampMS = tick;
 			m_state = 4;
-			return m_state;
+			return tick;
 		}
 		if ( m_state == 4 ) {
-			int elapsed = (int)clock() - m_pauseStampMS;   // placeholder tick source
+			// @0x545585-0x54558b: elapsed = Tick - stamp(+0x58), written to BOTH +0x60 and +0x5C
+			// (+0x60 first, @0x545588/0x54558b order kept), state -> param, RETURN elapsed.
+			const int elapsed = JE::Host::TickMilliseconds() - m_pauseStampMS;
 			m_pauseLastMS = elapsed;
 			m_pauseAccumMS = elapsed;
+			m_state = newState;
+			return elapsed;
 		}
+		// Every other legal transition: result was loaded from the OLD mbr_0x38 @0x545516 and is
+		// returned unchanged while @0x54558e stores the new state - the original returns the
+		// PRE-transition state here, not newState.
+		const int oldState = m_state;
 		m_state = newState;
-		return newState;
+		return oldState;
 	} // ChangeState_0x5454f0
 
 	// 0x545D60 core: ProcessJobs(pathMgr) + per-entity server tick. See header for the full
