@@ -26,6 +26,8 @@ namespace JE {
 			"lowerleft", "lowermiddle", "lowerright"
 		};
 
+		// Port suffix->slot map for the 9-corner skin records (GUI::Fragment 0x158-byte layout, vft
+		// 0x66ea1c slot 7 0x4B20A0; corner (u,v) init table 0x4B260D, T-007 G1/G2 byte-verified).
 		unsigned SlotFromSectionSuffix( const char* suffix ) {
 			if ( !suffix ) { return SLOT_COUNT; }
 			for ( unsigned i = 0; i < SLOT_COUNT; ++i ) {
@@ -37,6 +39,8 @@ namespace JE {
 		// ---- skinlist ---------------------------------------------------------------------
 		// Resource `skinlist` (ftype 800, pack Interface). Shipped content, verbatim:
 		//   "DefaultInterface.ini\r\nzzmainmenu.ini\r\nquickslot.ini\r\nareamap.ini\r\nf3_green.ini\r\n"
+		// Port enumeration over the parsed skin-name list (shipped consumes the list inside the
+		// resource-name chain — MAINMENU/Gfx_Engine@0x707CE4 slot viewports era, T-007 G2). No fn.
 		unsigned LoadSkinList( char names[][SKIN_NAME_MAX], unsigned maxNames ) {
 			if ( !names || maxNames == 0u || !JE::g_resource_system ) { return 0; }
 
@@ -67,15 +71,19 @@ namespace JE {
 		}
 
 		// ---- SkinTable -------------------------------------------------------------------
+		// Port table lifecycle around the reconstructed skin defaults (keys/widths/heights per
+		// Skin::LoadDefault 0x523490, RESPONSES-from-implementer-B; T-007 G1/G2 era).
 		SkinTable::SkinTable()
 			: m_ids( NULL ), m_text( NULL ), m_secs( NULL ), m_tree( NULL ), m_recs( NULL )
 			, m_n( 0 ), m_cap( 0 ) {
 		}
 
+		// teardown of the 0x523490-era records (port fn; string frees hit the SSO dtor fan 0x4B2DD0)
 		SkinTable::~SkinTable() {
 			Unload();
 		}
 
+		// port reset of the table to empty (era anchors at ~SkinTable above)
 		void SkinTable::Unload() {
 			if ( m_recs ) {
 				for ( unsigned i = 0; i < m_n; ++i ) { FreeSkinDefaults( &m_recs[i] ); }
@@ -94,16 +102,20 @@ namespace JE {
 			if ( m_text ) { free( m_text ); m_text = NULL; }
 		}
 
+		// parse-order section name view (T-007 G2 +0x2C parse-and-store era; Skin record +0x4 reads
+		// at 0x522ADD/0x5226AD are the shipped-site neighbors, WAVE-3 regen cites)
 		const char* SkinTable::SectionName( unsigned i ) const {
 			// The name stored when the record was built, not a re-index of the tree: a section that
 			// yielded no known key is skipped, and the two must never come apart.
 			return ( i < m_n && m_secs ) ? m_secs[i] : NULL;
 		}
 
+		// port record view (defaults per the 0x523490 key set above)
 		const SkinDefault* SkinTable::Record( unsigned i ) const {
 			return ( i < m_n ) ? &m_recs[i] : NULL;
 		}
 
+		// port slot view (9-corner mapping, SlotFromSectionSuffix anchor above)
 		unsigned SkinTable::SlotOf( unsigned i ) const {
 			const char* name = SectionName( i );
 			if ( !name ) { return SLOT_COUNT; }
@@ -111,6 +123,8 @@ namespace JE {
 			return SlotFromSectionSuffix( dot ? dot + 1 : name );
 		}
 
+		// port group-name copy (same 0x523490-era record fields; shipped reads inline in its
+		// LoadDefault-style parser at 0x523490)
 		char SkinTable::GroupOf( unsigned i, char* out, unsigned cap ) const {
 			const char* name = SectionName( i );
 			if ( !name || !out || cap == 0u ) { return 0; }
@@ -139,6 +153,8 @@ namespace JE {
 			}
 		}
 
+		// lookup by section name; shipped name-compare era = case-sensitive memcmp probe 0x41E4B0
+		// (T-013 KEY-FORM ruling: probe memcmp verbatim vs insert-stem — do NOT unify policies)
 		const SkinDefault* SkinTable::Find( const char* sectionName ) const {
 			if ( !sectionName ) { return NULL; }
 			for ( unsigned i = 0; i < m_n; ++i ) {
@@ -181,11 +197,15 @@ namespace JE {
 			return m_n;
 		}
 
+		// port view of the +0xC4 convert-gate result (T-013 Step-4 device-decode GATED; era cite
+		// 0x522ADD-family above — value semantics pending the M-001-era decode)
 		int SkinTable::ResolvedTextureIndex( unsigned i ) const {
 			if ( !m_ids || i >= m_n ) { return -1; }
 			return m_ids[i];
 		}
 
+		// loads the .ini through the resource chain (demand path 0x49B9F0, stem resolver sub_499F10
+		// @0x499F84 last-dot rfind — T-013 key-form decision, T-066 Step 3 exact accounting)
 		char SkinTable::Load( const char* iniResourceName ) {
 			Unload();
 			if ( !iniResourceName || !JE::g_resource_system ) { return 0; }
@@ -400,14 +420,18 @@ namespace JE {
 			m_cap = 0;
 		}
 
+		// set accessors over the LoadSkinList-built array (shipped set walk = resource-dir chain,
+		// RHT 0x50BB00 era per T-062 cursor census)
 		const SkinTable* SkinSet::At( unsigned i ) const {
 			return ( i < m_n ) ? m_items[i].table : NULL;
 		}
 
+		// same era as SkinSet::At above (0x50BB00 dir-walk neighborhood)
 		const char* SkinSet::NameAt( unsigned i ) const {
 			return ( i < m_n ) ? m_items[i].name : NULL;
 		}
 
+		// name-keyed fetch (compare policy per the 0x41E4B0 key-form ruling above)
 		const SkinTable* SkinSet::Get( const char* skinName ) {
 			m_lastNew = 0;
 			if ( !skinName || !skinName[0] ) { return NULL; }
