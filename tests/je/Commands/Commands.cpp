@@ -171,6 +171,22 @@ int main() {
 	F3::ExecutePendingCommands();
 	check( g_probeCalls == after + 1, "long line dispatches (truncate deviation)" );
 
+	// 12) script family at boot (singleton not installed): the slice-6 guards must make the
+	//     commands DRAIN-SILENT - found, dispatched, return early, queue empties. If anyone
+	//     removes a guard or faults, this row dies.
+	F3::RegisterCommand( "DisableScripts", F3::CommandDisableScripts );
+	F3::RegisterCommand( "EnableScripts", F3::CommandEnableScripts );
+	F3::RegisterCommand( "ToggleScripts", F3::CommandToggleScripts );
+	F3::RegisterCommand( "OneScriptPass", F3::CommandOneScriptPass );
+	F3::PushCommand( "disablescripts" );
+	F3::PushCommand( "enablescripts" );
+	F3::PushCommand( "togglescripts" );
+	F3::PushCommand( "onescriptpass" );
+	F3::PushCommand( "probe boot-safe-confirmed" );
+	F3::ExecutePendingCommands();
+	check( g_probeCalls == after + 2, "script family is boot-safe, queue kept flowing" );
+	check( strcmp( g_cell1, "boot-safe-confirmed" ) == 0, "post-script argv intact" );
+
 	if (!g_fail) { printf("OK: console executor tests passed\n"); return 0; }
 	printf("%d failures\n", g_fail);
 	return 1;

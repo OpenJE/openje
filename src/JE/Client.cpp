@@ -48,8 +48,13 @@ namespace F3 {
 	void __cdecl CommandCameraDown();
 	void __cdecl CommandCameraScrollSpeed(unsigned int argv);
 	void __cdecl CommandCameraFOV(unsigned int argv);
+	void __cdecl CommandToggleScripts();               // slice 6 (src/F3/Commands.cpp @0x588880)
+	void __cdecl CommandDisableScripts();              // slice 6 (@0x58e4a0)
+	void __cdecl CommandEnableScripts();               // slice 6 (@0x58e5b0)
+	void __cdecl CommandOneScriptPass();               // slice 6 (@0x58e6c0)
 
-	// Command registry entry (src/F3.cpp), original 0x59F5D0.
+	// Command registry entry (src/F3/CommandRegistry.cpp since slice-5b; was F3.cpp),
+	// original 0x59F5D0.
 	void RegisterCommand( const char* name, void ( __cdecl *handler )() );
 } // namespace F3
 
@@ -130,11 +135,14 @@ namespace JE {
 		F3::RegisterCommand( "CameraZoomOut_Off", F3::CommandCameraZoomOut_Off );                                    // 0x58edc9
 		F3::RegisterCommand( "CameraRotateLeft", F3::CommandCameraRotateLeft );                                     // 0x58edd8
 		F3::RegisterCommand( "CameraRotateRight", F3::CommandCameraRotateRight );                                    // 0x58ede7
+		F3::RegisterCommand( "ToggleScripts", F3::CommandToggleScripts );                                            // 0x58ef1c (slice 6)
+		F3::RegisterCommand( "DisableScripts", F3::CommandDisableScripts );                                          // 0x58ef2b (slice 6)
+		F3::RegisterCommand( "EnableScripts", F3::CommandEnableScripts );                                            // 0x58ef3a (slice 6)
+		F3::RegisterCommand( "OneScriptPass", F3::CommandOneScriptPass );                                            // 0x58ef49 (slice 6)
 		//   0x58ee44 ScreenCap 0x58ee53 ShowCursor 0x58ee62 Warp 0x58ee71 GuiOptimizationLevel
 		//   0x58ee80 ConsoleWindow 0x58ee8f DebugWindow 0x58eea1 StackWindow 0x58eeb0 DebugTools
 		//   0x58eebf FontTest 0x58eece GetGlobal 0x58eedd SetGlobal 0x58eeec ToggleScene
-		//   0x58eefb ToggleEntities 0x58ef0a ToggleGUI 0x58ef1c ToggleScripts 0x58ef2b DisableScripts
-		//   0x58ef3a EnableScripts 0x58ef49 OneScriptPass 0x58ef58 VRAM 0x58ef67 ListTextures
+		//   0x58eefb ToggleEntities 0x58ef0a ToggleGUI 0x58ef58 VRAM 0x58ef67 ListTextures
 		//   0x58ef76 ToggleSampling 0x58ef85 VSync 0x58ef97 AdapterInfo 0x58efa6 SetDisplaymode
 		//   0x58efb5 MemoryPoolTest 0x58efc4 FadeIn 0x58efd3 FadeOut 0x58efe2 MovieTest
 		//   0x58eff1 EditToken  (GameClient era 0x460b6f-0x460cbf lands with the window cmds.)
