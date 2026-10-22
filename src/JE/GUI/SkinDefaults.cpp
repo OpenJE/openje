@@ -105,6 +105,9 @@ namespace JE {
 			return anyKey;
 		}
 
+		// Port-side teardown of the T-007 G1/G2 skin-default record; no shipped single-fn
+		// counterpart indexed — shipped releases the texture string inline at the skin-table
+		// unload sites (same region as LoadDefault 0x523490, keys per RESPONSES-from-implementer-B).
 		void FreeSkinDefaults( SkinDefault* rec ) {
 			if ( rec ) { free( rec->texture ); rec->texture = 0; }
 		}
