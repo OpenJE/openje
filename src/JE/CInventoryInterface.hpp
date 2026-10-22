@@ -13,7 +13,7 @@ namespace JE {
 			undefined4 virt_meth_0x43b180();
 			undefined4 virt_meth_0x43b190();
 			undefined4 virt_meth_0x43b1a0();
-			virt_meth_0x43fje0;
+			undefined4 virt_meth_0x43ff30();   // R-HEADERSAN: retyped from the 2024 bare form
 	}; // CInventoryInterface
 } // namespace JE
 
