@@ -140,6 +140,10 @@ namespace JE {
 		}
 	}
 
+	// Roll-branch factored from shipped JE::Gregorian::AddSeconds (vft idx22, 0x5A3C60):
+	// the nested AddMinutes(vft+21, 0x5A3BE0) call happens at 0x5A3CA4 BEFORE the full-unit
+	// room lands in totalSeconds (mbr_0x34, added 0x5A3CAA) and the minute field (+0x30) is
+	// zeroed at 0x5A3CAE - the boundary-tick quirk documented above, in shipped branch form.
 	void Gregorian::AddSeconds_RollMinute( unsigned room ) {
 		AddMinutes( 1 );                            // vft+21(this,1) nested BEFORE room add
 		totalSeconds += room;                       // v6 = v5 + mbr_0x34
