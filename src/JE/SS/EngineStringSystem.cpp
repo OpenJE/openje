@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "JE/SS/EngineStringSystem.hpp"
+#include "JE/SS/StringFormat.hpp"
 #include "JE/ResourceSystem.hpp"
 #include "JE/Resources.hpp"
 #include "JE.hpp"
@@ -115,6 +116,25 @@ namespace JE {
 			}
 			return NULL;
 		} // GetToken
+
+		// vft[1] 0x56C260 - shipped two-call body recovered this seat (@0x56c26e base fetch,
+		// @0x56c276 in-place format). R-FINISH item 8: this is where the reconstructed SS::Format
+		// path HOOKS UP - no longer a library waiting for its call site. The shipped form pipes
+		// cls_0x50db20 string refs; the port idiom is the base class's own flat 8K buffer
+		// (StringSystem::GetById_0x4c5900 shape; the string-ref sink stays the base's pending
+		// wiring, unchanged). Order and defaults verbatim: missing id -> empty string, then
+		// format runs on it either way (the original formatted whatever the base wrote).
+		void EngineStringSystem::Get_0x56c260( unsigned id, char* out, unsigned cap ) {
+			tracing::instrument( tracing::LOCATION, "id=%u", id );
+			if ( !out || cap == 0u ) { return; }
+			if ( cap < 8192u ) { out[0] = 0; return; }   // the base fills an 8K scratch; refuse
+				                                          // silently under-sizing instead of
+				                                          // overrunning the caller
+			if ( !GetById_0x4c5900( id, out ) ) {
+				out[0] = 0;                                // byte_64D7D8 "" default, same as base Get
+			}
+			SS::Format( MakeEnv( this ), out, cap );      // meth_0x56be30's reconstructed twin
+		} // Get_0x56c260
 
 	} // namespace SS
 } // namespace JE

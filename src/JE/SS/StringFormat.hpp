@@ -54,8 +54,8 @@ namespace JE {
 		// Deviations: our SS strings are fixed-capacity buffers rather than std::string, so this
 		// rewrites in place and reports failure instead of growing; and the original's second
 		// token failure mode (found-but-unmaterializable) has no counterpart here, since our
-		// lookup returns a plain C string. Not yet wired into Get_0x56C260 - that call-site line
-		// is engine core (implementer-A); see chat/from-B.md C-27/C-29.
+		// lookup returns a plain C string. WIRED (R-FINISH item 8): EngineStringSystem::Get_0x56c260
+		// runs this Format over the env MakeEnv builds - the shipped @0x56c276 call site, closed.
 		char Format( const FormatEnv& env, char* text, unsigned capacity );
 
 		// Env bound to the real subsystems: token map from `ess`, variables from the app's

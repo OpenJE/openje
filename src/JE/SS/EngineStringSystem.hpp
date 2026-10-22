@@ -21,7 +21,9 @@ namespace JE {
 		//      meth_0x5AD460 (insert name,value); log strings are faithful:
 		//        "Couldn't load tokens file\r\n"  (missing/failed demand)
 		//        "Incorrect token formatting on line %d\r\n"
-		// vft[1] 0x56C260 Get -> formats through Format_0x56BE30 (decompile pending - disasm pass).
+		// vft[1] 0x56C260 Get = TWO calls, now decompiled (R-FINISH item 8, this seat; retires the
+		// old "decompile pending" note): base fetch StringSystem::virt_meth_0x4c5a30 @0x56c26e,
+		// then the in-place format EngineStringSystem::meth_0x56be30 @0x56c276.
 		class EngineStringSystem : public StringSystem {
 			//: Members
 			public:
@@ -39,6 +41,14 @@ namespace JE {
 				void Initialize( char* rootDirectory, JE::VFX_Parameter* params );
 				// 0x5AD530 equivalent; returns 1 when the token file was loaded.
 				char LoadTokens( const char* resourceName );
+				// vft[1] 0x56C260 Get - the two-call shipped body (@0x56c26e base fetch via
+				// StringSystem::virt_meth_0x4c5a30, empty-string default; @0x56c276 in-place
+				// format via EngineStringSystem::meth_0x56BE30). R-FINISH item 8 wires the
+				// formatting half: port idiom is the flat 8K-buffer shape the base already uses
+				// (the std::string-ref caller API is the base Get_virt_0x4c5a30's own pending
+				// sink, unchanged here), then SS::Format over the reconstructed path - the very
+				// Format this class owned in the original.
+				void Get_0x56c260( unsigned id, char* out, unsigned cap );
 				// lookup (engine consumers call through Get_0x56c260 + Format_0x56be30)
 				const char* GetToken( const char* name ) const;
 				unsigned TokenCount() const { return m_tokenCount; }
