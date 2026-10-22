@@ -21,7 +21,7 @@ namespace JE {
 			undefined4 virt_meth_0x54b770();
 			void ctor_0x54fea0();
 			undefined4 virt_meth_0x54ff10();
-			virt_meth_0x54fje0;
+			undefined4 virt_meth_0x54ff30();   // R-HEADERSAN: retyped from the 2024 bare form
 			undefined4 virt_meth_0x54ff50();
 			undefined4 virt_meth_0x54ffd0();
 			undefined4 virt_meth_0x591690();
