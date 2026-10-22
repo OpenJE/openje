@@ -49,6 +49,10 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
+			// 0x424670 - orbit pose setter: (this, azimuth_rad, elevation_rad, distance), called
+			// from CameraControl's command-era setters (call sites 0x585f1d/0x5860ba/0x5861db/0x585ffe).
+			// Body NOT reconstructed (device-era, rides T-013/Gfx work) - named-absence port seam.
+			undefined4 set_pose_0x424670( float azimuth_rad, float elevation_rad, float distance );
 			undefined4 meth_0x424670();
 			undefined4 meth_0x4c6200();
 			undefined4 meth_0x4c62f0();

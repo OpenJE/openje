@@ -7,6 +7,7 @@
 #include "JE/Subsystem.hpp"
 
 namespace JE {
+	class Client;   // forward decl for Network::GetGameClient (JE/Client.hpp)
 	// Engine network subsystem. sizeof == 0x30 (factory F3::InitializeNetwork new(0x30) then
 	// patches the object's vftptr to F3::GameNetwork::vftable_0x663efc).
 	//
@@ -20,14 +21,22 @@ namespace JE {
 			dword mbr_0xc;   // 0x0C (0 in ctor)
 			dword mbr_0x10;  // 0x10 = 100  (client timeout? ctor default)
 			dword mbr_0x14;  // 0x14 = 3000 (ms cadence)
-			dword mbr_0x18;  // 0x18 client connection object (vft+24/+28 pumped by Tick)
-			word  mbr_0x1c;  // 0x1C magic/port word = 22501 (0x57E5)
+			dword mbr_0x18;  // 0x18 connection object (vft+24/+28 pumped by Tick; role not re-verified)
+			word  mbr_0x1c;  // 0x1C port word read by the client factory (0x45dfd0: mov 0x1c(esi),cx)
 			dword mbr_0x20;  // 0x20 (0 in ctor)
 			dword mbr_0x24;  // 0x24 = 10 (retry count?)
 			dword mbr_0x28;  // 0x28 = 3000 (ms cadence)
-			dword mbr_0x2c;  // 0x2C server connection object (vft+24/+28 pumped by Tick)
+			dword mbr_0x2c;  // 0x2C GAME CLIENT connection object - RTTI GameClient cast at 0x43978a
+			               // and EVERY console command handler chain '[0x70BD90]+0x2C->+0x84 camera'
+			               // (R-USERRE-A raw census 2026-10-22) pin this slot as the client; the
+			               // earlier 'server connection' label was the ctor-time guess, superseded.
 		//: Methods
-		// vftable JE::Network::vftable_0x69118C:
+			// Singleton mirror of the shipped slot store [0x70BD90] @0x5438fa (ctor) - the console
+			// command era's ONLY read path (mov 0x70bd90,%eax firsts at 0x588365/0x58b4a5 raw).
+			static Network* GetGameNetwork();
+			// +0x2C as JE::Client* (RTTI-cast era 0x43978a); 0 until the net-boot install.
+			Client* GetGameClient();
+			// vftable JE::Network::vftable_0x69118C:
 		//   [0] 0x543910 scalar deleting dtor   [1] 0x543A40 Initialize
 		//   [2] 0x543730 Terminate              [3] 0x543770 Tick (the ONLY real subsystem tick)
 		//   [4] 0x5437B0                        [5] 0x543820

@@ -78,7 +78,11 @@ namespace JE {
                 undefined4 meth_0x5abaf0();
                 undefined4 meth_0x5abc00();
                 undefined4 meth_0x5abc70();
-                ctor_0x5abje0;
+                // DEFECT-FIX (msvc-build block 2026-10-22, R-USERRE-A include chain): the
+                // 2024 export emitted a TYPELESS declaration here (stale-export artifact;
+                // the 'j' in the old name is NOT hex - real EA likely 0x5abe00-era, NOT
+                // re-guessed). Made well-formed under a neutral name pending IDB check.
+                undefined4 sub_export_connection_0x81();
                 void dtor_0x5abf90();
                 undefined4 virt_meth_0x5ac210();
                 undefined4 meth_0x5ac450();

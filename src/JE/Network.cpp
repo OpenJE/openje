@@ -3,8 +3,21 @@
 #include "tracing.hpp"
 #include <stddef.h>
 #include "JE/Network.hpp"
+#include "JE/Client.hpp"
 
 namespace JE {
+
+	// Shipped singleton slot: the store mov %eax,0x70bd90 @0x5438fa (ctor). File-scope here so
+	// the console-command era can read it (every handler chain starts mov [0x70bd90] - raw
+	// 0x588365/0x58b4a5); R-USERRE-A 2026-10-22.
+	static Network* g_network_singleton = NULL;
+
+	Network* Network::GetGameNetwork() { return g_network_singleton; }
+
+	// (Client is declared in JE/Client.hpp; the cast keeps this header's dependency flat.)
+	Client* Network::GetGameClient() {
+		return reinterpret_cast<Client*>( this->mbr_0x2c );   // RTTI GameClient@0x43978a era
+	}
 
 	// 0x543890 - JE::Network constructor (observed side effects):
 	//   vftptr = &JE::Network::vftable_0x69118c (implicit in C++)
@@ -17,7 +30,6 @@ namespace JE {
 	void Network::ctor_0x543890() {
 		tracing::instrument( tracing::LOCATION, "" );
 
-		static Network* g_network_singleton = NULL;
 		if ( g_network_singleton ) {
 			return; // original: _CxxThrowException(Exception("Network object already exists."))
 		}

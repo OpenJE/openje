@@ -7,6 +7,7 @@
 #include "JE/net/client.hpp"
 
 namespace JE {
+	class CameraControl;   // +0x84 camera member (JE/CameraControl.hpp) - forward decl for GetCamera
 	class Client : public net::client {
 		//: Members
 		public:
@@ -101,7 +102,13 @@ namespace JE {
 			undefined4 virt_meth_0x58c380();
 			undefined4 virt_meth_0x58c660();
 			undefined4 virt_meth_0x58d9a0();
-			void ctor_0x58e900();
+			void ctor_0x58e900();                 // legacy zero-arg form -> calls the port form below
+			// 0x58E900 real form: JE::Client::ctor(this, u_short port) - port consumed by the
+			// net::client base (0x59c2e0), factory caller 0x45dfd0 passes network+0x1C word.
+			void ctor_0x58e900( ushort port );
+			// +0x84 as JE::CameraControl* (the console camera chain's middle hop; boot-era install,
+			// named-unresolved - R-USERRE-A). 0 pre-boot, handlers guard.
+			CameraControl* GetCamera();
 			undefined4 virt_meth_0x58f010();
 	}; // Client
 } // namespace JE
