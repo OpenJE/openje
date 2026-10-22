@@ -19,38 +19,38 @@ namespace F3 {
 	// The shipped engine ctor references these game symbols directly (the registration block
 	// at 0x58ea4e ff.); the port mirrors that dependency with this extern block rather than
 	// inventing a callback table the binary does not have.
-	void __stdcall CommandCameraAzimuth(unsigned int argv);
-	void __stdcall CommandCameraAzimuthInc();
-	void __stdcall CommandCameraAzimuthDec();
-	void __stdcall CommandCameraAzimuthSpeed(unsigned int argv);
-	void __stdcall CommandCameraElevation(unsigned int argv);
-	void __stdcall CommandCameraElevationSpeed(unsigned int argv);
-	void __stdcall CommandCameraTop();
-	void __stdcall CommandCameraTopDown();
-	void __stdcall CommandCameraTiltUp();
-	void __stdcall CommandCameraTiltDown();
-	void __stdcall CommandCameraDistance(unsigned int argv);
-	void __stdcall CommandCameraDistanceSpeed(unsigned int argv);
-	void __stdcall CommandCameraScrollLeft_On();
-	void __stdcall CommandCameraScrollRight_On();
-	void __stdcall CommandCameraScrollUp_On();
-	void __stdcall CommandCameraScrollDown_On();
-	void __stdcall CommandCameraScrollLeft_Off();
-	void __stdcall CommandCameraScrollRight_Off();
-	void __stdcall CommandCameraScrollUp_Off();
-	void __stdcall CommandCameraScrollDown_Off();
-	void __stdcall CommandCameraZoomIn_On();
-	void __stdcall CommandCameraZoomIn_Off();
-	void __stdcall CommandCameraZoomOut_On();
-	void __stdcall CommandCameraZoomOut_Off();
-	void __stdcall CommandCameraRotateLeft();
-	void __stdcall CommandCameraRotateRight();
-	void __stdcall CommandCameraDown();
-	void __stdcall CommandCameraScrollSpeed(unsigned int argv);
-	void __stdcall CommandCameraFOV(unsigned int argv);
+	void __cdecl CommandCameraAzimuth(unsigned int argv);
+	void __cdecl CommandCameraAzimuthInc();
+	void __cdecl CommandCameraAzimuthDec();
+	void __cdecl CommandCameraAzimuthSpeed(unsigned int argv);
+	void __cdecl CommandCameraElevation(unsigned int argv);
+	void __cdecl CommandCameraElevationSpeed(unsigned int argv);
+	void __cdecl CommandCameraTop();
+	void __cdecl CommandCameraTopDown();
+	void __cdecl CommandCameraTiltUp();
+	void __cdecl CommandCameraTiltDown();
+	void __cdecl CommandCameraDistance(unsigned int argv);
+	void __cdecl CommandCameraDistanceSpeed(unsigned int argv);
+	void __cdecl CommandCameraScrollLeft_On();
+	void __cdecl CommandCameraScrollRight_On();
+	void __cdecl CommandCameraScrollUp_On();
+	void __cdecl CommandCameraScrollDown_On();
+	void __cdecl CommandCameraScrollLeft_Off();
+	void __cdecl CommandCameraScrollRight_Off();
+	void __cdecl CommandCameraScrollUp_Off();
+	void __cdecl CommandCameraScrollDown_Off();
+	void __cdecl CommandCameraZoomIn_On();
+	void __cdecl CommandCameraZoomIn_Off();
+	void __cdecl CommandCameraZoomOut_On();
+	void __cdecl CommandCameraZoomOut_Off();
+	void __cdecl CommandCameraRotateLeft();
+	void __cdecl CommandCameraRotateRight();
+	void __cdecl CommandCameraDown();
+	void __cdecl CommandCameraScrollSpeed(unsigned int argv);
+	void __cdecl CommandCameraFOV(unsigned int argv);
 
 	// Command registry entry (src/F3.cpp), original 0x59F5D0.
-	void RegisterCommand( const char* name, void ( __stdcall *handler )() );
+	void RegisterCommand( const char* name, void ( __cdecl *handler )() );
 } // namespace F3
 
 namespace JE {
@@ -101,21 +101,21 @@ namespace JE {
 		//   0x58ebce ToggleOctreeNodeDebug 0x58ebdd ToggleFogOfWar 0x58ebec ToggleFOWAutomap
 		//   0x58ebfb ToggleFOWLOS 0x58ec0a ToggleVisualEffects 0x58ec19 ToggleWater
 		//   0x58ec28 ToggleBuilding 0x58ec3a CameraReset 0x58ec49 CameraSetTarget
-		F3::RegisterCommand( "CameraAzimuth", (void ( __stdcall *)())F3::CommandCameraAzimuth );              // 0x58ec58
+		F3::RegisterCommand( "CameraAzimuth", (void ( __cdecl *)())F3::CommandCameraAzimuth );              // 0x58ec58
 		F3::RegisterCommand( "CameraAzimuthInc", F3::CommandCameraAzimuthInc );                               // 0x58ec67
 		F3::RegisterCommand( "CameraAzimuthDec", F3::CommandCameraAzimuthDec );                               // 0x58ec76
-		F3::RegisterCommand( "CameraAzimuthSpeed", (void ( __stdcall *)())F3::CommandCameraAzimuthSpeed );    // 0x58ec85
-		F3::RegisterCommand( "CameraElevation", (void ( __stdcall *)())F3::CommandCameraElevation );           // 0x58ec94
-		F3::RegisterCommand( "CameraElevationSpeed", (void ( __stdcall *)())F3::CommandCameraElevationSpeed ); // 0x58eca3
-		F3::RegisterCommand( "CameraDistance", (void ( __stdcall *)())F3::CommandCameraDistance );                 // 0x58ecb5
-		F3::RegisterCommand( "CameraDistanceSpeed", (void ( __stdcall *)())F3::CommandCameraDistanceSpeed );        // 0x58ecc4
-		F3::RegisterCommand( "CameraFOV", (void ( __stdcall *)())F3::CommandCameraFOV );                             // 0x58ecd3 (slice 3; view-stamp half named-unported)
+		F3::RegisterCommand( "CameraAzimuthSpeed", (void ( __cdecl *)())F3::CommandCameraAzimuthSpeed );    // 0x58ec85
+		F3::RegisterCommand( "CameraElevation", (void ( __cdecl *)())F3::CommandCameraElevation );           // 0x58ec94
+		F3::RegisterCommand( "CameraElevationSpeed", (void ( __cdecl *)())F3::CommandCameraElevationSpeed ); // 0x58eca3
+		F3::RegisterCommand( "CameraDistance", (void ( __cdecl *)())F3::CommandCameraDistance );                 // 0x58ecb5
+		F3::RegisterCommand( "CameraDistanceSpeed", (void ( __cdecl *)())F3::CommandCameraDistanceSpeed );        // 0x58ecc4
+		F3::RegisterCommand( "CameraFOV", (void ( __cdecl *)())F3::CommandCameraFOV );                             // 0x58ecd3 (slice 3; view-stamp half named-unported)
 		F3::RegisterCommand( "CameraTop", F3::CommandCameraTop );                                             // 0x58ecf1
 		F3::RegisterCommand( "CameraTopDown", F3::CommandCameraTopDown );                                     // 0x58ece2
 		F3::RegisterCommand( "CameraDown", F3::CommandCameraDown );                                               // 0x58ed00
 		F3::RegisterCommand( "CameraTiltUp", F3::CommandCameraTiltUp );                                       // 0x58edf6
 		F3::RegisterCommand( "CameraTiltDown", F3::CommandCameraTiltDown );                                   // 0x58ee05
-		F3::RegisterCommand( "CameraScrollSpeed", (void ( __stdcall *)())F3::CommandCameraScrollSpeed );            // 0x58ed0f (slice 3: tick read proved 0x110 = scroll speed)
+		F3::RegisterCommand( "CameraScrollSpeed", (void ( __cdecl *)())F3::CommandCameraScrollSpeed );            // 0x58ed0f (slice 3: tick read proved 0x110 = scroll speed)
 		F3::RegisterCommand( "CameraScrollLeft_On", F3::CommandCameraScrollLeft_On );                              // 0x58ed1e
 		F3::RegisterCommand( "CameraScrollRight_On", F3::CommandCameraScrollRight_On );                             // 0x58ed30
 		F3::RegisterCommand( "CameraScrollUp_On", F3::CommandCameraScrollUp_On );                                   // 0x58ed3f
