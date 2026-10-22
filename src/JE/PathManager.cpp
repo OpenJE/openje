@@ -247,6 +247,8 @@ namespace JE {
 			static bool Less(PathNode* a, PathNode* b) { return a->f < b->f; }
 
 			void Init() { items = 0; count = capacity = 0; }
+			// Port open-list heap ops: no shipped single-fn counterparts — the shipped search fn
+			// 0x560C00 (with 0x561A90/0x560390, GamePathManager.md era) inlines its node ordering.
 			void Reserve(unsigned n) {
 				if ( n <= capacity ) return;
 				unsigned cap = capacity ? capacity : 16;
@@ -255,12 +257,14 @@ namespace JE {
 				if ( !grown ) return;
 				items = grown; capacity = cap;
 			}
+			// push into port heap (shipped inline in the 0x560C00 search era above)
 			void Push(PathNode* node) {
 				Reserve(count + 1);
 				if ( count >= capacity ) return;
 				items[count++] = node;
 				SiftUp(count - 1);
 			}
+			// sift-up: port-local (shipped orderings inline at 0x560C00, see Reserve note)
 			void SiftUp(unsigned i) {
 				while ( i ) {
 					unsigned p = (i - 1) / 2;
@@ -269,6 +273,7 @@ namespace JE {
 					i = p;
 				}
 			}
+			// sift-down: port-local (shipped orderings inline at 0x560C00, see Reserve note)
 			void SiftDown(unsigned i) {
 				for (;;) {
 					unsigned l = 2 * i + 1, r = l + 1, m = i;
@@ -279,6 +284,7 @@ namespace JE {
 					i = m;
 				}
 			}
+			// pop-min: port-local (shipped open-list pop inline in the 0x560C00 era)
 			PathNode* Pop() {
 				if ( !count ) return 0;
 				PathNode* top = items[0];
@@ -286,6 +292,7 @@ namespace JE {
 				if ( count ) SiftDown(0);
 				return top;
 			}
+			// remove-node: port-local (shipped re-open path inline at 0x561A90 era, Reserve note)
 			void Remove(PathNode* node) {
 				for ( unsigned i = 0; i < count; ++i ) {
 					if ( items[i] == node ) {
