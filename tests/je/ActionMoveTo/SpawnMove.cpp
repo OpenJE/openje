@@ -513,7 +513,7 @@ int main( int argc, char** argv ) {
 	}
 
 	// ---------------------------------------------------------------------------
-	// T-071: the idle RESIDENT. Mechanism RE'd in
+	// T-071 + P-REV: the idle ARM. Mechanism RE'd in
 	// discoveries/2025-10-21-t070-idle-resident-rootcause.md; every EA below is from
 	// that census. This block proves the three observables that made absence-equivalence
 	// fail, IN THE PORT: occupation, head-of-line blocking until a drain, activation
@@ -533,60 +533,85 @@ int main( int argc, char** argv ) {
 		t71Atk.name[0] = 0; t71Vic.name[0] = 0;
 
 		// (a) REBASE: drain-then-feed, mirror of SetInMap_0x551ba0 (drain @0x551bbe ->
-			// create(1) @0x551bde -> funnel @0x551be4). q=1, slot 0 holds kind 6, and the
-			// owner store lands exactly like the shipped uniform 0x550737 (R4, 12/12).
+		// create(1) @0x551bde -> funnel @0x551be4). q=1, slot 0 holds the idle ARM (kind 6),
+		// owner store lands like the shipped uniform 0x550737 (R4, 12/12 insert-window).
 		F3::RebaseOntoIdle( &t71Atk, 0 );
-		check( t71Atk.QueuedActionCount() == 1u, "rebase: the resident occupies the queue (q=1)" );
+		check( t71Atk.QueuedActionCount() == 1u, "rebase: the arm occupies the queue (q=1, insert window)" );
 		check( t71Atk.actions[0].kind == 6 && t71Atk.actions[0].action == &t71Atk.idleResident,
-		       "rebase: slot 0 is the idle resident (shipped factory case 1 class)" );
+		       "rebase: slot 0 is the idle arm (shipped factory case 1 class)" );
 		check( t71Atk.idleResident.owner0x14 == &t71Atk,
 		       "rebase: 0x550737 analog fired - owner linked through the seam" );
 		check( t71Atk.idleResident.done0x18 == 0u && t71Atk.idleResident.startPending0x10 == 1u,
 		       "rebase: armed fresh - predicate 0 (0x56018d), start pending (0x560184)" );
 
-		// (b) ACTIVATION on the first pump tick, NOT at rebase time (the shipped start runs
-		// inside the pump, sub_55A1C0:20 clears the pending byte before calling vft+0x10):
-		// world-ms stamp into the +0x184 analog + the 9-then-1 QueueAnimEvent pair.
+		// (b) P-REV TRANSIENT CORE: one processed tick runs start (activation: +0x184
+		// world-ms stamp via 0x548f90, QueueAnimEvent 9-then-1 pair, LAST id in our seam),
+		// then update 0x5a9070 writes done (c6 41 18 01 - raw), then the walk's predicate
+		// retest erases - and NOTHING of the arm survives the tick. The never-finishes
+		// reading this block originally asserted is REFUTED (T-082); the erase-and-continue
+		// walk shape (0x54c80a->0x54c819) replaces it.
 		F3::TickWorldForEntity( &t71Atk, 500 );
 		check( t71Atk.actionStartMs0x184 == 500,
-		       "activation: 0x548f90 stamp - [entity+0x184] took the world ms of the tick" );
+		       "activation: 0x548f90 stamp - [entity+0x184] took the world ms of the arm's single tick" );
 		check( t71Atk.queuedAnimEvent == 1,
 		       "activation: QueueAnimEvent 9@0x40566d then 1@0x40567a; last-id seam holds 1" );
-		check( t71Atk.idleResident.startPending0x10 == 0u && t71Atk.idleResident.consumed0x16 == 1u,
-		       "activation: pending byte cleared before start; update byte +0x16 set (0x5a9070)" );
-		F3::TickWorldForEntity( &t71Atk, 900 );
-		check( t71Atk.actionStartMs0x184 == 500,
-		       "activation ran ONCE - 900 did not restamp (pending cleared at the start tick)" );
-		check( t71Atk.idleResident.done0x18 == 0u && t71Atk.actions[0].kind == 6,
-		       "the resident NEVER finishes: predicate stays 0, slot stays held (0x404b60 reads +0x18)" );
+		check( t71Atk.idleResident.startPending0x10 == 0u && t71Atk.idleResident.done0x18 == 1u,
+		       "transient: pending cleared before start; update wrote the DONE byte itself (0x5a9070 raw)" );
+		check( t71Atk.actions[0].kind == 0 && t71Atk.QueuedActionCount() == 0u,
+		       "transient: the arm erased inside its first tick - steady-state q EXCLUDES idle (T-082 S1)" );
 		check( t71Atk.actedLatch0x319 == 0u,
-		       "NO raise for the resident - the shipped raiser 0x54c833 watches the anim-event deque, not the action queue" );
+		       "no raise from the arm's tick: it left no occupied head (T-085 raiser census agrees)" );
 
-		// (c) HEAD-OF-LINE BLOCKING (run H's "Attack never fired" in one assertion): push
-		// an order WITHOUT draining (the F3::Attack native shape, 0x459f5d) - it occupies
-		// slot 1, ticks nothing, and the pump breaks on the resident head every frame.
+		// (c) WALK-CONTINUE + real HOL, in one construction: rebase (arm, insert window -
+		// the re-stamp proves fresh pending+stampOnce, mirroring shipped's new allocation),
+		// queue a Wait BEHIND it, then ONE tick. The shipped walk erases a finishing head
+		// and CONTINUES the same frame (0x54c80a erase -> loop): the arm must go AND the
+		// Wait must be started by the SAME walk. After that the unfinished Wait is the
+		// head, and the F3::Attack native-shape push behind it is blocked - THAT is the
+		// legitimate head-of-line, owned by an unfinished order, not by idle.
+		F3::RebaseOntoIdle( &t71Atk, 0 );
+		F3::GameActionWait w71;
+		w71.durationMs = 5000u; w71.startMs = 0u;
+		check( F3::EnqueueEntityAction( &t71Atk, &w71, 2 ) == 1, "push: Wait queues behind the fresh arm" );
+		check( t71Atk.QueuedActionCount() == 2u, "insert window: q=2 is arm+order - the R3 shape T-056 sampled" );
+		F3::TickWorldForEntity( &t71Atk, 700 );
+		check( t71Atk.actionStartMs0x184 == 700,
+		       "re-arm restamped: fresh object per rebase in-place (0x4055f0 allocation analog)" );
+		check( t71Atk.QueuedActionCount() == 1u && t71Atk.actions[0].kind == 2,
+		       "walk-continue: same tick erased the arm AND compacted the Wait to head - no one-frame skew" );
+		check( w71.startMs == 700u,
+		       "the SAME walk processed the Wait after the arm's instant finish (0x54c80a->advance shape)" );
 		F3::AttackModeRecord m71 = F3::GameActionAttack::MakeUnarmedMode( 2, 2, 1, 0 );
 		F3::GameActionAttack blocked71;
 		blocked71.Start( &t71Atk, &t71Vic, 0, &m71 );
-		check( F3::EnqueueEntityAction( &t71Atk, &blocked71, 4 ) == 1,
-		       "native-shape push: queued into slot 1 behind the resident" );
-		check( t71Atk.QueuedActionCount() == 2u, "push: q=2 counts the resident - shipped R3 semantics" );
-		for ( int i = 0; i < 20; ++i ) { F3::TickWorldForEntity( &t71Atk, 1000 + 100 * i ); }
-		check( !blocked71.finished && t71Vic.statCur == 10,
-		       "head-of-line block: behind a never-finishing resident the order does NOT run (run H)" );
-		check( t71Atk.actions[0].kind == 6 && t71Atk.actions[1].kind == 4,
-		       "the queue shape is unchanged by the block: resident head, order behind it" );
+		check( F3::EnqueueEntityAction( &t71Atk, &blocked71, 4 ) == 1, "native push: Attack behind the unfinished Wait" );
+		F3::TickWorldForEntity( &t71Atk, 800 );
+		F3::TickWorldForEntity( &t71Atk, 900 );
+		check( t71Vic.statCur == 10 && !blocked71.finished,
+		       "real HOL: the UNFINISHED Wait breaks the walk at 0x54c7f6 - the order behind it does not run" );
+		check( t71Atk.actedLatch0x319 == 1u,
+		       "processed-not-finished head raises +0x319 (T-048 analog; the raiser watches unfinished WORK)" );
+		F3::TickWorldForEntity( &t71Atk, 6500 );   // past the Wait's 700+5000 due: it finishes...
+		check( t71Vic.statCur < 10 || blocked71.finished,
+		       "continuation PROVEN: the Attack's Update ran in the SAME walk that erased the "
+		           "finished Wait (hp moved or volley closed; HOL at 800/900 proved it had NOT "
+		           "run while the unfinished Wait owned the head)" );
 
 		// (d) DRAIN-THEN-FEED idempotence (stop-packet case 0x3B, @0x55763b->@0x55765d):
+		// a rebase erases EVERYTHING - arm AND any order stalled behind an unfinished head -
+		// and leaves exactly one freshly armed arm (which itself completes next tick). A
+		// stalled native order is never revived: shipped discards it at the drain; the new
+		// command re-issues fresh (case 0x3C shape).
+		// (d) DRAIN-THEN-FEED idempotence (stop-packet case 0x3B, @0x55763b->@0x55765d):
 		// a rebase erases EVERYTHING (resident AND the stuck order) and leaves exactly one
-		// freshly armed resident. A stuck native order is never revived - shipped discards
+		// freshly armed arm. A stuck native order is never revived - shipped discards
 		// it, the new command re-issues fresh (case 0x3C shape).
 		F3::RebaseOntoIdle( &t71Atk, 0 );
 		check( t71Atk.QueuedActionCount() == 1u && t71Atk.actions[0].kind == 6
 		           && t71Atk.actions[1].kind == 0,
-		       "rebase is drain+feed: the stuck order is gone, one resident remains" );
-		check( t71Atk.idleResident.startPending0x10 == 1u,
-		       "the resident was RE-ARMED (fresh 0x560184 pending), not reused mid-state" );
+		       "rebase is drain+feed: the stalled order is gone, one fresh arm remains" );
+		check( t71Atk.idleResident.startPending0x10 == 1u && t71Atk.idleResident.done0x18 == 0u,
+		       "the arm was RE-ARMED (fresh pending, done reset), not reused mid-state" );
 
 		// (e) FREED HEAD: after the drain, a fresh order at the head runs - the block was
 		// the RESIDENT, not the container. Command-boundary shape: drain, then issue.
@@ -599,9 +624,15 @@ int main( int argc, char** argv ) {
 		                            // attack gates are absolute-vs-nowMs windows, and t30 proves
 		                            // this ms sequence carries an order from Start(0) to a hit
 		check( t71Vic.statCur < 10, "post-drain, the order fires through the pump (head is free)" );
+		F3::TickWorldForEntity( &t71Atk, 6600 );   // drain the (possibly still-live) attack...
+		F3::TickWorldForEntity( &t71Atk, 6700 );   // ...then the transient arm again, cleanly
+		F3::RebaseOntoIdle( &t71Atk, 0 );
+		F3::TickWorldForEntity( &t71Atk, 6800 );
+		check( t71Atk.QueuedActionCount() == 0u,
+		       "post-revision end state: steady queue is EMPTY, arm completed - T-082 S1, not resident-forever" );
 
 		// (f) NUMBERING: the digest's shared axis is the CLASS NAME (T-031 ruling); this
-		// pins the port-kind -> shipped-class mapping incl. the new resident and proves the
+		// pins the port-kind -> shipped-class mapping incl. the idle arm and proves the
 		// table is TOTAL over the used kinds (no UNKNOWN leak).
 		check( strcmp( F3::Sim::ActionKindName( 6 ), "GameActionIdle" ) == 0,
 		       "kind 6 -> GameActionIdle (shipped factory case 1, 0x46f290)" );
