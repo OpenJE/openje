@@ -45,6 +45,8 @@ namespace JE {
 		free( m_sections );
 	} // ~VFX_Parameter
 
+	// Port-side section lookup over the parse tree (T-009 iterator era; shipped sections are walked
+	// inline from the parse entry 0x4FA3C0, VFX_Parameter layout docs).
 	static VFX_Parameter::IniSection* FindSection( VFX_Parameter* tree, const char* name, bool create ) {
 		for ( int i = 0; i < tree->m_sectionCount; ++i ) {
 			if ( _stricmp( tree->m_sections[i].name, name ) == 0 ) {
@@ -226,7 +228,8 @@ namespace JE {
 		return NULL;
 	} // FindSectionConst
 
-	// Name of section i in parse order; NULL for i outside [0, SectionCount()).
+	// Name of section i in parse order; NULL for i outside [0, SectionCount()). Port accessor
+	// (T-009); shipped read shape: section array walk from the 0x4FA3C0 parse era.
 	const char* VFX_Parameter::SectionNameAt(int i) const {
 		if ( i < 0 || i >= m_sectionCount || !m_sections ) {
 			return NULL;
@@ -234,13 +237,15 @@ namespace JE {
 		return m_sections[i].name;
 	} // SectionNameAt
 
-	// Number of key/value pairs in `section`; -1 when the section is absent.
+	// Number of key/value pairs in `section`; -1 when the section is absent. Port accessor
+	// (T-009); shipped counts live on the same 0x4FA3C0-era section records.
 	int VFX_Parameter::EntryCount(const char* section) const {
 		const IniSection* sec = FindSectionConst( this, section );
 		return sec ? sec->count : -1;
 	} // EntryCount
 
 	// Key of entry i of `section`; NULL for a missing section or i outside [0, EntryCount()).
+	// Port accessor (T-009 era above; records per the 0x4FA3C0 parse layout).
 	const char* VFX_Parameter::EntryKeyAt(const char* section, int i) const {
 		const IniSection* sec = FindSectionConst( this, section );
 		if ( !sec || i < 0 || i >= sec->count ) {
@@ -250,6 +255,7 @@ namespace JE {
 	} // EntryKeyAt
 
 	// Value of entry i of `section`; NULL for a missing section or i outside [0, EntryCount()).
+	// Port accessor (same T-009 / 0x4FA3C0-era basis as EntryKeyAt above).
 	const char* VFX_Parameter::EntryValueAt(const char* section, int i) const {
 		const IniSection* sec = FindSectionConst( this, section );
 		if ( !sec || i < 0 || i >= sec->count ) {
