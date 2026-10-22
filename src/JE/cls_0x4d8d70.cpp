@@ -51,10 +51,15 @@ namespace JE {
 		return StringCapacity( reinterpret_cast<const byte*>( stringObject ) + 4 );
 	}
 
+	// No shipped single-fn counterpart: node linking is INLINED per _Tree clone in the shipped
+	// binary (0x50DBB0/0x50DB20 families, T-057 attribution tier); this accessor is the port's
+	// extraction over the b3 node layout (edge selected by linkOffset).
 	static byte* NodeLink( byte* node, int linkOffset ) {
 		return *reinterpret_cast<byte**>( node + linkOffset );
 	}
 
+	// Same tier as NodeLink (no shipped single fn): std::string keys are read inline in shipped
+	// clones; SSO-buffer-first layout per QueryData above (offset 0 = buffer).
 	static const char* NodeKey( byte* node ) {
 		return StringData( node + Node_Key );   // node keys are plain std::strings (offset 0 = buffer)
 	}
