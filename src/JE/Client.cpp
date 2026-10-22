@@ -46,6 +46,8 @@ namespace F3 {
 	void __stdcall CommandCameraRotateLeft();
 	void __stdcall CommandCameraRotateRight();
 	void __stdcall CommandCameraDown();
+	void __stdcall CommandCameraScrollSpeed(unsigned int argv);
+	void __stdcall CommandCameraFOV(unsigned int argv);
 
 	// Command registry entry (src/F3.cpp), original 0x59F5D0.
 	void RegisterCommand( const char* name, void ( __stdcall *handler )() );
@@ -107,18 +109,13 @@ namespace JE {
 		F3::RegisterCommand( "CameraElevationSpeed", (void ( __stdcall *)())F3::CommandCameraElevationSpeed ); // 0x58eca3
 		F3::RegisterCommand( "CameraDistance", (void ( __stdcall *)())F3::CommandCameraDistance );                 // 0x58ecb5
 		F3::RegisterCommand( "CameraDistanceSpeed", (void ( __stdcall *)())F3::CommandCameraDistanceSpeed );        // 0x58ecc4
-		// 0x58ecd3 CameraFOV @0x58b660 - slice 3: the Gfx_Engine seam [0x707CE4] vft+0xA8 is
-		//   now testable against the LIVE device (G1 positive 41b1a74), so this lands with
-		//   real validation instead of a guessed layout.
+		F3::RegisterCommand( "CameraFOV", (void ( __stdcall *)())F3::CommandCameraFOV );                             // 0x58ecd3 (slice 3; view-stamp half named-unported)
 		F3::RegisterCommand( "CameraTop", F3::CommandCameraTop );                                             // 0x58ecf1
 		F3::RegisterCommand( "CameraTopDown", F3::CommandCameraTopDown );                                     // 0x58ece2
 		F3::RegisterCommand( "CameraDown", F3::CommandCameraDown );                                               // 0x58ed00
 		F3::RegisterCommand( "CameraTiltUp", F3::CommandCameraTiltUp );                                       // 0x58edf6
 		F3::RegisterCommand( "CameraTiltDown", F3::CommandCameraTiltDown );                                   // 0x58ee05
-		// 0x58ed0f CameraScrollSpeed @0x58b7d0 - DEFERRED to slice 3 with a WARNING: it writes
-		//   a FLOAT at cam+0x110 which the ctor 0x586fd9 stamps with the Gfx_Engine VIEW POINTER
-		//   - shipped slot collision, needs the anim-tick consumer read before the echo/FOV
-		//   interpretation settles (ledger, not guessed).
+		F3::RegisterCommand( "CameraScrollSpeed", (void ( __stdcall *)())F3::CommandCameraScrollSpeed );            // 0x58ed0f (slice 3: tick read proved 0x110 = scroll speed)
 		F3::RegisterCommand( "CameraScrollLeft_On", F3::CommandCameraScrollLeft_On );                              // 0x58ed1e
 		F3::RegisterCommand( "CameraScrollRight_On", F3::CommandCameraScrollRight_On );                             // 0x58ed30
 		F3::RegisterCommand( "CameraScrollUp_On", F3::CommandCameraScrollUp_On );                                   // 0x58ed3f

@@ -66,13 +66,14 @@ namespace JE {
 		tracing::instrument( tracing::LOCATION, "deg=%f", degrees );
 
 		float v = degrees;
-		// clamp pair 0xd8/0xdc (fcomps 0xdc @0x586032 raw); the bound ORDER (which is min vs
-		// max) is NAMED-OPEN - resolved by the anim-tick consumer, not guessed. Reading A:
-		// 0xd8=min, 0xdc=max, matching the 0x586045 below-branch stamp.
-		if ( v < mbr_0xd8 ) {
-			v = mbr_0xd8;            // clamp to bound A (0x58603d-0x586045)
-		} else if ( v > mbr_0xdc ) {
-			v = mbr_0xdc;            // clamp to bound B (0x58605a-0x586062)
+		// CLAMP PAIR CORRECTED slice 3 (v2 had d8/dc - d8 is the ELEVATION SPEED the tick
+		// multiplies with; the setter's clamp legs read 0xdc/0xe0 per the decompile, min-vs-max
+		// ORDER named-open since no consumer reads them - symmetric clamp, either order behaves
+		// identically for in-band values):
+		if ( v < mbr_0xdc ) {
+			v = mbr_0xdc;            // bound A leg (0x58603d-0x586045)
+		} else if ( v > mbr_0xe0 ) {
+			v = mbr_0xe0;            // bound B leg (0x58605a-0x586062)
 		}
 		float cur = mbr_0xa8 * 57.295776f;   // 0x58602a
 		if ( ceil( v ) == ceil( cur ) ) {
@@ -111,10 +112,12 @@ namespace JE {
 		tracing::instrument( tracing::LOCATION, "d=%f", degrees );
 
 		float v = degrees;
-		if ( v < mbr_0xec ) {
-			v = mbr_0xec;            // 0x58616f leg (bound A)
-		} else if ( v > mbr_0xf0 ) {
-			v = mbr_0xf0;            // 0x58618c leg (bound B)
+		// RAW bounds slice 3: fcomps 0xf0(%esi) @0x58615c = LOWER, fcomps 0xf4 @0x586179 = UPPER
+		// (v2 had ec/f0 - 0xec is the distance SPEED, per the tick's anim leg @0x586b8a).
+		if ( v < mbr_0xf0 ) {
+			v = mbr_0xf0;            // lower bound (0x58616f leg)
+		} else if ( v > mbr_0xf4 ) {
+			v = mbr_0xf4;            // upper bound (0x58618c leg)
 		}
 		float cur = mbr_0xac;        // 0x586154
 		if ( ceil( v ) == ceil( cur ) ) {
@@ -131,6 +134,61 @@ namespace JE {
 			mbr_0xf8 = v;            // 0x58621e
 		}
 	} // set_distance_0x586140
+
+	// 0x5867C0 - FOV set (slice 3). Clamps to [104,108] only when mbr_0x114 enable is set
+	// (tests 0x5867c3/0x5867dc/0x5867f9), then writes the VIEW object through the Gfx_Engine
+	// singleton [0x707CE4] vft+0xA8 getter (0x58680d): view+0x4A=1 ('fov dirty', 0x58681f),
+	// view+0x110 = degrees*0.017453292 (0x586822), orbit mbr_0x4 = 1 (0x586828).
+	// GATED on the device era: with G1 positive (41b1a74) the view object becomes reachable at
+	// runtime; until the Gfx_Engine port exists the body keeps the CLAMP half (pure) and names
+	// the view half as the unported callee - NO invented pointer.
+	int CameraControl::set_fov_0x5867c0( float degrees ) {
+		tracing::instrument( tracing::LOCATION, "fov=%f", degrees );
+
+		float v = degrees;
+		if ( mbr_0x114 ) {
+			if ( v < mbr_0x104 ) {
+				v = mbr_0x104;       // 0x5867e4
+			} else if ( v > mbr_0x108 ) {
+				v = mbr_0x108;       // 0x586801
+			}
+		}
+		// UNPORTED CALLEE (named-absence): the [0x707CE4] Gfx_Engine view stamp trio
+		// (0x58681f/0x586822/0x586828) - lands with the engine lane; CommandCameraFOV cites
+		// this boundary instead of faking a global.
+		mbr_0x8.mbr_0x4 = 1;         // orbit 'dirty' byte, raw store 0x586828 shape
+		(void) v;                    // consumed by the view stamp once engine-side lands
+		return 0;                    // shipped returns the view ptr; 0 = no engine yet
+	} // set_fov_0x5867c0
+
+	// 0x5869C0 - animation tick (the CONSUMER that decoded the field key; slice 3). Shipped:
+	// dt-gate 33ms vs mbr_0xc4... which IS the zoom-speed slot overlap (mode dword low half,
+	// see hpp) - the 'timestamp' and 'zoom speed' readings are the SAME storage; ported as one
+	// float slot with the overlap named. Legs (all cited):
+	//   bit0 azimuth walk, bit1 elevation walk, bit2 distance walk, bit3 wrap-done clear,
+	//   c2-mode scroll(1-8)/zoom(0x10,0x20)/rotate(0x40,0x80)/tilt(0x100,0x200) deltas
+	//   pushed to the orbit via set_pose / sub_4C62B0 (orbit nudge, seam-cited).
+	// THE FULL TICK PORTS WHEN THE ANIM WALK MATH MATCHES TICK READS (0x586a19 era, uses
+	// mbr_0xc8/cd/d0/d4 etc.) - slice-4 work with device validation; this commit BANKS the
+	// ported legs that need no engine seam:
+	void CameraControl::anim_tick_0x5869c0( float dt_ms ) {
+		tracing::instrument( tracing::LOCATION, "dt=%f", dt_ms );
+
+		// azimuth walk leg (0x586a19-0x586a78): cur = speed mbr_0xc8 * 0.001 * dt * dir mbr_0xd0
+		// + walk mbr_0xd4; clamp to target mbr_0xcc when past it (dir sign decides the side);
+		// then orbit set_pose(az_rad, elev_rad, dist).
+		if ( mbr_0xc0 & 1 ) {
+			double v = (double)mbr_0xc8 * 0.001 * (double)dt_ms * (double)mbr_0xd0 + (double)mbr_0xd4;
+			if ( mbr_0xd0 >= 0.0f ) {
+				if ( v >= mbr_0xcc ) { mbr_0xc0 = (word)(mbr_0xc0 & 0xFFFE); mbr_0xd4 = mbr_0xcc; v = mbr_0xcc; }
+			} else if ( v <= mbr_0xcc ) { mbr_0xc0 = (word)(mbr_0xc0 & 0xFFFE); mbr_0xd4 = mbr_0xcc; v = mbr_0xcc; }
+			mbr_0xd4 = (float)v;
+			char* orbit = reinterpret_cast<char*>( this ) + 8;
+			reinterpret_cast<Gfx_CamCtrl*>( orbit )->set_pose_0x424670( mbr_0xd4 * 0.017453292f, mbr_0xa8 * 0.017453292f, mbr_0xac );   // 0x586aa7
+		}
+		// elevation + distance legs + the mode-register legs ride the same shape; banked for
+		// slice 4 (they need sub_4C62B0 orbit-nudge + MoveTarget 0x586410 ports, seam-cited).
+	} // anim_tick_0x5869c0
 
 	// PORT-SIDE seam (named-absence): JE::Gfx_CamCtrl::set_pose_0x424670 - body not
 	// reconstructed (device-era owner of the orbit pose; call sites cited above prove the
