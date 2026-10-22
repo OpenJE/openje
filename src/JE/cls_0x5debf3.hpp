@@ -6,7 +6,7 @@
 #include "types.hpp"
 
 namespace JE {
-	class cls_0x5debje {
+	class cls_0x5debf3 {
 		//: Members
 		public:
 			dword mbr_0x0;
@@ -28,7 +28,7 @@ namespace JE {
 			dword mbr_0xc;
 		//: Methods
 		public:
-			ctor_0x5debje;
+			undefined4 ctor_0x5debf3();   // R-HEADERSAN: retyped from the 2024 bare form
 			undefined4 meth_0x5dec4e();
 			undefined4 meth_0x5deca4();
 			undefined4 meth_0x5e14aa();
