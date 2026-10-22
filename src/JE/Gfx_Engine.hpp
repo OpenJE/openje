@@ -110,8 +110,12 @@ namespace JE {
 			undefined4 virt_meth_0x5bde60();
 			undefined4 virt_meth_0x5bde90();
 			undefined4 virt_meth_0x5bdeb0();
-			undefined4 virt_meth_0x5bdee0();
-			virt_meth_0x5bdje0;
+			undefined4 virt_meth_0x5bdee0();   // R-HEADERSAN: the 2024 export ALSO left a bare
+			                                   // typeless twin (`virt_meth_0x5bdje0;`, j->d being
+			                                   // the ONLY single-digit candidate in F3.json and
+			                                   // Gfx_Engine's OWN method - vft 0x6ae7ec slot 90,
+			                                   // f3_address_lookup + tools/jdigit-verify.py,
+			                                   // 2026-10-22); that duplicate line is FOLDED here.
 			undefined4 virt_meth_0x5bdf80();
 			undefined4 virt_meth_0x5bdfc0();
 			undefined4 virt_meth_0x5be010();
